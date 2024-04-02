@@ -8,6 +8,29 @@ module.exports = {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["cupcake"],
+    themes: [{
+      "tiendazul": {
+
+        "primary": "#242856",
+
+        "secondary": "#FFFFFF",
+
+        "accent": "#D9D9D9",
+
+        "neutral": "#F3F4F6",
+
+        "base-100": "#ECEDF0",
+
+        "info": "#4449db",
+
+        "info2": "#D056BB",
+
+        "success": "#15b01a",
+
+        "warning": "#80a5ff",
+
+        "error": "#fb4b71",
+      }
+    }],
   },
 }

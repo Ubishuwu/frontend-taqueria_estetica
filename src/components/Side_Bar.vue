@@ -3,15 +3,16 @@
         <ul class="menu">
             <li class="logo">{{ titulo }}</li>
 
-            <li class="item" id="item" v-for="(ruta, nombre) in rutas" :key="ruta">
-                <RouterLink :to="Object.keys(ruta)[0]">{{ nombre }}</RouterLink>
+            <li class="item" id="itemNav" v-for="(ruta, nombre) in rutas" :key="ruta">
+                <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{ nombre }}</RouterLink>
                 <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
             </li>
-<!---
+            <!---
             <li class="item button"><a href="#">Log In</a></li>
             <li class="item button secondary"><a href="#">Sign Up</a></li>
 -->
-            <li class="toggle" id="toggle" ><button @click="desplegar"><font-awesome-icon :icon="['fas', 'ellipsis-vertical']" /></button></li>
+            <li class="toggle" id="toggle"><button @click="desplegar"><font-awesome-icon
+                        :icon="['fas', 'ellipsis-vertical']" /></button></li>
         </ul>
     </nav>
 </template>
@@ -26,24 +27,26 @@ export default {
     data() {
         return {
             rutas: {///agregar las rutas
-                'Inicio': {'/':'rol'},
-                'Caja': {'/caja':'rol'},
-                'Inventario': {'/inventario':'rol'}
+                'Inicio': { '/': 'rol' },
+                'Caja': { '/caja': 'rol' },
+                'Inventario': { '/inventario': 'rol' }
             }
         }
     },
     computed: {},
     methods: {
         desplegar() {
-            if (document.getElementById("item").classList.contains("active")) {
-                //document.getElementById("item").classList.remove("active");
-                const elementos = document.querySelectorAll('.item');
-                elementos.forEach(el => el.classList.remove('active'))
+            if (document.getElementById("itemNav").classList.contains("active")) {
+                retraer();
             } else {
-                ///document.getElementById("item").classList.add("active");
                 const elementos = document.querySelectorAll('.item');
                 elementos.forEach(el => el.classList.add('active'))
+                
             }
+        },
+        retraer() {
+            const elementos = document.querySelectorAll('.item');
+                elementos.forEach(el => el.classList.remove('active'))
         }
     }
 }
@@ -57,29 +60,32 @@ export default {
     margin: 0;
 }
 
-button{
+button {
     font-size: large;
     height: 2rem;
-    aspect-ratio: 1 / 1 ;
+    aspect-ratio: 1 / 1;
 
 }
 
 body {
     font-family: sans-serif;
-    background: #f1f1f1;
+
 }
 
 nav {
-    background: #222;
     padding: 1px 5px;
+    @apply bg-primary
 }
 
 ul {
     list-style-type: none;
 }
 
-a,.toggle{
-    color: white;
+a,
+.toggle,
+.logo {
+    @apply text-neutral;
+    /*color: white;*/
     text-decoration: none;
 }
 
@@ -88,9 +94,9 @@ a:hover {
 }
 
 .logo {
-    color: white;
+    /*color: white;*/
     text-decoration: none;
-    font-size: 25px;
+    font-size: 30px;
     text-align: justify;
 }
 
@@ -105,9 +111,6 @@ a:hover {
     font-size: 20px;
 }
 
-.button.secondary {
-    border-bottom: 1px #444 solid;
-}
 
 /* Mobile menu */
 .menu {
@@ -130,10 +133,15 @@ a:hover {
     text-align: center;
     order: 3;
     display: none;
+
 }
 
 .item.active {
     display: block;
+}
+
+.item:hover {
+    @apply bg-info;
 }
 
 /* Tablet menu */
@@ -144,7 +152,7 @@ a:hover {
 
     .logo {
         flex: 1;
-        
+
     }
 
     .toggle {
@@ -162,32 +170,21 @@ a:hover {
         order: 2;
     }
 
-    .button.secondary {
-        border: 0;
-    }
-
     .button a {
         padding: 7.5px 15px;
         background: teal;
         border: 1px #006d6d solid;
     }
 
-    .button.secondary a {
-        background: transparent;
-    }
 
     .button a:hover {
         text-decoration: none;
     }
 
-    .button:not(.secondary) a:hover {
-        background: #006d6d;
-        border-color: #005959;
+    .item:hover {
+        background: none;
     }
 
-    .button.secondary a:hover {
-        color: #ddd;
-    }
 }
 
 /* Desktop menu */
@@ -195,6 +192,8 @@ a:hover {
     .item {
         display: block;
         width: auto;
+        order: 1;
+
     }
 
     .toggle {
@@ -206,9 +205,6 @@ a:hover {
         text-align: center;
     }
 
-    .item {
-        order: 1;
-    }
 
     .button {
         order: 2;

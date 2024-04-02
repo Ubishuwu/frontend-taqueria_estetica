@@ -1,4 +1,5 @@
 <template>
+    <div class="container"></div>
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur eligendi saepe deleniti sit amet quidem
         molestias pariatur eos deserunt incidunt quaerat quis, tenetur dicta minima aperiam eum totam modi quasi?</p>
 
@@ -8,6 +9,8 @@
         <Tarjeta titulo="marzopa" tipo="1 vaso" precio="25.00" />
         <Tarjeta titulo="mazapan" tipo="1 vaso" precio="25.00" />
     </div>
+    <button class="btn btn-primary">Botón</button>
+
 </template>
 
 <script setup>
@@ -21,8 +24,8 @@ p {
 }
 
 div {
-
-    background-color: rgb(230, 229, 229);
+    @apply bg-neutral;
+    
     padding: 0;
     margin: 0;
     display: flex;

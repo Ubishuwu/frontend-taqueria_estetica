@@ -8,7 +8,7 @@
             </div>
 
 
-            <img class="imag" ref="imag" src="../../assets/miku.png" alt="user">
+            <img class="imag" ref="imag" @click="activar()" src="../../assets/miku.png" alt="user">
             <div class="data" ref="data" @click="activar()">
                 <h2>{{ titulo }}</h2>
                 <p class="tipo">{{ tipo }}</p>
@@ -16,6 +16,7 @@
             </div>
         </div>
         <button class="agregar" ref="boton" @click="agregar()">agregar</button>
+        
     </div>
 </template>
 
@@ -98,8 +99,8 @@ h2 {
 .tipo {
     border-radius: 20px;
     font-size: small;
-    background-color: rgb(178, 176, 176);
     margin: 0px 8%;
+    @apply bg-accent text-primary;
 }
 
 .precio {
@@ -133,10 +134,9 @@ h2 {
     border-radius: 20px;
     border-width: 1px;
     border-style: solid;
-    border-color: rgb(185, 186, 187);
-    background-color: rgb(247, 247, 247);
 
     /*config solo*/
+    padding: 15px;
     padding-top: 30%;
     margin-top: 30%;
 
@@ -151,7 +151,7 @@ h2 {
     transition-property: margin;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
-
+    @apply shadow-xl bg-secondary border-accent;
 }
 
 .imag {
@@ -162,6 +162,7 @@ h2 {
     top: 0;
     width: 60%;
     aspect-ratio: 1/1;
+    @apply shadow-xl;
 }
 
 /***pagar-cantidad */
@@ -173,13 +174,16 @@ h2 {
     /**para pagar */
     padding-bottom: 15px;
 }
-
+.data.activo .precio{
+    @apply text-success;
+}
 .ficha.activo {
 
     /**compra */
     padding: 15px;
-    background-color: rgb(8, 8, 74);
+    
     transition: background-color 0.5s ease;
+    @apply shadow-2xl bg-primary;
 }
 
 .data.activo {
@@ -189,12 +193,11 @@ h2 {
     padding: 0px;
     background-color: rgba(240, 248, 255, 0);
     border-width: 0;
-    color: white;
     height: 100%;
     transition-property: margin;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
-
+    @apply shadow-none text-secondary;
 }
 
 .cantidad,
@@ -205,7 +208,7 @@ h2 {
 
 button {
     padding: 5px;
-    background-color: white;
+    @apply bg-secondary; 
 }
 
 #izq {
@@ -219,12 +222,12 @@ button {
 }
 
 .cantidad.activo {
+    @apply bg-neutral;
     border-radius: 15px;
     display: flex;
     flex-direction: row;
     width: 80%;
     aspect-ratio: 3/1;
-    background-color: white;
     justify-content: space-between;
     align-items: center;
 
@@ -242,18 +245,18 @@ button {
     width: 80%;
     border-radius: 10px;
     position: absolute;
-    background-color: green;
+    
     bottom: 0;
-    color: white;
-
+    @apply bg-success text-secondary ;
+    
 }
 
 button:hover {
-    background-color: rgb(230, 229, 229);
+    @apply brightness-90; 
 }
 
 .agregar:hover {
-    background-color: rgb(9, 170, 9);
+    @apply bg-success brightness-110; 
 }
 
 

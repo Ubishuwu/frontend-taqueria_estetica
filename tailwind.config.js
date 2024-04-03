@@ -9,7 +9,7 @@ module.exports = {
   plugins: [require("daisyui")],
   daisyui: {
     themes: [{
-      "tiendazul": {
+      "sistemaGestor": {
 
         "primary": "#242856",
 

@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import Tarjeta from '../elementos/Tarjeta.vue'
+import Tarjeta from '../templates/Tarjeta.vue'
 
 </script>
 

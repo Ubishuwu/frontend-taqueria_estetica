@@ -1,3 +1,4 @@
+
 module.exports = {
   content: [
     "./index.html",
@@ -12,6 +13,8 @@ module.exports = {
       "sistemaGestor": {
 
         "primary": "#242856",
+
+        "mark": "#293080",
 
         "secondary": "#FFFFFF",
 

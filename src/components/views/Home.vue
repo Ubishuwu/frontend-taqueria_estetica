@@ -1,14 +1,17 @@
 <template>
- <Side_Bar :titulo="currentRouteName" />
+ 
+ <NavBar></NavBar>
     <div>
         <router-view></router-view>
     </div>
-    <p>sucurasles aparecer aqui, si es el dueño</p>
+    <p class="bg-secondary">sucurasles aparecer aqui, si es el dueño</p>
     <p>pie de pagina owo</p>
 </template>
 
 <script setup>
 import Side_Bar from '../Side_Bar.vue';
+import NavBar from '../templates/NavBar.vue';
+
 import { useRoute } from 'vue-router'
 import {ref, watch} from 'vue'
 

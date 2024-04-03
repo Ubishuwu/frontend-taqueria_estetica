@@ -8,7 +8,7 @@ module.exports = {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: [{
+    themes: ["cupcake",{
       "sistemaGestor": {
 
         "primary": "#242856",

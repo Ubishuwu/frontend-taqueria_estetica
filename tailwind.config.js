@@ -1,3 +1,4 @@
+
 module.exports = {
   content: [
     "./index.html",
@@ -8,10 +9,12 @@ module.exports = {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: [{
+    themes: ["cupcake",{
       "sistemaGestor": {
 
         "primary": "#242856",
+
+        "mark": "#293080",
 
         "secondary": "#FFFFFF",
 

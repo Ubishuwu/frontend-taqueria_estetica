@@ -1,4 +1,6 @@
 import { createApp } from 'vue'
+import 'tailwindcss/tailwind.css'
+import 'daisyui/dist/full.css'
 import './style.css'
 import App from './App.vue'
 import { router } from "./routes/main.js";

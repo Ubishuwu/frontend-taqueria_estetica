@@ -1,5 +1,5 @@
 <template>
-    <div class="content" ref="princi">
+    <div class="content m-3 w-2/4 min-[420px]:w-2/6 min-[550px]:w-4/12 sm:w-3/12 md:w-5/12 min-[900px]:w-3/12 lg:w-3/12 min-[1120px]:w-1/5 xl:w-1/6" ref="princi">
         <div class="ficha" ref="ficha">
             <div class="cantidad" ref="aumentador">
                 <button @click="disminuir()" id="izq">-</button>
@@ -79,9 +79,9 @@ export default {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 
     position: relative;
-    width: 80%;
 
-    margin: 1rem;
+
+    /*margin: 1rem;*/
     padding-top: 0rem;
     display: flex;
     flex-wrap: wrap;
@@ -259,23 +259,4 @@ button:hover {
     @apply bg-success brightness-110; 
 }
 
-
-@media all and (min-width: 420px) {
-    .content {
-        width: 42%;
-    }
-}
-
-@media all and (min-width: 600px) {
-    .content {
-        width: 25%;
-    }
-}
-
-@media all and (min-width: 900px) {
-    .content {
-        width: 20%;
-    }
-
-}
 </style>

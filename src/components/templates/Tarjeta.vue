@@ -1,6 +1,13 @@
 <template>
-    <div class="content m-3 w-2/4 min-[420px]:w-2/6 min-[550px]:w-4/12 sm:w-3/12 md:w-5/12 min-[900px]:w-3/12 lg:w-3/12 min-[1120px]:w-1/5 xl:w-1/6" ref="princi">
+    <div class="content m-3 w-2/4 min-[420px]:w-2/6 min-[550px]:w-4/12 sm:w-3/12 md:w-5/12 min-[900px]:w-3/12 lg:w-3/12 min-[1120px]:w-1/5 xl:w-1/6"
+        ref="princi">
         <div class="ficha" ref="ficha">
+            <div v-if="this.stock_restante <= 0 && this.producto.tipo == 'producto'"
+                class="absolute h-full w-full bg-slate-500 bg-opacity-65 rounded-2xl z-30 justify-center items-center flex">
+                <div class=" -rotate-45">
+                    <span class="text-white sm:text-3xl text-xl">Sin Stock</span>
+                </div>
+            </div>
             <div class="cantidad" ref="aumentador">
                 <button @click="disminuir()" id="izq">-</button>
                 <p>{{ canti }}</p>
@@ -10,56 +17,88 @@
 
             <img class="imag" ref="imag" @click="activar()" src="../../assets/miku.png" alt="user">
             <div class="data" ref="data" @click="activar()">
-                <h2>{{ titulo }}</h2>
-                <p class="tipo">{{ tipo }}</p>
-                <p class="precio">${{ precio }}</p>
+                <h2>{{ producto.nombre }}</h2>
+                <p class="tipo">{{ producto.tipo }}</p>
+                <p class="precio">${{ producto.precio }}</p>
             </div>
         </div>
         <button class="agregar" ref="boton" @click="agregar()">agregar</button>
-        
+
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        titulo: {
-            default: 'titulo',
+        producto: {
+            type: Object,
+            required: true,
         },
-        tipo: {
-            default: "orden",
-        },
-        precio: {
-            default: "49.80",
-        },
+        stock_venta: {
+            type: Number,
+            default: 0,
+        }
     },
     data() {
         return {
-            canti: 0
+            canti: 0,
+            stock: 0,
+            stock_restante: null,
         }
     },
+    mounted() {
+
+        //console.log(this.producto.nombre, this.stock_venta)
+        this.stock = this.stock_venta;
+        if(this.producto.tipo.toLowerCase() == 'producto')
+        if (this.stock_venta != 0) {
+           
+            this.stock_restante = this.producto.cantidad - this.stock;
+        } else
+            this.stock_restante = this.producto.cantidad;
+    },
     computed: {},
+    watch: {
+        stock_venta() {
+            this.stock = this.stock_venta;
+            if(this.producto.tipo.toLowerCase() == 'producto')
+            if (this.stock_venta != 0)  {
+                this.stock_restante = this.producto.cantidad - this.stock;
+            } else
+                this.stock_restante = this.producto.cantidad;
+        }
+    },
     methods: {
         activar() {
-            if (!this.$refs.princi.classList.contains("activo")) {
-                this.$refs.princi.classList.add('activo');
-                this.$refs.ficha.classList.add('activo');
-                this.$refs.aumentador.classList.add('activo');
-                this.$refs.imag.classList.add('activo');
-                this.$refs.data.classList.add('activo');
-                this.$refs.boton.classList.add('activo');
+            if (!(this.stock_restante <= 0 && this.producto.tipo == 'producto')) {
+                if (!this.$refs.princi.classList.contains("activo")) {
+                    this.$refs.princi.classList.add('activo');
+                    this.$refs.ficha.classList.add('activo');
+                    this.$refs.aumentador.classList.add('activo');
+                    this.$refs.imag.classList.add('activo');
+                    this.$refs.data.classList.add('activo');
+                    this.$refs.boton.classList.add('activo');
+                }
             }
         },
         aumentar() {
-            this.canti++;
+            if (this.stock_restante > this.canti || this.stock_restante == null)
+                this.canti++;
         },
         disminuir() {
-            if (this.canti != 0)
+            if (this.canti != 0 || this.stock_restante == null)
                 this.canti--;
         },
         agregar() {
+            if (this.canti != 0) {
+                this.stock = this.stock + this.canti;
+                if(this.producto.tipo == 'producto')
+                this.stock_restante = this.producto.cantidad - this.stock;
+                
+                this.$emit('carrito', { 'cantidad': this.stock, 'producto': this.producto });
+                this.canti = 0;
+            }
             this.base();
-            this.canti = 0;
         },
         base() {
             this.$refs.princi.classList.remove('activo');
@@ -174,14 +213,16 @@ h2 {
     /**para pagar */
     padding-bottom: 15px;
 }
-.data.activo .precio{
+
+.data.activo .precio {
     @apply text-success;
 }
+
 .ficha.activo {
 
     /**compra */
     padding: 15px;
-    
+
     transition: background-color 0.5s ease;
     @apply shadow-2xl bg-primary;
 }
@@ -208,7 +249,7 @@ h2 {
 
 button {
     padding: 5px;
-    @apply bg-secondary; 
+    @apply bg-secondary;
 }
 
 #izq {
@@ -245,18 +286,17 @@ button {
     width: 80%;
     border-radius: 10px;
     position: absolute;
-    
+
     bottom: 0;
-    @apply bg-success text-secondary ;
-    
+    @apply bg-success text-secondary;
+
 }
 
 button:hover {
-    @apply brightness-90; 
+    @apply brightness-90;
 }
 
 .agregar:hover {
-    @apply bg-success brightness-110; 
+    @apply bg-success brightness-110;
 }
-
 </style>

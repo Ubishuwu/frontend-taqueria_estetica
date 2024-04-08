@@ -1,29 +1,10 @@
 <template>
- 
- <NavBar :titulo="currentRouteName"></NavBar>
- <!----->
-    <div class=" overflow-y-hidden">
-        <router-view></router-view>
-    </div>
+     <NavBar :titulo="currentRouteName"></NavBar>
     
-    <!--
-    <div class="bg-neutral flex ">
-      <div class="p-0 m-0 flex flex-wrap flex-row w-2/3">
-        <Tarjeta titulo="agua de jamaica con trozo de piña owo" tipo="1 vaso" precio="25.00" v-for="numero in 10"
-        :key="numero" />
-        <Tarjeta titulo="papas con chilito" tipo="1 vaso" precio="25.00" />
-        <Tarjeta titulo="marzopa" tipo="1 vaso" precio="25.00" />
-        <Tarjeta titulo="mazapan" tipo="1 vaso" precio="25.00" />
-        
-      </div>
-      
-      
-    </div>
-    <ListaCompra />
-    --->
-    <p class="bg-secondary">sucurasles aparecer aqui, si es el dueño</p>
-    <p>pie de pagina owo</p>
-</template>
+    <router-view></router-view>
+ 
+ 
+ </template>
 
 <script setup>
 import Side_Bar from '../Side_Bar.vue';

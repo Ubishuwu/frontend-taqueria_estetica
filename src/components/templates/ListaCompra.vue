@@ -31,7 +31,7 @@
 
                                 <!---IMAGEN-->
                                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-accent">
-                                    <img src="../../assets/miku.png"
+                                    <img :src="`../src/assets/${item.producto.tipo}.png`" 
                                         alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
                                         class="h-full w-full object-cover object-center">
                                 </div>

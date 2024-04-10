@@ -17,11 +17,11 @@
             </div>
             <div class="flex flex-row flex-nowrap items-center justify-end">
                 <Search />
-                <button
-                    class="btn bg-transparent btn-circle m-y-1  border-transparent hover:brightness-110"><font-awesome-icon
+                <button @click="activarmodolista()"
+                    :class="['btn bg-transparent btn-circle m-y-1  border-transparent hover:brightness-110',{'btn-disabled':modolista}]"><font-awesome-icon
                         :icon="['fas', 'list']" /></button>
-                <button
-                    class="btn bg-transparent btn-circle m-y-1 border-transparent hover:brightness-110"><font-awesome-icon
+                <button @click="desactivarmodolista()"
+                    :class="['btn bg-transparent btn-circle m-y-1 border-transparent hover:brightness-110',{'btn-disabled':!modolista}]"><font-awesome-icon
                         :icon="['fas', 'grip-vertical']" /></button>
             </div>
         </div>
@@ -42,7 +42,8 @@ export default {
     data() {
         return {
             filtro: 'Todo',
-            activo: false
+            activo: false,
+            modolista: false
         }
     },
     components: {
@@ -57,6 +58,14 @@ export default {
             //console.log(item);
             this.menufiltro();
             this.$emit("filtroselect",item);
+        },
+        activarmodolista(){
+            this.modolista=true;
+            this.$emit("lista",this.modolista);
+        },
+        desactivarmodolista(){
+            this.modolista=false;
+            this.$emit("lista",this.modolista);
         }
     }
 

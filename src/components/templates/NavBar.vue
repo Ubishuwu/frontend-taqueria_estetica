@@ -135,7 +135,8 @@ export default {
                 'Mi Perfil': { '/user': 'all' },
                 'Configuracion': { '/config': 'rol' },
                 'Cerrar Sesion': { '/logout': 'all' }
-            }
+            },
+            
         }
     },
     computed: {},

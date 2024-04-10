@@ -3,11 +3,11 @@
 
         <div id="cajaProductosInicio" class="scroll-estilo md:grow md:overflow-y-auto md:w-2/3">
 
-            <CajaNavBar :filtros="filtro" @filtroselect="filtrocambio" />
+            <CajaNavBar :filtros="filtro" @filtroselect="filtrocambio" @lista="modolistado" />
 
             <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                 <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
-                    @carrito="agregar_compra" :key="item.id" />
+                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
             </div>
 
 
@@ -38,7 +38,7 @@ export default {
             elementosmax: 80,
             pagina_actual: 1,
             paginas: 1,
-            elementosxpagina: 12,
+            elementosxpagina: 10,
             lista: [],
             lista_original: [///elementos recibidos del back
                 {
@@ -50,7 +50,7 @@ export default {
                 },
                 {
                     id: 2,
-                    nombre: 'otroProducto',
+                    nombre: 'agua pura',
                     cantidad: 3,
                     tipo: 'servicio',
                     precio: 25.0
@@ -89,6 +89,7 @@ export default {
                 'Todo',
             ],
             filtrado: 'todo',
+            modolista: false
         }
     },
     components: {
@@ -99,13 +100,16 @@ export default {
 
     },
     methods: {
+        modolistado(valor) {
+            this.modolista = valor;
+        },
         filtrocambio(tipo) {
             //dependiendo como se reciban los datos
             //console.log(tipo.toLowerCase().substring(0,tipo.length-1));
             if (tipo == 'Todo')
                 this.lista = this.lista_original;
             else
-                this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0,tipo.length-1));
+                this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
         },
         realizarventa(total) {
             //acccion para enviar la venta al back
@@ -183,28 +187,37 @@ export default {
         },
         lista() {
             this.lista_porcionada();
+            this.elementosmax = this.lista.length;
+            this.paginas = Math.ceil(this.elementosmax / this.elementosxpagina);
+            this.pagina_actual = 1;
         }
     }
     ,
-    beforeMount() {
+    beforeMount() {///cargar cantidad de elementos en la paginacion.. camiar si es necesario a mount o asi dependiendo la forma de carga de datos
         this.elementosmax = this.lista.length;
         this.paginas = Math.ceil(this.elementosmax / this.elementosxpagina);
 
     },
     mounted() {
-        this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
-        this.lista_porcionada();
-
         const sucursal = 'taqueria';
 
-        if (sucursal == 'taqueria')
+        if (sucursal == 'taqueria') {
             this.filtro.push(
                 'Bebidas',
-                'Platillos')
-        else
+                'Platillos');
+            //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista
+        }
+        else {
             this.filtro.push(
                 'Servicios',
-                'Productos')
+                'Productos');
+            //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista)
+
+        }
+
+        this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
+        this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
+        this.lista_porcionada();
     }
 
 }

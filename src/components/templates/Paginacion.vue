@@ -5,10 +5,10 @@
                 , { 'btn-disabled bg-accent': pag == 1 }
             ]">Anterior</button>
             <p>
-                <span class="font-medium text-sm">pagina: {{ pag }}</span>
+                <span class="font-medium text-sm">pagina: {{ pag }} de {{ paginas }}</span>
             </p>
             <button @click="next_pagina" :class="['relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50'
-                , { 'btn-disabled bg-accent': pag == paginas }
+                , { 'btn-disabled bg-accent': pag >= paginas }
             ]">Siguiente</button>
         </div>
         <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">

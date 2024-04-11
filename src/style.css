@@ -3,3 +3,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scroll-estilo::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scroll-estilo::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background: #888;
+  }

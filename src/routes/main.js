@@ -22,9 +22,16 @@ const routes = [
   }
 ];
 
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Retorna la posición deseada
+    if (to.hash) {
+      return { el: to.hash };
+    }
+  },
 });
 
 

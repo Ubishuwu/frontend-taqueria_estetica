@@ -1,6 +1,42 @@
 <template>
-    <div class="content m-3 w-2/4 min-[420px]:w-2/6 min-[550px]:w-4/12 sm:w-3/12 md:w-5/12 min-[900px]:w-3/12 lg:w-3/12 min-[1120px]:w-1/5 xl:w-1/6" ref="princi">
+    <div :class="['w-full ',{'flex':lista==true},{'hidden ':lista==false}]">
+
+        <div :class="['flex flex-row flex-nowrap w-full mx-5 my-2 p-2 border border-accent rounded-lg bg-secondary shadow-md items-center justify-center',
+    {'brightness-50':this.stock_restante <= 0 && this.producto.tipo == 'producto'}]">
+        
+        <img class="rounded-full h-20 aspect-square object-cover border-2 border-gray-100" @click="activar()"
+        :src="`../src/assets/${producto.tipo}.png`" alt="user">
+        <div class="mx-3 m-0 justify-center items-center">
+            
+            <h2>{{ producto.nombre }}</h2>
+            <div class="flex-row flex flex-nowrap">
+                
+                <p class="my-3 text-gray-500">{{ producto.tipo }}</p>
+                <p class="m-3">${{ producto.precio }}</p>
+            </div>
+        </div>
+        
+        <div class="grow flex flex-nowrap justify-end items-center ">
+            <button @click="disminuir()" id="izq" class="btn-sm btn-square shadow-md border">-</button>
+            <p class="h-8 w-8 shadow-md border text-center text-">{{ canti }}</p>
+            <button @click="aumentar()" id="der" class="btn-sm btn-square shadow-md border">+</button>
+            <button class="ml-2 rounded-md border border-success hover:bg-success hover:text-white hover:brightness-125" ref="boton" @click="agregar()">agregar</button>
+        </div>
+    </div>
+    <div v-if="this.stock_restante <= 0 && this.producto.tipo == 'producto'" class="flex absolute -rotate-12 my-1 items-center bg-accent rounded-lg border-b-2 border-primary">
+            <span class="m-3 mx-6 text-red-600 brightness-150 sm:text-3xl text-xl font-bold">Sin Stock</span>
+        </div>  
+    </div>
+    <div :class="[' m-3 w-2/4 min-[420px]:w-2/6 min-[550px]:w-4/12 sm:w-3/12 md:w-5/12 min-[900px]:w-3/12 lg:w-3/12 min-[1120px]:w-1/5 xl:w-1/6',
+{'hidden':lista==true},{'flex content':lista==false}]"
+        ref="princi">
         <div class="ficha" ref="ficha">
+            <div v-if="this.stock_restante <= 0 && this.producto.tipo == 'producto'"
+                class="absolute h-full w-full bg-slate-500 bg-opacity-65 rounded-2xl z-30 justify-center items-center flex">
+                <div class=" -rotate-45">
+                    <span class="text-white sm:text-3xl text-xl">Sin Stock</span>
+                </div>
+            </div>
             <div class="cantidad" ref="aumentador">
                 <button @click="disminuir()" id="izq">-</button>
                 <p>{{ canti }}</p>
@@ -8,58 +44,95 @@
             </div>
 
 
-            <img class="imag" ref="imag" @click="activar()" src="../../assets/miku.png" alt="user">
+            <img class="imag border-2 border-accent shadow-sm" ref="imag" @click="activar()"
+                :src="`../src/assets/${producto.tipo}.png`" :alt="`${producto.tipo}`">
             <div class="data" ref="data" @click="activar()">
-                <h2>{{ titulo }}</h2>
-                <p class="tipo">{{ tipo }}</p>
-                <p class="precio">${{ precio }}</p>
+                <h2>{{ producto.nombre }}</h2>
+                <p class="tipo">{{ producto.tipo }}</p>
+                <p class="precio">${{ producto.precio }}</p>
             </div>
         </div>
         <button class="agregar" ref="boton" @click="agregar()">agregar</button>
-        
+
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        titulo: {
-            default: 'titulo',
+        producto: {
+            type: Object,
+            required: true,
         },
-        tipo: {
-            default: "orden",
+        stock_venta: {
+            type: Number,
+            default: 0,
         },
-        precio: {
-            default: "49.80",
-        },
+        lista: {
+            default: false 
+        }
     },
     data() {
         return {
-            canti: 0
+            canti: 0,
+            stock: 0,
+            stock_restante: null,
+            
         }
     },
+    mounted() {
+
+        //console.log(this.producto.nombre, this.stock_venta)
+        this.stock = this.stock_venta;
+        if (this.producto.tipo.toLowerCase() == 'producto')
+            if (this.stock_venta != 0) {
+
+                this.stock_restante = this.producto.cantidad - this.stock;
+            } else
+                this.stock_restante = this.producto.cantidad;
+    },
     computed: {},
+    watch: {
+        stock_venta() {
+            this.stock = this.stock_venta;
+            if (this.producto.tipo.toLowerCase() == 'producto')
+                if (this.stock_venta != 0) {
+                    this.stock_restante = this.producto.cantidad - this.stock;
+                } else
+                    this.stock_restante = this.producto.cantidad;
+        }
+    },
     methods: {
         activar() {
-            if (!this.$refs.princi.classList.contains("activo")) {
-                this.$refs.princi.classList.add('activo');
-                this.$refs.ficha.classList.add('activo');
-                this.$refs.aumentador.classList.add('activo');
-                this.$refs.imag.classList.add('activo');
-                this.$refs.data.classList.add('activo');
-                this.$refs.boton.classList.add('activo');
+            if (!(this.stock_restante <= 0 && this.producto.tipo == 'producto')) {
+                if (!this.$refs.princi.classList.contains("activo")) {
+                    this.$refs.princi.classList.add('activo');
+                    this.$refs.ficha.classList.add('activo');
+                    this.$refs.aumentador.classList.add('activo');
+                    this.$refs.imag.classList.add('activo');
+                    this.$refs.data.classList.add('activo');
+                    this.$refs.boton.classList.add('activo');
+                }
             }
         },
         aumentar() {
-            this.canti++;
+            if (this.stock_restante > this.canti || this.stock_restante == null)
+                this.canti++;
         },
         disminuir() {
-            if (this.canti != 0)
+            if (this.canti != 0 || this.stock_restante == null)
                 this.canti--;
         },
         agregar() {
+            if (this.canti != 0) {
+                this.stock = this.stock + this.canti;
+                if (this.producto.tipo == 'producto')
+                    this.stock_restante = this.producto.cantidad - this.stock;
+
+                this.$emit('carrito', { 'cantidad': this.stock, 'producto': this.producto });
+                this.canti = 0;
+            }
             this.base();
-            this.canti = 0;
         },
         base() {
             this.$refs.princi.classList.remove('activo');
@@ -174,14 +247,16 @@ h2 {
     /**para pagar */
     padding-bottom: 15px;
 }
-.data.activo .precio{
+
+.data.activo .precio {
     @apply text-success;
 }
+
 .ficha.activo {
 
     /**compra */
     padding: 15px;
-    
+
     transition: background-color 0.5s ease;
     @apply shadow-2xl bg-primary;
 }
@@ -208,7 +283,7 @@ h2 {
 
 button {
     padding: 5px;
-    @apply bg-secondary; 
+    @apply bg-secondary;
 }
 
 #izq {
@@ -245,18 +320,17 @@ button {
     width: 80%;
     border-radius: 10px;
     position: absolute;
-    
+
     bottom: 0;
-    @apply bg-success text-secondary ;
-    
+    @apply bg-success text-secondary;
+
 }
 
 button:hover {
-    @apply brightness-90; 
+    @apply brightness-90;
 }
 
 .agregar:hover {
-    @apply bg-success brightness-110; 
+    @apply bg-success brightness-110;
 }
-
 </style>

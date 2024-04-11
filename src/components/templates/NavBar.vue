@@ -42,7 +42,7 @@
                             <button type="button"
                                 class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium "
                                 id="lista-escritorio-navbar" v-for="(ruta, nombre) in rutas" :key="ruta">
-                                <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{ nombre }}</RouterLink>
+                                <RouterLink :to="Object.keys(ruta)[0]">{{ nombre }}</RouterLink>
                                 <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                             </button>
                         </div>
@@ -69,9 +69,7 @@
                                 id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                 <span class="absolute -inset-1.5"></span>
                                 <span class="sr-only">Open user menu</span>
-                                <img class="h-8 w-8 rounded-full object-cover "
-                                    src="../../assets/miku.png"
-                                    alt="">
+                                <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
                             </button>
                         </div>
 
@@ -86,14 +84,15 @@
               To: "transform opacity-0 scale-95"
           -->
                         <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-menu">
+                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                            id="user-menu">
                             <!-- Active: "bg-gray-100", Not Active: "" -->
                             <a type="button"
-                    class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm"
-                    v-for="(ruta, nombre) in rutasUser" :key="ruta">
-                    <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{ nombre }}</RouterLink>
-                    <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-            </a>
+                                class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm"
+                                v-for="(ruta, nombre) in rutasUser" :key="ruta">
+                                <RouterLink :to="Object.keys(ruta)[0]" @click="retraerUser">{{ nombre }}</RouterLink>
+                                <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -109,7 +108,7 @@
                     v-for="(ruta, nombre) in rutas" :key="ruta">
                     <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{ nombre }}</RouterLink>
                     <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-            </a>
+                </a>
             </div>
         </div>
     </nav>
@@ -136,11 +135,19 @@ export default {
                 'Mi Perfil': { '/user': 'all' },
                 'Configuracion': { '/config': 'rol' },
                 'Cerrar Sesion': { '/logout': 'all' }
-            }
+            },
+            
         }
     },
     computed: {},
     methods: {
+        retraer() {
+            document.getElementById("mobile-menu").classList.add("hidden");
+        },
+        retraerUser() {
+            document.getElementById("user-menu").classList.add("absolute");
+            document.getElementById("user-menu").classList.remove("hidden");
+        },
         menu() {
             if (document.getElementById("mobile-menu").classList.contains("hidden")) {
                 document.getElementById("mobile-menu").classList.remove("hidden");
@@ -148,7 +155,7 @@ export default {
                 document.getElementById("mobile-menu").classList.add("hidden");
             }
         },
-        menuUser(){
+        menuUser() {
             if (document.getElementById("user-menu").classList.contains("absolute")) {
                 document.getElementById("user-menu").classList.remove("absolute");
                 document.getElementById("user-menu").classList.add("hidden");

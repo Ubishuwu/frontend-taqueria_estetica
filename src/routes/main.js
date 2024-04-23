@@ -15,10 +15,6 @@ const routes = [
         path: "caja",
         name: "Caja",
         component: Caja,
-      }, {
-        path: "inventario",
-        name: "Inventario",
-        component: Inventario,
       },
       {
         path: "cocina",
@@ -36,7 +32,12 @@ const routes = [
     path: "/create-platillo",
     name: "Crear Plantillo",
     component: CreatePlatillo
-  }
+  },
+  {
+    path: "/inventario",
+    name: "Inventario",
+    component: Inventario,
+  },
 ];
 
 

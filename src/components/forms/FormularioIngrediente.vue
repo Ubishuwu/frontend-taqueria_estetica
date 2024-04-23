@@ -1,6 +1,6 @@
 <template>
     <div class="border border-1 border-black">
-        <div class="flex flex-col justify-center items-center p-3 m-2">
+        <form @submit.prevent="validar" class="flex flex-col justify-center items-center p-3 m-2">
             <h1 class="text-2xl font-semibold m-2">Nuevo Ingrediente</h1>
             <label class="flex md:flex-row flex-col w-full max-w-2xl items-center">
                 <span class="label-text">Nombre del Ingrediente:</span>
@@ -32,7 +32,7 @@
                 
             </div>
             <input type="submit" value="Guardar" class="btn btn-sm hover:btn-success hover:text-secondary" />
-        </div>
+        </form>
     </div>
 </template>
 

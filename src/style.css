@@ -5,8 +5,9 @@
 @tailwind utilities;
 
 .scroll-estilo::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 12px;
+  height: 8px;
+  @apply bg-accent rounded-r-md
   }
   
   .scroll-estilo::-webkit-scrollbar-thumb {

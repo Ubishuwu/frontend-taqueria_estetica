@@ -59,7 +59,6 @@
       <div class="m-5">
         <component :is="showComponent" />
       </div>
-      
     </div>
     <div class="drawer-side">
       <label
@@ -67,10 +66,11 @@
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+      <ul class="menu p-4 w-60 min-h-full bg-base-200 text-base-content">
         <!-- Sidebar content here -->
-        <li><a href="/">Home</a></li>
-        <li @click="showComponent = 'Main'"><a>Inventario</a></li>
+        <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li>
+        <li @click="showComponent = 'Main'"><a>Página Principal</a></li>
+        <li @click="showComponent = 'Productos'"><a>Inventario</a></li>
         <li @click="showComponent = 'Reportes'"><a>Reportes</a></li>
       </ul>
     </div>
@@ -80,11 +80,13 @@
 <script>
 import Main from "./Inventario/Main.vue";
 import Reportes from "./Inventario/Reportes.vue";
+import Productos from "./Inventario/Productos.vue";
 
 export default {
   components: {
     Main,
     Reportes,
+    Productos,
   },
   data() {
     return {

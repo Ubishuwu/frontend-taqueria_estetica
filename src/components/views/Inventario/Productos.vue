@@ -1,0 +1,99 @@
+<template>
+  <div class="w-[200px] flex">
+
+    <form class="flex mt-5">
+      <label class="form-control w-full max-w-xs mr-2">
+        <div class="label">
+          <span class="label-text">Sucursal</span>
+        </div>
+        <select class="select select-sm select-bordered">
+          <option>Todos</option>
+          <option>Taqueria El TaquerITO</option>
+          <option>Estetica El cortITO</option>
+        </select>
+      </label>
+      <label class="form-control w-full max-w-xs mr-2">
+        <div class="label">
+          <span class="label-text">Estatus</span>
+        </div>
+        <select class="select select-sm select-bordered">
+          <option>Todos</option>
+          <option>Proximos a vencer</option>
+          <option>Normal</option>
+          <option>Sobreinventario</option>
+        </select>
+      </label>
+      <label class="form-control w-full max-w-xs mr-2">
+        <div class="label">
+          <span class="label-text">Ordenar por</span>
+        </div>
+        <select class="select select-sm select-bordered">
+          <option>Nombre</option>
+          <option>Inventario</option>
+          <option>Sucursal</option>
+        </select>
+      </label>
+
+    </form>
+    <button class="btn btn-outline btn-success mt-10" onclick="my_modal_3.showModal()">Agregar</button>
+    <dialog id="my_modal_3" class="modal">
+      <div class="modal-box">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <FormularioProducto/>
+      </div>
+    </dialog>
+  </div>
+  <div class="overflow-x-auto mt-5">
+    <table class="table">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Medida</th>
+          <th>Inventario</th>
+          <th>Proveedor</th>
+
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- row 1 -->
+        <tr>
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="mask mask-squircle w-12 h-12">
+                  <img src="https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"
+                    alt="Avatar Tailwind CSS Component" />
+                </div>
+              </div>
+              <div>
+                <div class="font-bold">Cilantro</div>
+                <div class="text-sm opacity-50">Cocina</div>
+              </div>
+            </div>
+          </td>
+          <td>Kilo</td>
+          <td>
+            <div class="badge badge-success">
+              <p class="text-white">5</p>
+            </div>
+          </td>
+
+          <td>Mercado 20 de Noviembre</td>
+          <th>
+            <button class="btn btn-ghost btn-xs">Detalles</button>
+          </th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+<script setup>
+import FormularioProducto from '../../forms/FormularioProducto.vue';
+
+</script>
+
+<style></style>

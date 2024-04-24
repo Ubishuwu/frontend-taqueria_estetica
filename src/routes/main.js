@@ -3,13 +3,17 @@ import Home from '../components/views/Home.vue'
 import Caja from '../components/views/Caja.vue'
 import Inventario from '../components/views/Inventario.vue'
 import Login from '../components/forms/Login.vue';
+import Register from '../components/forms/Register.vue';
 import Cocina from '../components/views/Cocina.vue';
 import CreatePlatillo from '../components/views/CreatePlatillo.vue';
+import FormularioIngrediente from '../components/forms/FormularioIngrediente.vue';
+import FormularioPlatillo from '../components/forms/FormularioPlatillo.vue';
+import FormularioUsuarios from '../components/forms/FormularioUsuarios.vue';
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: FormularioUsuarios,
     children: [
       {
         path: "caja",
@@ -27,6 +31,11 @@ const routes = [
     path: "/Login",
     name: "Login",
     component: Login
+  },
+  {
+    path: "/Register",
+    name: "Register",
+    component: Register
   },
   {
     path: "/create-platillo",

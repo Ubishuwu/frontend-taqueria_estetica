@@ -1,27 +1,56 @@
 <template>
-    <div class="border border-1 border-black">
-        <div class="flex flex-col justify-center items-center p-3 m-2">
-            <h1 class="text-2xl font-semibold m-2">Nuevo Producto</h1>
-            <label class="flex md:flex-row flex-col w-full max-w-2xl items-center">
-                <span class="label-text">Nombre del Producto:</span>
-                <input type="text" placeholder="Ingrediente" class="input input-bordered input-sm grow ml-3" />
+    <div>
+        <form>
+            <label class="form-control w-full ">
+                <div class="label">
+                    <span class="label-text font-bold">Nombre</span>
+                </div>
+                <input type="email" v-model="email" class="input input-bordered w-full" required />
             </label>
-            <div class="justify-center items-center flex md:flex-row flex-col w-full">
-                <label class="flex md:flex-row flex-col max-w-2xl items-center m-2">
-                    <span class="label-text">Cantidad:</span>
-                    <input type="number" placeholder="1 unidad" class="input input-bordered input-sm ml-3" />
-                </label>
-                <label class="flex md:flex-row flex-col max-w-2xl items-center m-2">
-                    <span class="label-text">Precio($):</span>
-                    <input type="number" placeholder="00.00" class="input input-bordered input-sm ml-3" />
-                </label>
-            </div>
-            <input type="submit" value="Guardar" class="btn btn-sm hover:btn-success hover:text-secondary mt-2" />
+            <label class="form-control w-full max-w-xs">
+                <div class="label">
+                    <span class="label-text font-bold">Tipo de producto</span>
+                </div>
+                <select class="select select-bordered">
+                    <option selected>Ingrediente</option>
+                    <option>De venta</option>
+                </select>
+            </label>
+            <label class="form-control w-full ">
+                <div class="label">
+                    <span class="label-text font-bold">Proveedor</span>
+                </div>
+                <input type="email" v-model="email" class="input input-bordered w-full" required />
+            </label>
+            <label class="form-control w-full max-w-xs">
+                <div class="label">
+                    <span class="label-text font-bold">Medida</span>
+                </div>
+                <select class="select select-bordered">
+                    <option disabled selected>Selecciona una</option>
+                    <option>Kilo</option>
+                    <option>Gramo</option>
+                    <option>Litro</option>
+                    <option>Miligramo</option>
+                    <option>Bulto</option>
+                    <option>Unidad</option>
+                </select>
+            </label>
+            <label class="form-control">
+                <div class="label">
+                    <span class="label-text font-bold">Descripción (opcional)</span>
+                </div>
+                <textarea class="textarea textarea-bordered h-24" placeholder="Este ingrediente solo se compra en temporada de verano......."></textarea>
+            </label>
+            <label class="form-control w-full mt-5">
+                <button class="btn" type="submit" @click.prevent="login">Registrar</button>
+            </label>
 
-        </div>
+        </form>
     </div>
+
 </template>
 
-<script> 
-//agregar validadcion y metodo de envio.. ademas de colocarlo como modal o vista dependiendo como se vea mejor
+<script>
+
 </script>

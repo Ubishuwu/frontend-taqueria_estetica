@@ -13,7 +13,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: FormularioUsuarios,
+    component: Home,
     children: [
       {
         path: "caja",

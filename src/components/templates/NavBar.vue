@@ -48,75 +48,94 @@
                 </div>
                 <!--Usuario-->
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <button class="btn btn-sm" onclick="my_modal_5.showModal()">
-                        Entrar
-                    </button>
-                    <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-                        <div class="modal-box">
-                            <form>
-                                <label class="form-control w-full ">
-                                    <div class="label">
-                                        <span class="label-text font-bold">Nombre</span>
-                                    </div>
-                                    <input type="text"
-                                        class="input input-bordered w-full" required />
-                                </label>
-                                <label class="form-control w-full">
-                                    <div class="label">
-                                        <span class="label-text font-bold">Contraseña</span>
-                                    </div>
-                                    <input type="password" 
-                                        class="input input-bordered w-full " required/>
-                                </label>
-                                <p class="mt-2">¿Aún no tienes cuenta? <a href="/register" class="underline text-primary">Iniciar Sesión</a></p>
-                                <label class="form-control w-full mt-5">
-                                    <button class="btn" type="submit">Entrar</button>
-                                </label>
-                                
-                        </form>
+                    <div v-if="usuarioAutenticado == null">
+                        <button class="btn btn-sm" onclick="my_modal_5.showModal()">
+                            Entrar
+                        </button>
+                        <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+                            <div  class="modal-box">
+
+                                <div v-if="errorMessage !=''" role="alert" class="alert alert-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Credenciales no válidas</span>
+                                </div>
+                                <form>
+                                    <label class="form-control w-full ">
+                                        <div class="label">
+                                            <span class="label-text font-bold">Correo</span>
+                                        </div>
+                                        <input type="email" v-model="email" class="input input-bordered w-full"
+                                            required />
+                                    </label>
+                                    <label class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text font-bold">Contraseña</span>
+                                        </div>
+                                        <input type="password" v-model="password" class="input input-bordered w-full "
+                                            required />
+                                    </label>
+                                    <p class="mt-2">¿Aún no tienes cuenta? <a href="/register"
+                                            class="underline text-primary">Registrate </a></p>
+                                    <label class="form-control w-full mt-5">
+                                        <button class="btn" type="submit" @click.prevent="login">Entrar</button>
+                                    </label>
+
+                                </form>
+                            </div>
+                        </dialog>
+                    </div>
+                    <div class="flex" v-else>
+                        <button type="button"
+                            class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                            <span class="absolute -inset-1.5"></span>
+                            <span class="sr-only">View notifications</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                        </button>
+
+                        <!-- Profile dropdown -->
+                        <div class="relative ml-3">
+                            <div>
+                                <button type="button" @click="menuUser"
+                                    class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                    id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="absolute -inset-1.5"></span>
+                                    <span class="sr-only">Open user menu</span>
+                                    <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
+                                </button>
+                                <p class="text-white">{{ this.usuarioAutenticado.email }}</p>
+                            </div>
+
+                            <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                                id="user-menu">
+
+                                <!-- Active: "bg-gray-100", Not Active: "" -->
+
+                                <a type="button"
+                                    class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm"
+                                    v-for="(ruta, nombre) in rutasUser" :key="ruta">
+                                    <RouterLink :to="Object.keys(ruta)[0]" @click="retraerUser">{{ nombre }}
+                                    </RouterLink>
+
+                                    <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
+
+                                </a>
+                                <a @click="logout" type="button"
+                                    class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
+                                    Cerrar Sesión
+                                </a>
+                            </div>
+
                         </div>
-                    </dialog>
-                    <!--
-                    <button type="button"
-                        class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span class="absolute -inset-1.5"></span>
-                        <span class="sr-only">View notifications</span>
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                        </svg>
-                    </button>
-                    -->
-                    <!-- Profile dropdown 
-                    <div class="relative ml-3">
-                        <div>
-                            <button type="button" @click="menuUser"
-                                class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <span class="absolute -inset-1.5"></span>
-                                <span class="sr-only">Open user menu</span>
-                                <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
-                            </button>
-                        </div>
-                        
-                        <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
-                            id="user-menu">
-                            -->
-                    <!-- Active: "bg-gray-100", Not Active: "" -->
-                    <!--
-                            <a type="button"
-                                class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm"
-                                v-for="(ruta, nombre) in rutasUser" :key="ruta">
-                                <RouterLink :to="Object.keys(ruta)[0]" @click="retraerUser">{{ nombre }}</RouterLink>
-                                -->
-                    <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-                    <!--    
-                            </a>
-                        </div>
-                    
-                    </div>-->
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,15 +148,19 @@
                     v-for="(ruta, nombre) in rutas" :key="ruta">
                     <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{
                         nombre
-                        }}</RouterLink>
+                    }}</RouterLink>
                     <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                 </a>
+
             </div>
         </div>
     </nav>
+
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
 export default {
     name: "Side_Bar",
     props: {
@@ -147,6 +170,10 @@ export default {
     },
     data() {
         return {
+            usuarioAutenticado: null,
+            email: "",
+            password: "",
+            errorMessage: '',
             rutas: {
                 ///agregar las rutas
                 Inicio: { "/": "rol" },
@@ -157,9 +184,16 @@ export default {
                 ///rutas para configuracion o que tenga q ver con usuario
                 "Mi Perfil": { "/user": "all" },
                 Configuracion: { "/config": "rol" },
-                "Cerrar Sesion": { "/logout": "all" },
+                "Cerrar Sesion": { "/logout": "logout" },
             },
         };
+    },
+    mounted() {
+        // Verificar si hay un usuario autenticado al cargar el componente
+        setTimeout(() => {
+            this.usuarioAutenticado = firebase.auth().currentUser;
+        }, 1000);
+
     },
     computed: {},
     methods: {
@@ -186,7 +220,30 @@ export default {
                 document.getElementById("user-menu").classList.remove("hidden");
             }
         },
-    },
+        mostrarUser() {
+
+
+
+        },
+        login() {
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+                .then(() => {
+                    console.log(firebase.auth().currentUser.uid);
+                    if (firebase.auth().currentUser) {
+                        location.reload();
+                    }
+                }).catch((error) => {
+                    this.errorMessage = error;
+                })
+        },
+        logout() {
+            firebase.auth().signOut().then(() => {
+                location.reload();
+            })
+
+        }
+
+    }
 };
 </script>
 

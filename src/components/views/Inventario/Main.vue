@@ -27,7 +27,7 @@
           <div class="stat-figure text-3xl">
               <font-awesome-icon :icon="['fas', 'store']" />
           </div>
-          <div class="stat-title">Taqueriaz</div>
+          <div class="stat-title">Estetica</div>
           <div class="stat-value ">- $10,000</div>
           <div class="stat-desc">21% mas que el mes pasado</div>
         </div>

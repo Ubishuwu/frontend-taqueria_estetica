@@ -8,6 +8,10 @@
             <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                 <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
                     @carrito="agregar_compra" :lista="modolista" :key="item.id" />
+                    <Tarjeta v-for="item in platillos" :producto="item" :stock_venta="verificarcompra(item)"
+                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
+                    <Tarjeta v-for="item in productos" :producto="item" :stock_venta="verificarcompra(item)"
+                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
             </div>
 
 
@@ -26,6 +30,9 @@
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../../firebase/firebaseInit"
 import Tarjeta from '../templates/Tarjeta.vue'
 import ListaCompra from '../templates/ListaCompra.vue'
 import CajaNavBar from '../templates/CajaNavBar.vue'
@@ -40,6 +47,8 @@ export default {
             paginas: 1,
             elementosxpagina: 10,
             lista: [],
+            platillos: [],
+            productos: [],
             lista_original: [///elementos recibidos del back
                 {
                     id: 1,
@@ -98,6 +107,37 @@ export default {
         CajaNavBar,
         Paginacion,
 
+    },
+    async created() {
+        var dataBase = await db.collection('platillos');
+        var dbResults = await dataBase.get();
+        console.log("plat")
+        console.log(dbResults)
+        dbResults.forEach((doc) => {
+            const data = {
+                nombre: doc.data().nombre,
+                tipo: doc.data().tipo,
+                precio: doc.data().precio,
+            }
+            this.platillos.push(data)
+        })
+
+        dataBase = await db.collection('productos');
+        dbResults = await dataBase.get();
+        console.log("prods")
+        console.log(dbResults)
+        dbResults.forEach((doc) => {
+            const data = {
+                nombre: doc.data().nombre,
+                tipo: doc.data().tipo,
+                precio: doc.data().precio,
+            }
+            console.log(data);
+            if(doc.data().tipo == "De venta"){
+                this.productos.push(data)
+            }
+        })
+        console.log(this.productos)
     },
     methods: {
         modolistado(valor) {

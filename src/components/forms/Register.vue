@@ -72,7 +72,7 @@ export default {
     },
     validations: {
         user: { required },
-        password: { required, minLength: minLength(5) },
+        password: { required, minLength: minLength(4) },
         email: {required, email}
     },
     methods: {

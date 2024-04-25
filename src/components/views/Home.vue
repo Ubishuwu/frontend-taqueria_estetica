@@ -2,7 +2,7 @@
   <NavBar :titulo="currentRouteName"></NavBar>
 
   <router-view></router-view>
-  <button class="btn" onclick="formulario.showModal()">open modal</button>
+  <button class="btn hidden" onclick="formulario.showModal()">open modal</button>
 
   <!---Auxiliar para testear formularios-- pasar proximamente a un modal--->
   <dialog id="formulario" class="modal max-w-96">

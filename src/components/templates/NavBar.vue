@@ -35,7 +35,7 @@
                     <div class="flex flex-shrink-0 items-center">
                         <h1 class="text-lg text-secondary">{{ titulo }}</h1>
                     </div>
-                    <div class="hidden sm:ml-6 sm:!block size-full">
+                    <div v-if="usuarioAutenticado != null" class="hidden sm:ml-6 sm:!block size-full">
                         <div class="flex flex-nowrap justify-end">
                             <button type="button"
                                 class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium"
@@ -112,7 +112,7 @@
                                     <span class="sr-only">Open user menu</span>
                                     <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
                                 </button>
-                                <p class="text-white">{{ this.usuarioAutenticado.email }}</p>
+                                <p class="text-white text-xs">{{ this.usuarioAutenticado.email }}</p>
                             </div>
 
                             <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -182,6 +182,7 @@ export default {
                 Inicio: { "/": "rol" },
                 Caja: { "/caja": "rol" },
                 Inventario: { "/inventario": "rol" },
+                Cocina: { "/cocina": "rol" },
             },
             rutasUser: {
                 ///rutas para configuracion o que tenga q ver con usuario
@@ -194,7 +195,7 @@ export default {
         // Verificar si hay un usuario autenticado al cargar el componente
         setTimeout(() => {
             this.usuarioAutenticado = firebase.auth().currentUser;
-        }, 1000);
+        }, 500);
 
     },
     computed: {},

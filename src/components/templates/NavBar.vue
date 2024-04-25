@@ -179,7 +179,7 @@ export default {
             errorMessage: '',
             rutas: {
                 ///agregar las rutas
-                Inicio: { "/": "rol" },
+                Inicio: { "/inicio": "rol" },
                 Caja: { "/caja": "rol" },
                 Inventario: { "/inventario": "rol" },
                 Cocina: { "/cocina": "rol" },

@@ -87,7 +87,9 @@ router.beforeEach((to, from, next) => {
       // No hay usuario autenticado, `currentUser` será null
       console.log('No hay usuario autenticado.');
       // Aquí puedes redirigir al usuario a la pantalla de inicio de sesión
-      if (to.path != '/login')
+      if (to.path === '/register')
+        next();
+      else if (to.path != '/login')
         next('/login');
       else
         next();

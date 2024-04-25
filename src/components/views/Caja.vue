@@ -6,7 +6,7 @@
             <CajaNavBar :filtros="filtro" @filtroselect="filtrocambio" @lista="modolistado" />
 
             <div v-if="cargando" class="h-3/4 w-full flex justify-center items-center">
-                <h1 class="text-green-600 font-semibold font-mono  text-5xl">Cargando....</h1>
+                <h1 class="text-green-600 font-semibold font-mono  text-5xl p-5 m-6">Cargando....</h1>
             </div>
 
             <div class="p-0 m-0 flex flex-wrap flex-row justify-center">

@@ -1,6 +1,6 @@
 import firebase from "firebase";
 import "firebase/firestore";
-
+import "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCHF1zplHI2k-mko13u57hE_oAnbFnlWYg",
@@ -13,6 +13,9 @@ const firebaseConfig = {
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+const auth = firebase.auth();
 
 export {timestamp}
+export {auth}
 export default firebaseApp.firestore();
+

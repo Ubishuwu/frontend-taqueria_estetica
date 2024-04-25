@@ -5,6 +5,10 @@
 
             <CajaNavBar :filtros="filtro" @filtroselect="filtrocambio" @lista="modolistado" />
 
+            <div v-if="cargando" class="h-3/4 w-full flex justify-center items-center">
+                <h1 class="text-green-600 font-semibold font-mono  text-5xl">Cargando....</h1>
+            </div>
+
             <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                 <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
                     @carrito="agregar_compra" :lista="modolista" :key="item.id" />
@@ -26,20 +30,27 @@
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../../firebase/firebaseInit"
 import Tarjeta from '../templates/Tarjeta.vue'
 import ListaCompra from '../templates/ListaCompra.vue'
 import CajaNavBar from '../templates/CajaNavBar.vue'
 import Paginacion from '../templates/Paginacion.vue'
+import { list } from "postcss";
 
 export default {
     props: {},
     data() {
         return {
+            cargando: true,
             elementosmax: 80,
             pagina_actual: 1,
             paginas: 1,
-            elementosxpagina: 10,
+            elementosxpagina: 5,
             lista: [],
+            platillos: [],
+            productos: [],
             lista_original: [///elementos recibidos del back
                 {
                     id: 1,
@@ -86,7 +97,7 @@ export default {
             compra: [],//elemtos en la lista de venta
             listaPorcionada: [],///elementos por pagina
             filtro: [
-                'Todo',
+                'Todo','Otros'
             ],
             filtrado: 'todo',
             modolista: false
@@ -99,6 +110,48 @@ export default {
         Paginacion,
 
     },
+    async created() {
+        var dataBase = await db.collection('platillos');
+        var dbResults = await dataBase.get();
+        //console.log("plat")
+        //console.log(dbResults)
+        dbResults.forEach((doc) => {
+            const data = {
+                nombre: doc.data().nombre,
+                tipo: doc.data().tipo,
+                precio: doc.data().precio,
+            }
+            
+            this.platillos.push(data)
+        })
+
+        dataBase = await db.collection('productos');
+        dbResults = await dataBase.get();
+        //console.log("prods")
+        //console.log(dbResults)
+        dbResults.forEach((doc) => {
+            const data = {
+                nombre: doc.data().nombre,
+                tipo: doc.data().tipo,
+                precio: doc.data().precio,
+            }
+            //console.log(data);
+            if(doc.data().tipo == "De venta"){
+                this.productos.push(data)
+            }
+        })
+        console.log(this.productos);
+        console.log(this.platillos);
+
+        
+        this.lista = this.lista_original//omitir esta linea despues.. ya q solo es para cargar productos de ejemplo
+
+        this.lista_original = this.lista = [...this.lista, ...this.platillos, ...this.productos]
+
+        this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
+        this.cargando=false;
+        this.lista_porcionada();
+    },
     methods: {
         modolistado(valor) {
             this.modolista = valor;
@@ -106,10 +159,16 @@ export default {
         filtrocambio(tipo) {
             //dependiendo como se reciban los datos
             //console.log(tipo.toLowerCase().substring(0,tipo.length-1));
-            if (tipo == 'Todo')
+            
+            if (tipo == 'Todo'){
                 this.lista = this.lista_original;
+            }
+            else if (tipo == 'Otros'){
+                this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() != this.filtro[2].toLowerCase().substring(0, this.filtro[2].length - 1) && elemento.tipo.toLowerCase() != this.filtro[3].toLowerCase().substring(0, this.filtro[3].length - 1) );
+            }
             else
                 this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
+                
         },
         realizarventa(total) {
             //acccion para enviar la venta al back
@@ -196,7 +255,9 @@ export default {
     beforeMount() {///cargar cantidad de elementos en la paginacion.. camiar si es necesario a mount o asi dependiendo la forma de carga de datos
         this.elementosmax = this.lista.length;
         this.paginas = Math.ceil(this.elementosmax / this.elementosxpagina);
+        
 
+        
     },
     mounted() {
         const sucursal = 'taqueria';
@@ -215,9 +276,9 @@ export default {
 
         }
 
-        this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
-        this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
-        this.lista_porcionada();
+        //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
+
+        
     }
 
 }

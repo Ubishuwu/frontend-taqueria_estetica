@@ -35,7 +35,7 @@
                     <div class="flex flex-shrink-0 items-center">
                         <h1 class="text-lg text-secondary">{{ titulo }}</h1>
                     </div>
-                    <div class="hidden sm:ml-6 sm:!block size-full">
+                    <div v-if="usuarioAutenticado != null" class="hidden sm:ml-6 sm:!block size-full">
                         <div class="flex flex-nowrap justify-end">
                             <button type="button"
                                 class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium"
@@ -48,14 +48,15 @@
                 </div>
                 <!--Usuario-->
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <!----->
                     <div v-if="usuarioAutenticado == null">
                         <button class="btn btn-sm" onclick="my_modal_5.showModal()">
                             Entrar
                         </button>
                         <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-                            <div  class="modal-box">
+                            <div class="modal-box">
 
-                                <div v-if="errorMessage !=''" role="alert" class="alert alert-error">
+                                <div v-if="errorMessage != ''" role="alert" class="alert alert-error">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6"
                                         fill="none" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,6 +64,7 @@
                                     </svg>
                                     <span>Credenciales no válidas</span>
                                 </div>
+                                <!---FOrm inicio secion-->
                                 <form>
                                     <label class="form-control w-full ">
                                         <div class="label">
@@ -110,7 +112,7 @@
                                     <span class="sr-only">Open user menu</span>
                                     <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
                                 </button>
-                                <p class="text-white">{{ this.usuarioAutenticado.email }}</p>
+                                <p class="text-white text-xs">{{ this.usuarioAutenticado.email }}</p>
                             </div>
 
                             <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -148,7 +150,7 @@
                     v-for="(ruta, nombre) in rutas" :key="ruta">
                     <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{
                         nombre
-                    }}</RouterLink>
+                        }}</RouterLink>
                     <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                 </a>
 
@@ -161,6 +163,7 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
+
 export default {
     name: "Side_Bar",
     props: {
@@ -170,21 +173,21 @@ export default {
     },
     data() {
         return {
-            usuarioAutenticado: null,
+            usuarioAutenticado: firebase.auth().currentUser,
             email: "",
             password: "",
             errorMessage: '',
             rutas: {
                 ///agregar las rutas
-                Inicio: { "/": "rol" },
+                Inicio: { "/inicio": "rol" },
                 Caja: { "/caja": "rol" },
                 Inventario: { "/inventario": "rol" },
+                Cocina: { "/cocina": "rol" },
             },
             rutasUser: {
                 ///rutas para configuracion o que tenga q ver con usuario
                 "Mi Perfil": { "/user": "all" },
                 Configuracion: { "/config": "rol" },
-                "Cerrar Sesion": { "/logout": "logout" },
             },
         };
     },
@@ -192,7 +195,7 @@ export default {
         // Verificar si hay un usuario autenticado al cargar el componente
         setTimeout(() => {
             this.usuarioAutenticado = firebase.auth().currentUser;
-        }, 1000);
+        }, 500);
 
     },
     computed: {},
@@ -238,7 +241,8 @@ export default {
         },
         logout() {
             firebase.auth().signOut().then(() => {
-                location.reload();
+                //location.reload();
+                this.$router.push('/Login');
             })
 
         }

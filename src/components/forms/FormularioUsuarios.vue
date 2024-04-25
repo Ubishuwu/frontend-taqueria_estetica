@@ -302,7 +302,7 @@ export default {
             }
             console.log('Formulario válido. Enviando...');
             ///proceso para enviar y redirigir a la pagina owo// o cerrar modal(no c como xd)
-            this.$router.push('/Login');
+            this.$router.push('/');
         },
         validateFloat(event) {
             this.sueldo = event.target.value.replace(/[^0-9.]/g, '');

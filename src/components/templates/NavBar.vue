@@ -48,14 +48,15 @@
                 </div>
                 <!--Usuario-->
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <!----->
                     <div v-if="usuarioAutenticado == null">
                         <button class="btn btn-sm" onclick="my_modal_5.showModal()">
                             Entrar
                         </button>
                         <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-                            <div  class="modal-box">
+                            <div class="modal-box">
 
-                                <div v-if="errorMessage !=''" role="alert" class="alert alert-error">
+                                <div v-if="errorMessage != ''" role="alert" class="alert alert-error">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6"
                                         fill="none" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,6 +64,7 @@
                                     </svg>
                                     <span>Credenciales no válidas</span>
                                 </div>
+                                <!---FOrm inicio secion-->
                                 <form>
                                     <label class="form-control w-full ">
                                         <div class="label">
@@ -148,7 +150,7 @@
                     v-for="(ruta, nombre) in rutas" :key="ruta">
                     <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{
                         nombre
-                    }}</RouterLink>
+                        }}</RouterLink>
                     <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                 </a>
 
@@ -161,6 +163,7 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
+
 export default {
     name: "Side_Bar",
     props: {
@@ -170,7 +173,7 @@ export default {
     },
     data() {
         return {
-            usuarioAutenticado: null,
+            usuarioAutenticado: firebase.auth().currentUser,
             email: "",
             password: "",
             errorMessage: '',
@@ -184,7 +187,6 @@ export default {
                 ///rutas para configuracion o que tenga q ver con usuario
                 "Mi Perfil": { "/user": "all" },
                 Configuracion: { "/config": "rol" },
-                "Cerrar Sesion": { "/logout": "logout" },
             },
         };
     },
@@ -238,7 +240,8 @@ export default {
         },
         logout() {
             firebase.auth().signOut().then(() => {
-                location.reload();
+                //location.reload();
+                this.$router.push('/Login');
             })
 
         }

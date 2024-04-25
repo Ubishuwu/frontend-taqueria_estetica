@@ -8,10 +8,6 @@
             <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                 <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
                     @carrito="agregar_compra" :lista="modolista" :key="item.id" />
-                    <Tarjeta v-for="item in platillos" :producto="item" :stock_venta="verificarcompra(item)"
-                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
-                    <Tarjeta v-for="item in productos" :producto="item" :stock_venta="verificarcompra(item)"
-                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
             </div>
 
 
@@ -37,6 +33,7 @@ import Tarjeta from '../templates/Tarjeta.vue'
 import ListaCompra from '../templates/ListaCompra.vue'
 import CajaNavBar from '../templates/CajaNavBar.vue'
 import Paginacion from '../templates/Paginacion.vue'
+import { list } from "postcss";
 
 export default {
     props: {},
@@ -119,6 +116,7 @@ export default {
                 tipo: doc.data().tipo,
                 precio: doc.data().precio,
             }
+            
             this.platillos.push(data)
         })
 
@@ -138,6 +136,8 @@ export default {
             }
         })
         console.log(this.productos)
+
+        this.lista_original = this.lista = [...this.lista, ...this.platillos, ...this.productos]
     },
     methods: {
         modolistado(valor) {
@@ -146,10 +146,12 @@ export default {
         filtrocambio(tipo) {
             //dependiendo como se reciban los datos
             //console.log(tipo.toLowerCase().substring(0,tipo.length-1));
-            if (tipo == 'Todo')
+            if (tipo == 'Todo'){
                 this.lista = this.lista_original;
+            }
             else
                 this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
+                
         },
         realizarventa(total) {
             //acccion para enviar la venta al back

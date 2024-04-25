@@ -1,6 +1,9 @@
 <template>
     <div class="border border-1 border-r-0 border-accent bg-neutral ">
+
+
         <form @submit.prevent="validar" class="flex flex-col justify-center items-center p-3 m-2 ">
+
             <h1 class="text-2xl font-semibold ">Nuevo Usuario</h1>
 
             <!---Datos personales-->
@@ -88,8 +91,18 @@
                 </div>
             </div>
 
-
+            <div class="m-5" v-if="!validName || !validCorreo || !validTelefono">
+                <div role="alert" class="alert alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Datos personales incorrectos.</span>
+                </div>
+            </div>
             <div class="relative flex flex-col items-center justify-center m-5 mt-0 p-4 w-full bg-neutral">
+
 
                 <div class="bg-neutral absolute top-0 left-20 z-40 p-1 px-8 rounded-xl border-2 border-primary">
                     <h1 class="text-xl font-mono font-medium">Datos del Empleado</h1>
@@ -202,9 +215,9 @@
 
                                 <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
                                 <select class="select select-bordered select-sm w-full" id="rol" v-model="rol">
-                                    <option>Cajero</option>
+                                    <option>Empleado</option>
+                                    <option>Cocina</option>
                                     <option>Gerente</option>
-                                    <option>Dueño</option>
                                 </select>
                             </div>
                             <span v-if="enviado && v$.rol.$error" class="font-mono text-sm text-red-500 text-right">Rol
@@ -223,8 +236,18 @@
                     </div>
                 </div>
             </div>
-
-            <input type="submit" value="Guardar" class="btn btn-md w-1/4 hover:btn-success hover:text-secondary" />
+            <div class="m-5" id="alert1" >
+                <div role="alert" class="alert alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Error! Task failed successfully.</span>
+                </div>
+            </div>
+            <input @click.prevent="guardar" type="submit" value="Guardar"
+                class="btn btn-md w-1/4 hover:btn-success hover:text-secondary" />
         </form>
     </div>
 </template>
@@ -233,6 +256,9 @@
 
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, helpers, numeric } from '@vuelidate/validators'
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../../firebase/firebaseInit"
 
 export default {
     setup: () => ({ v$: useVuelidate() }),
@@ -252,20 +278,20 @@ export default {
             rol: "",
             dias: [],
             enviado: false,
-            /*
-                        validName: true,
-                        validLastName: true,
-                        validEdad: true,
-                        validCorreo: true,
-                        validTelefono: true,
-                        validUser: true,
-                        validPassword: true,
-                        //validPasswordv: true,
-                        validHora: true,
-                        validHoraf: true,
-                        validSueldo: true,
-                        validRol: true,
-                        */
+
+            validName: true,
+            validLastName: true,
+            validEdad: true,
+            validCorreo: true,
+            validTelefono: true,
+            validUser: true,
+            validPassword: true,
+            //validPasswordv: true,
+            validHora: true,
+            validHoraf: true,
+            validSueldo: true,
+            validRol: true,
+
             validDias: true,
             validHora: true,
         }
@@ -289,7 +315,9 @@ export default {
         async validar() {
             const isFormCorrect = await this.v$.$validate()
             this.enviado = true;
-
+            this.validName = await this.v$.name.$validate()
+            this.validTelefono = await this.v$.telefono.$validate()
+            this.validCorreo = await this.v$.correo.$validate()
             this.validarDatos();
             if (!isFormCorrect || this.validHora || !this.validDias) {
                 console.log("error...");
@@ -312,12 +340,25 @@ export default {
             if (this.horai != 0 && this.horaf != 0) { this.validHora = false; }
             else { this.validHora = true; }
 
-            console.log('dias:'+this.dias)
+            console.log('dias:' + this.dias)
             if (this.dias.length > 0)
                 this.validDias = true;
             else
                 this.validDias = false;
         },
+
+        async guardar() {
+            let res = await this.v$.$validate();
+            await this.validar();
+            console.log(res)
+            console.log(this.v$.$errors);
+            if (res) {
+                const firebaseAuth = await firebase.auth();
+                const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.correo, this.password);
+                const result = await createUser;
+            }
+
+        }
     },
 }
 </script>

@@ -44,13 +44,7 @@
               <li><a>Item 3</a></li>
             </ul>
           </div>
-          <div class="navbar-end">
-            <label
-              for="my-drawer-2"
-              class="btn btn-primary drawer-button lg:hidden"
-              >Open drawer</label
-            >
-          </div>
+         
         </div>
       </div>
       <!--End Navbar-->
@@ -71,7 +65,7 @@
         <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li>
         <li @click="showComponent = 'Main'"><a>Página Principal</a></li>
         <li @click="showComponent = 'Productos'"><a>Inventario</a></li>
-        <li @click="showComponent = 'Reportes'"><a>Reportes</a></li>
+        <li @click="showComponent = 'Personal'"><a>Empleados</a></li>
       </ul>
     </div>
   </div>
@@ -81,12 +75,14 @@
 import Main from "./Inventario/Main.vue";
 import Reportes from "./Inventario/Reportes.vue";
 import Productos from "./Inventario/Productos.vue";
+import Personal from "./Inventario/Personal.vue";
 
 export default {
   components: {
     Main,
     Reportes,
     Productos,
+    Personal,
   },
   data() {
     return {

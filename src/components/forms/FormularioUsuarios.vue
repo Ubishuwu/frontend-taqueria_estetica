@@ -387,6 +387,7 @@ export default {
                 const firebaseAuth = await firebase.auth();
                 const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.correo, this.password);
                 const result = await createUser;
+                this.$el.closest('dialog').close();
             }
 
         }

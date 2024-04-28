@@ -37,12 +37,16 @@
                     </div>
                     <div v-if="usuarioAutenticado != null" class="hidden sm:ml-6 sm:!block size-full">
                         <div class="flex flex-nowrap justify-end">
-                            <button type="button"
-                                class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium"
-                                id="lista-escritorio-navbar" v-for="(ruta, nombre) in rutas" :key="ruta">
-                                <RouterLink :to="Object.keys(ruta)[0]">{{ nombre }}</RouterLink>
-                                <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-                            </button>
+                            <div>
+                                <RouterLink :to="Object.keys(ruta)[0]" class="w-full" v-for="(ruta, nombre) in rutas"
+                                    :key="ruta">
+                                    <button type="button"
+                                        class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium"
+                                        id="lista-escritorio-navbar">
+                                        {{ nombre }}
+                                    </button>
+                                </RouterLink>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -150,7 +154,7 @@
                     v-for="(ruta, nombre) in rutas" :key="ruta">
                     <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{
                         nombre
-                        }}</RouterLink>
+                    }}</RouterLink>
                     <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                 </a>
 

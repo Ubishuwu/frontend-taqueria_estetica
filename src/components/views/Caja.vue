@@ -8,10 +8,16 @@
             <div v-if="cargando" class="h-3/4 w-full flex justify-center items-center">
                 <h1 class="text-green-600 font-semibold font-mono  text-5xl p-5 m-6">Cargando....</h1>
             </div>
+            <div v-if="listaPorcionada.length===0 && !cargando" class="h-3/4 w-full flex justify-center items-center">
+                <h1 class="text-red-700 font-semibold font-mono text-center text-5xl p-5 m-6">Uy!! No hay nada aqui, registre algo y regrese</h1>
+            </div>
 
-            <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
-                <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
-                    @carrito="agregar_compra" :lista="modolista" :key="item.id" />
+            <div class=" min-h-3_4 " v-if="listaPorcionada.length !=0" >
+
+                <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
+                    <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
+                        @carrito="agregar_compra" :lista="modolista" :key="item.id" />
+                </div>
             </div>
 
 
@@ -47,57 +53,15 @@ export default {
             elementosmax: 80,
             pagina_actual: 1,
             paginas: 1,
-            elementosxpagina: 5,
+            elementosxpagina: 10,
             lista: [],
+            lista_original: [],
             platillos: [],
             productos: [],
-            lista_original: [///elementos recibidos del back
-                {
-                    id: 1,
-                    nombre: 'salchipapa',
-                    cantidad: 5,
-                    tipo: 'producto',
-                    precio: 50.5
-                },
-                {
-                    id: 2,
-                    nombre: 'agua pura',
-                    cantidad: 3,
-                    tipo: 'servicio',
-                    precio: 25.0
-                }, {
-                    id: 3,
-                    nombre: 'sabrita',
-                    cantidad: 5,
-                    tipo: 'platillo',
-                    precio: 50.5
-                },
-                {
-                    id: 4,
-                    nombre: 'chocomenta',
-                    cantidad: 8,
-                    tipo: 'producto',
-                    precio: 25.0
-                },
-                {
-                    id: 5,
-                    nombre: 'malteada',
-                    cantidad: 8,
-                    tipo: 'bebida',
-                    precio: 21.0
-                },
-                {
-                    id: 6,
-                    nombre: 'jugo',
-                    cantidad: 8,
-                    tipo: 'bebida',
-                    precio: 21.0
-                },
-            ],
             compra: [],//elemtos en la lista de venta
             listaPorcionada: [],///elementos por pagina
             filtro: [
-                'Todo','Otros'
+                'Todo', 'Otros'
             ],
             filtrado: 'todo',
             modolista: false
@@ -121,7 +85,7 @@ export default {
                 tipo: doc.data().tipo,
                 precio: doc.data().precio,
             }
-            
+
             this.platillos.push(data)
         })
 
@@ -136,20 +100,17 @@ export default {
                 precio: doc.data().precio,
             }
             //console.log(data);
-            if(doc.data().tipo == "De venta"){
+            if (doc.data().tipo == "De venta") {
                 this.productos.push(data)
             }
         })
         console.log(this.productos);
         console.log(this.platillos);
 
-        
-        this.lista = this.lista_original//omitir esta linea despues.. ya q solo es para cargar productos de ejemplo
-
-        this.lista_original = this.lista = [...this.lista, ...this.platillos, ...this.productos]
+        this.lista_original= this.lista = [...this.lista, ...this.platillos, ...this.productos]
 
         this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
-        this.cargando=false;
+        this.cargando = false;
         this.lista_porcionada();
     },
     methods: {
@@ -159,16 +120,16 @@ export default {
         filtrocambio(tipo) {
             //dependiendo como se reciban los datos
             //console.log(tipo.toLowerCase().substring(0,tipo.length-1));
-            
-            if (tipo == 'Todo'){
+
+            if (tipo == 'Todo') {
                 this.lista = this.lista_original;
             }
-            else if (tipo == 'Otros'){
-                this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() != this.filtro[2].toLowerCase().substring(0, this.filtro[2].length - 1) && elemento.tipo.toLowerCase() != this.filtro[3].toLowerCase().substring(0, this.filtro[3].length - 1) );
+            else if (tipo == 'Otros') {
+                this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() != this.filtro[2].toLowerCase().substring(0, this.filtro[2].length - 1) && elemento.tipo.toLowerCase() != this.filtro[3].toLowerCase().substring(0, this.filtro[3].length - 1));
             }
             else
                 this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
-                
+
         },
         realizarventa(total) {
             //acccion para enviar la venta al back
@@ -255,9 +216,9 @@ export default {
     beforeMount() {///cargar cantidad de elementos en la paginacion.. camiar si es necesario a mount o asi dependiendo la forma de carga de datos
         this.elementosmax = this.lista.length;
         this.paginas = Math.ceil(this.elementosmax / this.elementosxpagina);
-        
 
-        
+
+
     },
     mounted() {
         const sucursal = 'taqueria';
@@ -265,7 +226,7 @@ export default {
         if (sucursal == 'taqueria') {
             this.filtro.push(
                 'Bebidas',
-                'Platillos');
+                'Comidas');
             //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista
         }
         else {
@@ -278,7 +239,7 @@ export default {
 
         //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
 
-        
+
     }
 
 }

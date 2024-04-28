@@ -31,11 +31,17 @@
                 </label>
                 
             </div>
-            <input type="submit" value="Guardar" class="btn btn-sm hover:btn-success hover:text-secondary" />
+            <input @click="cerrarDialogo" type="submit" value="Guardar" class="btn btn-sm hover:btn-success hover:text-secondary" />
         </form>
     </div>
 </template>
 
 <script>
-
+export default {
+  methods: {
+    cerrarDialogo() {
+      this.$el.closest('dialog').close();
+    }
+  }
+}
 </script>

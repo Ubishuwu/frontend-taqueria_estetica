@@ -7,7 +7,7 @@
             <h1 class="text-2xl font-semibold ">Nuevo Usuario</h1>
 
             <!---Datos personales-->
-            <div class="relative flex flex-col items-center justify-center m-5 p-4 w-full bg-neutral">
+            <div class="relative flex flex-col items-center justify-center m-5 mb-0 p-4 w-full bg-neutral">
 
                 <div class="bg-neutral absolute top-0 left-20 z-40 p-1 px-8 rounded-xl border-2 border-primary">
                     <h1 class="text-xl font-mono font-medium">Datos Personales</h1>
@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <div class="m-5" v-if="!validName || !validCorreo || !validTelefono">
+            <div class="m-5 mt-0" v-if="!validName || !validCorreo || !validTelefono">
                 <div role="alert" class="alert alert-error">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                         viewBox="0 0 24 24">
@@ -101,7 +101,8 @@
                     <span>Datos personales incorrectos.</span>
                 </div>
             </div>
-            <div class="relative flex flex-col items-center justify-center m-5 mt-0 p-4 w-full bg-neutral">
+
+            <div class="relative flex flex-col items-center justify-center m-5 mt-0 mb-0 p-4 w-full bg-neutral">
 
 
                 <div class="bg-neutral absolute top-0 left-20 z-40 p-1 px-8 rounded-xl border-2 border-primary">
@@ -142,7 +143,7 @@
                     </div>
                     <div class="flex flex-col w-full p-2 mt-2 border border-1 border-white rounded-xl justify-center">
                         <span class=" font-sans text-xl text-gray-200 m-1">Horario:</span>
-                        <div class="flex flex-col xl:flex-row w-full p-2">
+                        <div class="flex flex-col min-[1180px]:flex-row w-full p-2">
                             <label class="flex flex-row p-2">
                                 <span class=" font-sans text-sm text-gray-200 m-1">Dias:</span>
                                 <div class="flex flex-row flex-nowrap">
@@ -187,47 +188,74 @@
                                     Verifiquela</span>
                             </label>
 
-                            <label class="flex flex-col p-2 items-start ">
-                                <div class="flex md:flex-row flex-col items-center justify-between">
-                                    <span class=" font-sans text-sm text-gray-200 m-1">Hora Inicio:</span>
+                            <div 
+                            class="flex flex-col p-2 items-start ">
+                            <label 
+                            class="flex flex-row w-full items-center justify-between">
+                                    <div class="flex md:flex-row flex-col items-center justify-between">
 
-                                    <input type="time" placeholder="Horas" class="input input-bordered input-sm "
-                                        id="horai" v-model="horai" />
-                                    <span class=" font-sans text-sm text-gray-200 m-1">Hora Fin:</span>
+                                        <span class=" font-sans text-sm text-gray-200 m-1">Hora Inicio:</span>
+                                        <input type="time" placeholder="Horas" class="input input-bordered input-sm "
+                                            id="horai" v-model="horai" />
+                                    </div>
+                                    <div class="flex md:flex-row flex-col items-center justify-between">
 
-                                    <input type="time" placeholder="Horas" class="input input-bordered input-sm "
-                                        id="horaf" v-model="horaf" />
+                                        <span class=" font-sans text-sm text-gray-200 m-1">Hora Fin:</span>
 
-                                </div>
+                                        <input type="time" placeholder="Horas" class="input input-bordered input-sm "
+                                            id="horaf" v-model="horaf" />
+                                    </div>
+
+                                </label>
                                 <span v-if="enviado && validHora"
-                                    class="font-mono text-sm text-red-500 text-right pt-2">
-                                    La hora es requerida.
-                                </span>
+                                class="font-mono text-sm text-red-500 text-right pt-2">
+                                La hora es requerida.
+                            </span>
+                        </div>
 
-                            </label>
                         </div>
 
                     </div>
-                    <div class="flex flex-col sm:flex-row w-full p-2 mt-2">
+                    <div class="flex flex-col  min-[1000px]:flex-row items-center justify-center w-full p-2 mt-2">
 
-                        <label class="flex flex-col w-full m-2 p-2 ">
-                            <div class="flex md:flex-row flex-col">
+                        <div class="flex flex-col w-full">
+                            <label class="flex flex-col m-2 p-2 items-center">
+                                <div class="flex md:flex-row flex-col w-full">
 
-                                <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
-                                <select class="select select-bordered select-sm w-full" id="rol" v-model="rol">
-                                    <option>Empleado</option>
-                                    <option>Cocina</option>
-                                    <option>Gerente</option>
-                                </select>
+                                    <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
+                                    <select class="select select-bordered select-sm grow xl-max-w-56" id="rol"
+                                        v-model="rol">
+                                        <option>Empleado</option>
+                                        <option>Cocina</option>
+                                        <option>Gerente</option>
+                                    </select>
+                                </div>
+                                <span v-if="enviado && v$.rol.$error"
+                                    class="font-mono text-sm text-red-500 text-right">Rol
+                                    Requerido</span>
+                            </label>
+
+                            <label class=" flex flex-col items-center m-2 p-2">
+                                <div class="flex md:flex-row w-full flex-col">
+                                    <span class="font-sans text-md text-gray-200 m-1">Sucursal: </span>
+                                    <select v-model="sucursal" class="select select-bordered select-sm grow xl:w-52">
+                                        <option disabled selected>Selecciona una</option>
+                                        <option>Taqueria</option>
+                                        <option>Barberia</option>
+                                    </select>
+                                </div>
+                                <span v-if="enviado && v$.sucursal.$error" class="font-mono text-sm text-red-500 text-right">Rol
+                                    Requerido</span>
+                            </label>
+                        </div>
+
+                        <label class="flex flex-col items-center w-full m-2 p-2">
+                            <div class="flex md:flex-row flex-col w-full">
+
+                                <span class=" font-sans text-md text-gray-200 m-1">Sueldo(por Hora):</span>
+                                <input type="text" v-model="sueldo" placeholder="00.00" @input="validateFloat"
+                                    class="input input-bordered input-sm grow" />
                             </div>
-                            <span v-if="enviado && v$.rol.$error" class="font-mono text-sm text-red-500 text-right">Rol
-                                Requerido</span>
-                        </label>
-
-                        <label class="flex xl:flex-row flex-col w-full mt-2 p-2">
-                            <span class=" font-sans text-md text-gray-200 m-1">Sueldo(por Hora):</span>
-                            <input type="text" v-model="sueldo" placeholder="00.00" @input="validateFloat"
-                                class="input input-bordered input-sm" />
                             <span v-if="enviado && v$.sueldo.$error"
                                 class="font-mono text-sm text-red-500 text-right">Sueldo
                                 Requerido,
@@ -236,14 +264,15 @@
                     </div>
                 </div>
             </div>
-            <div class="m-5" id="alert1" >
+
+            <div class="m-5 mt-0" id="alert1" v-if="v$.rol.$error">
                 <div role="alert" class="alert alert-error">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Error! Task failed successfully.</span>
+                    <span>Informacion del Empleado incorrectos</span>
                 </div>
             </div>
             <input @click.prevent="guardar" type="submit" value="Guardar"
@@ -276,6 +305,7 @@ export default {
             horaf: 0,
             sueldo: '',
             rol: "",
+            sucursal: "",
             dias: [],
             enviado: false,
 
@@ -300,7 +330,7 @@ export default {
         name: { required, alpha },
         lastname: { required, alpha },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
-        correo: { email },
+        correo: { email,required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
         user: { required },
         password: { required, minLength: minLength(5) },
@@ -309,6 +339,7 @@ export default {
         horai: { required },
         sueldo: { required, decimal },
         rol: { required },
+        sucursal: {required}
 
     },
     methods: {
@@ -356,6 +387,7 @@ export default {
                 const firebaseAuth = await firebase.auth();
                 const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.correo, this.password);
                 const result = await createUser;
+                this.$el.closest('dialog').close();
             }
 
         }

@@ -38,7 +38,7 @@
                     class="font-mono text-sm text-red-500 text-right">Contraseña Requerida, Verifiquela</span>
             </label>
 
-            <p class="mt-2 text-white">¿Aún no tienes cuenta? <a href="/register" class="underline text-info">Registrate
+            <p v-if="false" class="mt-2 text-white">¿Aún no tienes cuenta? <a href="/Register" class="underline text-info">Registrate
                 </a>
             </p>
 

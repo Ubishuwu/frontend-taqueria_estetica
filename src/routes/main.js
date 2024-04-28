@@ -10,6 +10,7 @@ import Inicio from '../components/views/Inicio.vue'
 import FormularioIngrediente from '../components/forms/FormularioIngrediente.vue';
 import FormularioPlatillo from '../components/forms/FormularioPlatillo.vue';
 import FormularioUsuarios from '../components/forms/FormularioUsuarios.vue';
+import Error404 from '../components/views/Error404.vue';
 
 import { auth } from '../firebase/firebaseInit'
 //import firebase from "firebase/app";
@@ -58,6 +59,11 @@ const routes = [
     name: "Inventario",
     component: Inventario,
   },
+  {
+    path: "/error",
+    name: "error",
+    component: Error404,
+  }
 ];
 
 
@@ -74,25 +80,33 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      // El usuario está autenticado, `currentUser` debe estar disponible
-      console.log('Usuario autenticado');
-      // Aquí puedes realizar acciones como redirigir a una ruta protegida
-      if (to.path === '/login' || to.path === '/')
-        next('/inicio');
-      else
-        next();
-    } else {
-      // No hay usuario autenticado, `currentUser` será null
-      console.log('No hay usuario autenticado.');
-      // Aquí puedes redirigir al usuario a la pantalla de inicio de sesión
-      if (to.path != '/login')
-        next('/login');
-      else
-        next();
-    }
-  });
+  console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
+  console.log(routes.some(rute => rute.path == to.path))
+  if ((routes.some(route => route.path === to.path) || routes[0].children.some(rute => ('/' + rute.path) === to.path)))
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // El usuario está autenticado, `currentUser` debe estar disponible
+        console.log('Usuario autenticado');
+        // Aquí puedes realizar acciones como redirigir a una ruta protegida
+        if (to.path === '/Login' || to.path === '/')
+          next('/inicio');
+        else
+          next();
+      } else {
+        // No hay usuario autenticado, `currentUser` será null
+        console.log('No hay usuario autenticado.');
+        // Aquí puedes redirigir al usuario a la pantalla de inicio de sesión
+        if (to.path === '/register')
+          next();
+        else if (to.path != '/Login')
+          next('/Login');
+        else
+          next();
+      }
+    });
+  else
+    next('/error');
+
 }
 
 )

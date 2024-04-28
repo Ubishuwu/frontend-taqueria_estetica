@@ -14,3 +14,7 @@
     border-radius: 20px;
     background: #888;
   }
+
+  .min-h-3_4{
+    min-height: 75%;
+  }

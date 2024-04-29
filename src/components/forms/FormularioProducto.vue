@@ -126,11 +126,12 @@ export default {
                 inventarioActual: this.inventarioactual,
                 sucursal: this.sucursal,
                 precio: this.precio,
+                //comentario: this.comentario,
             })
             location.reload();
         },
         change(){
-            console.log("Hola mundo")
+            console.log(this.tipo)
             this.tipo == "De venta"? this.isForSell =  true : this.isForSell = false 
         }
     }

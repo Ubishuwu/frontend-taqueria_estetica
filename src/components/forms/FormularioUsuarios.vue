@@ -188,10 +188,8 @@
                                     Verifiquela</span>
                             </label>
 
-                            <div 
-                            class="flex flex-col p-2 items-start ">
-                            <label 
-                            class="flex flex-row w-full items-center justify-between">
+                            <div class="flex flex-col p-2 items-start ">
+                                <label class="flex flex-row w-full items-center justify-between">
                                     <div class="flex md:flex-row flex-col items-center justify-between">
 
                                         <span class=" font-sans text-sm text-gray-200 m-1">Hora Inicio:</span>
@@ -208,10 +206,10 @@
 
                                 </label>
                                 <span v-if="enviado && validHora"
-                                class="font-mono text-sm text-red-500 text-right pt-2">
-                                La hora es requerida.
-                            </span>
-                        </div>
+                                    class="font-mono text-sm text-red-500 text-right pt-2">
+                                    La hora es requerida.
+                                </span>
+                            </div>
 
                         </div>
 
@@ -244,7 +242,8 @@
                                         <option>Barberia</option>
                                     </select>
                                 </div>
-                                <span v-if="enviado && v$.sucursal.$error" class="font-mono text-sm text-red-500 text-right">Rol
+                                <span v-if="enviado && v$.sucursal.$error"
+                                    class="font-mono text-sm text-red-500 text-right">Rol
                                     Requerido</span>
                             </label>
                         </div>
@@ -330,7 +329,7 @@ export default {
         name: { required, alpha },
         lastname: { required, alpha },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
-        correo: { email,required },
+        correo: { email, required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
         user: { required },
         password: { required, minLength: minLength(5) },
@@ -339,7 +338,7 @@ export default {
         horai: { required },
         sueldo: { required, decimal },
         rol: { required },
-        sucursal: {required}
+        sucursal: { required }
 
     },
     methods: {
@@ -361,7 +360,7 @@ export default {
             }
             console.log('Formulario válido. Enviando...');
             ///proceso para enviar y redirigir a la pagina owo// o cerrar modal(no c como xd)
-            this.$router.push('/');
+            //this.$router.push('/');
         },
         validateFloat(event) {
             this.sueldo = event.target.value.replace(/[^0-9.]/g, '');
@@ -386,8 +385,31 @@ export default {
             if (res) {
                 const firebaseAuth = await firebase.auth();
                 const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.correo, this.password);
-                const result = await createUser;
+                const result = await createUser.user.uid;
+                /*Activar cuando la base de datos ya c encuentre completa*/
+                const dataBase = db.collection("empleado").doc(result);
+                await dataBase.set({
+                    nombre: this.name,
+                    apellido: this.lastname,
+                    edad: this.edad,
+                    email: this.correo,
+                    telefono: this.telefono,
+                    userName: this.user,
+                    horario: {
+                        dias: this.dias,
+                        horaDeEntrada: this.horai,
+                        horaDeSalida: this.horaf,
+                    },
+                    rol: this.rol,
+                    sueldo: this.sueldo,
+                    sucursal: this.sucursal,
+                })
+
                 this.$el.closest('dialog').close();
+
+                location.reload();
+
+
             }
 
         }

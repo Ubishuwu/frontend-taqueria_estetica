@@ -156,7 +156,25 @@
             </label>
           </div>
         </div>
+<<<<<<< HEAD
 
+=======
+        <select class="select select-sm select-bordered">
+          <option>Nombre</option>
+          <option>Inventario</option>
+          <option>Sucursal</option>
+        </select>
+      </label>
+      
+    </form>
+    <button class="btn btn-outline btn-success mt-10" onclick="my_modal_3.showModal()">Agregar Producto</button>
+    <dialog id="my_modal_3" class="modal">
+      <div class="modal-box">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <FormularioProducto/>
+>>>>>>> 322d662e41eaa2ffa51a5c29b952f46bb4ef5c51
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">

@@ -4,7 +4,7 @@
 
         <form @submit.prevent="validar"
             class="flex flex-col border border-1 border-primary rounded-xl p-5 shadow-lg shadow-gray-700 bg-primary md:w-3/6 sm:w-4/6 w-11/12 h-4/6 items-center justify-center">
-            <h1 class="font-sans text-2xl font-bold text-gray-200 mb-5 border-0 border-b-2 border-white">Inicie Sesión
+            <h1 class="font-sans text-2xl font-bold text-gray-200 mb-5 border-0 border-b-2 border-white">Inicio de Sesión
             </h1>
             <div v-if="errorMessage != ''" role="alert" class="alert alert-error">
                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
@@ -25,14 +25,14 @@
         -->
             <label class="flex flex-col w-full p-2">
                 <span class=" font-sans text-md text-gray-200 mb-1">Correo Electronico:</span>
-                <input type="email" placeholder="email" class="input input-bordered input-sm w-full" id="email"
+                <input type="email" placeholder="Correo Electrónico" class="input input-bordered input-sm w-full" id="email"
                     v-model="email" required />
                 <span v-if="enviado && v$.email.$error" id="spanUser"
                     class="font-mono text-sm text-red-500 text-right">Usuario Requerido, Verifiquelo</span>
             </label>
             <label class="flex flex-col w-full p-2">
                 <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
-                <input type="password" placeholder="Password" class="input input-bordered input-sm w-full" id="password"
+                <input type="password" placeholder="Contraseña" class="input input-bordered input-sm w-full" id="password"
                     v-model="password" required />
                 <span v-if="enviado && !validPassword" id="spanUser"
                     class="font-mono text-sm text-red-500 text-right">Contraseña Requerida, Verifiquela</span>

@@ -65,8 +65,9 @@
         <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li>
         <li @click="showComponent = 'Main'"><a>Página Principal</a></li>
         <li @click="showComponent = 'Productos'"><a>Inventario</a></li>
-        <li @click="showComponent = 'Cocina'"><a>Cocina</a></li>
         <li @click="showComponent = 'Personal'"><a>Empleados</a></li>
+        <li @click="showComponent = 'Cocina'"><a>Cocina</a></li>
+        <li @click="showComponent = 'Servicios'"><a>Servicios</a></li>
       </ul>
     </div>
   </div>
@@ -78,6 +79,7 @@ import Reportes from "./Inventario/Reportes.vue";
 import Productos from "./Inventario/Productos.vue";
 import Personal from "./Inventario/Personal.vue";
 import Cocina from "./Inventario/Cocina.vue";
+import Servicios from "./Inventario/Servicios.vue";
 
 export default {
   components: {
@@ -85,7 +87,8 @@ export default {
     Reportes,
     Productos,
     Personal,
-    Cocina,
+    Cocina, 
+    Servicios
   },
   data() {
     return {

@@ -82,19 +82,20 @@ export default {
                 precio: this.precio,
                 comentario: this.comentario
             })
-            const refImg = ref.child("imagenes/"+this.validNombre);
-            const metaData = {
-                contentType: 'image/jpeg'
-            }
-            refImg.put(this.imagen, metaData)
-                .then((e) => {
-                    console.log(e)
-                })
-            location.reload();
+            
+            location.reload(true);
         },
         change(e){
             this.imagen = e.target.files[0];
             console.log(this.imagen)
+            const refImg = ref.child("imagenes/" + this.nombre + ".jpg");
+            const metadata = {
+                contentType: 'img/jpeg'
+            }
+            refImg.put(this.imagen, metadata)
+                .then((e) => {
+                    console.log(e)
+                })
         }
     }
 }

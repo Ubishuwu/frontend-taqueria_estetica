@@ -4,7 +4,7 @@ import Caja from '../components/views/Caja.vue'
 import Inventario from '../components/views/Inventario.vue'
 import Login from '../components/forms/Login.vue';
 import Register from '../components/forms/Register.vue';
-import Cocina from '../components/views/Cocina.vue';
+//import Cocina from '../components/views/Cocina.vue';
 import CreatePlatillo from '../components/views/CreatePlatillo.vue';
 import Inicio from '../components/views/Inicio.vue'
 import FormularioIngrediente from '../components/forms/FormularioIngrediente.vue';
@@ -26,12 +26,12 @@ const routes = [
         path: "caja",
         name: "Caja",
         component: Caja,
-      },
+      },/*
       {
         path: "cocina",
         name: "Cocina",
         component: Cocina,
-      },
+      },*/
       {
         path: "inicio",
         name: "Inicio",
@@ -80,8 +80,8 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-  console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
-  console.log(routes.some(rute => rute.path == to.path))
+  //console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
+  //console.log(routes.some(rute => rute.path == to.path))
   if ((routes.some(route => route.path === to.path) || routes[0].children.some(rute => ('/' + rute.path) === to.path)))
     auth.onAuthStateChanged(user => {
       if (user) {

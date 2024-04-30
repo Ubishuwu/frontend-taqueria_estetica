@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-screen bg-slate-500">
+  <div class="flex w-fulll bg-slate-500">
     <div class="bg-cyan-700 w-full">
       <div id="main" class="mx-10 mt-4">
         <a class="btn" href="/create-platillo">Crear Platillo</a>

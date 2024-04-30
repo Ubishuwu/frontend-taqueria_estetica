@@ -10,13 +10,13 @@
         <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
             <table class="table border-collapse">
                 <!-- head -->
-                <thead class="z-50 sticky top-0 bg-gray-100">
+                <thead class="sticky top-0 bg-gray-100">
                     <tr>
                         <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Usuario</th>
-                        <th>Sucursal</th>
-                        <th>Rol</th>
+                        <th class="hidden min-[520px]:table-cell ">Correo</th>
+                        <th class="hidden md:table-cell ">Usuario</th>
+                        <th class="hidden sm:table-cell ">Sucursal</th>
+                        <th class="hidden sm:table-cell ">Rol</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -36,23 +36,100 @@
                                 </div>
                             </div>
                         </td>
-                        <td>{{ user.correo }}</td>
-                        <th>{{ user.user }}</th>
-                        <td>
+                        <td class="hidden min-[520px]:table-cell ">{{ user.correo }}</td>
+                        <th class="hidden md:table-cell ">{{ user.user }}</th>
+                        <td class="hidden sm:table-cell ">
                             <div class="badge badge-success">
                                 <p class="text-white">{{ user.sucursal }}</p>
                             </div>
                         </td>
 
-                        <td>{{ user.rol }}</td>
+                        <td class="hidden sm:table-cell ">{{ user.rol }}</td>
                         <th>
-                            <button class="btn btn-ghost btn-xs">Detalles</button>
+                            <button class="btn btn-ghost btn-xs " onclick="detalle.showModal()"
+                                @click="nuevoDetalle(user)">Detalles</button>
                         </th>
 
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <!---VIsta de detalles-->
+        <dialog id="detalle" class="modal w-4/5 ">
+            <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[100vh] w-full">
+                <div class="flex flex-col w-full">
+                    <div class="flex flex-col w-full p-3">
+
+                        <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">Datos
+                            Personales</span>
+                        <div class="flex justify-between md:flex-row flex-col">
+
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Nombre:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.nombre }} {{ detalles.apellido }}</h3>
+                            </label>
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">User:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.user }}</h3>
+                            </label>
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Edad:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.edad }}</h3>
+                            </label>
+                        </div>
+                        <div class="flex justify-between md:flex-row flex-col">
+
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Correo:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.correo }}</h3>
+                            </label>
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Telefono:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.telefono }}</h3>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col w-full p-3 pt-0">
+                        <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">
+                            Datos Laborales</span>
+                        <div class="flex justify-between md:flex-row flex-col">
+
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Rol:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.rol }}</h3>
+                            </label>
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Sucursal:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.sucursal }}</h3>
+                            </label>
+                        </div>
+                        <div class="flex justify-between md:flex-row flex-col">
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Horario:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.hora_inicio }} a {{ detalles.hora_fin }}
+                                </h3>
+                            </label>
+                        </div>
+                        <div class="flex justify-between md:flex-row flex-col">
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Dias:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.dias }}</h3>
+                            </label>
+                            <label class="flex flex-nowrap m-2">
+                                <h2 class="font-bold text-lg mr-2">Sueldo:</h2>
+                                <h3 class="font-normal text-lg">{{ detalles.sueldo }}</h3>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
 
         <!---Auxiliar para testear formularios-- pasar proximamente a un modal--->
         <dialog id="formulario" class="modal max-w-96">
@@ -92,7 +169,8 @@ export default {
                     sueldo: 54.5,
                     sucursal: "Taqueria",
                 },
-            ]
+            ],
+            detalles: {}
         };
     },
     components: {
@@ -112,13 +190,18 @@ export default {
                 user: doc.data().userName,
                 hora_inicio: doc.data().horario.horaDeEntrada,
                 hora_fin: doc.data().horario.horaDeSalida,
-                dias: doc.data().horario.dias,
+                dias: doc.data().horario.dias.toString(),
                 rol: doc.data().rol,
                 sueldo: doc.data().sueldo,
                 sucursal: doc.data().sucursal,
             }
             this.empleados.push(data)
         })
+    },
+    methods: {
+        nuevoDetalle(item) {
+            this.detalles = item;
+        }
     }
 
 

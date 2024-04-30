@@ -126,7 +126,7 @@ export default {
                 inventarioActual: this.inventarioactual,
                 sucursal: this.sucursal,
                 precio: this.precio,
-                //comentario: this.comentario,
+                comentario: this.comentario,
             })
             location.reload();
         },

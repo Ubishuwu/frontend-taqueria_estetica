@@ -119,7 +119,7 @@ export default {
               ingredientes: this.ingredientes,
               precio: this.precio,
             })
-            this.$router.push('/cocina');
+            this.$router.push('/inventario');
     }
   },
   async created() {

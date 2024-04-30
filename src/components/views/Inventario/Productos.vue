@@ -1,128 +1,168 @@
 <template>
-      <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
+  <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
-        <div class="w-[200px] flex">
-          
-          <form class="flex mt-5">
-            <label class="form-control w-full max-w-xs mr-2">
-              <div class="label">
-                <span class="label-text">Sucursal</span>
+    <div class="flex sm:flex-row flex-col justify-between items-center">
+
+      <form class="flex mt-5">
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Sucursal</span>
+          </div>
+          <select class="select select-sm select-bordered">
+            <option>Todos</option>
+            <option>Taqueria El TaquerITO</option>
+            <option>Estetica El cortITO</option>
+          </select>
+        </label>
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Estatus</span>
+          </div>
+          <select class="select select-sm select-bordered">
+            <option>Todos</option>
+            <option>Proximos a vencer</option>
+            <option>Normal</option>
+            <option>Sobreinventario</option>
+          </select>
+        </label>
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Ordenar por</span>
+          </div>
+          <select class="select select-sm select-bordered">
+            <option>Nombre</option>
+            <option>Inventario</option>
+            <option>Sucursal</option>
+          </select>
+        </label>
+
+      </form>
+      <button class="btn btn-outline btn-success mt-10" onclick="my_modal_3.showModal()">Agregar Producto</button>
+      <dialog id="my_modal_3" class="modal">
+        <div class="modal-box">
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <FormularioProducto />
+        </div>
+      </dialog>
+    </div>
+
+
+    <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
+      <table class="table">
+        <!-- head -->
+        <thead class="sticky top-0 bg-gray-100">
+          <tr>
+            <th>Nombre</th>
+            <th class="hidden min-[650px]:table-cell ">Medida</th>
+            <th class="hidden min-[520px]:table-cell ">Inventario</th>
+            <th class="hidden min-[580px]:table-cell ">Proveedor</th>
+            <th>Sucursal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="prod in productos">
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="avatar">
+                  <div class="mask mask-squircle w-12 h-12">
+                    <img src="https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"
+                      alt="Avatar Tailwind CSS Component" />
+                  </div>
+                </div>
+                <div>
+                  <div class="font-bold">{{ prod.nombre }}</div>
+                  <div class="text-sm opacity-50">{{ prod.tipo }}</div>
+                </div>
               </div>
-              <select class="select select-sm select-bordered">
-                <option>Todos</option>
-                <option>Taqueria El TaquerITO</option>
-                <option>Estetica El cortITO</option>
-              </select>
+            </td>
+            <td class="hidden min-[650px]:table-cell ">{{ prod.medida }}</td>
+            <td class="hidden min-[520px]:table-cell ">
+              <div class="badge badge-success">
+                <p class="text-white">{{ prod.inventarioActual }}</p>
+              </div>
+            </td>
+
+            <td class="hidden min-[580px]:table-cell "> {{ prod.proveedor }}</td>
+            <th>{{ prod.sucursal }}</th>
+            <th>
+              <button class="btn btn-ghost btn-xs" onclick="detalle.showModal()"
+                @click="nuevoDetalle(prod)">Detalles</button>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!---VIsta de detalles-->
+  <dialog id="detalle" class="modal w-4/5 ">
+    <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[100vh] w-full">
+      <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full p-3">
+
+          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">Datos
+            del Producto</span>
+          <div class="flex justify-between md:flex-row flex-col">
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Nombre:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.nombre }}</h3>
             </label>
-            <label class="form-control w-full max-w-xs mr-2">
-              <div class="label">
-                <span class="label-text">Estatus</span>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Precio:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.precio }}</h3>
+            </label>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Medida:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.medida }}</h3>
+            </label>
+          </div>
+          <div class="flex justify-between md:flex-row flex-col">
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Stock Actual:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.inventarioActual }}</h3>
+            </label>
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Stock Minimo:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.inventarioMinimo }}</h3>
+            </label>
+          </div>
         </div>
-        <select class="select select-sm select-bordered">
-          <option>Todos</option>
-          <option>Proximos a vencer</option>
-          <option>Normal</option>
-          <option>Sobreinventario</option>
-        </select>
-      </label>
-      <label class="form-control w-full max-w-xs mr-2">
-        <div class="label">
-          <span class="label-text">Ordenar por</span>
+
+        <div class="flex flex-col w-full p-3 pt-0">
+          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">
+            Detalles</span>
+          <div class="flex justify-between md:flex-row flex-col">
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Sucursal:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.sucursal }}</h3>
+            </label>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Proveedor:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.proveedor }}</h3>
+            </label>
+          </div>
+          <div class="flex justify-between md:flex-row flex-col">
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">comentarios:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.comentario }}
+              </h3>
+            </label>
+          </div>
         </div>
-        <select class="select select-sm select-bordered">
-          <option>Nombre</option>
-          <option>Inventario</option>
-          <option>Sucursal</option>
-        </select>
-      </label>
-      
-    </form>
-    <button class="btn btn-outline btn-success mt-10" onclick="my_modal_3.showModal()">Agregar Producto</button>
-    <button class="btn btn-outline btn-success mt-10 ml-3" onclick="my_modal_3.showModal()">Agregar Servicio</button>
-    <dialog id="my_modal_3" class="modal">
-      <div class="modal-box">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-        <FormularioProducto/>
+
       </div>
-    </dialog>
-  </div>
-  <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
-    <table class="table">
-      <!-- head -->
-      <thead class="z-50 sticky top-0 bg-gray-100">
-        <tr>
-          <th>Nombre</th>
-          <th>Medida</th>
-          <th>Inventario</th>
-          <th>Proveedor</th>
-          <th>Sucursal</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- row 1 -->
-        <tr>
-          <td>
-            <div class="flex items-center gap-3">
-              <div class="avatar">
-                <div class="mask mask-squircle w-12 h-12">
-                  <img src="https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"
-                  alt="Avatar Tailwind CSS Component" />
-                </div>
-              </div>
-              <div>
-                <div class="font-bold">Cilantro</div>
-                <div class="text-sm opacity-50">Cocina</div>
-              </div>
-            </div>
-          </td>
-          <td>Kilo</td>
-          <td>
-            <div class="badge badge-success">
-              <p class="text-white">5</p>
-            </div>
-          </td>
-          
-          <td>Mercado 20 de Noviembre</td>
-          <td>Taqueria</td>
-          <th>
-            <button class="btn btn-ghost btn-xs">Detalles</button>
-          </th>
-        </tr>
-        <tr v-for="prod in productos">
-          <td>
-            <div class="flex items-center gap-3">
-              <div class="avatar">
-                <div class="mask mask-squircle w-12 h-12">
-                  <img src="https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"
-                  alt="Avatar Tailwind CSS Component" />
-                </div>
-              </div>
-              <div>
-                <div class="font-bold">{{prod.nombre}}</div>
-                <div class="text-sm opacity-50">{{prod.tipo}}</div>
-              </div>
-            </div>
-          </td>
-          <td>{{prod.medida}}</td>
-          <td>
-            <div class="badge badge-success">
-              <p class="text-white">{{prod.inventarioActual}}</p>
-            </div>
-          </td>
-          
-          <td>{{prod.proveedor}}</td>
-          <th>{{prod.sucursal}}</th>
-          <th>
-            <button class="btn btn-ghost btn-xs">Detalles</button>
-          </th>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </template>
 <script>
 
@@ -133,10 +173,11 @@ import db from "../../../firebase/firebaseInit"
 import FormularioProducto from '../../forms/FormularioProducto.vue';
 
 export default {
-  
+
   data() {
     return {
-      productos: []
+      productos: [],
+      detalles: {}
     };
   },
   components: {
@@ -153,12 +194,19 @@ export default {
         inventarioActual: doc.data().inventarioActual,
         inventarioMinimo: doc.data().inventarioMinimo,
         tipo: doc.data().tipo,
-        sucursal: doc.data().sucursal
+        sucursal: doc.data().sucursal,
+        comentario: doc.data().comentario,
+        precio: doc.data().precio
       }
       this.productos.push(data)
     })
 
 
+  },
+  methods: {
+    nuevoDetalle(item) {
+      this.detalles = item;
+    }
   }
 }
 </script>

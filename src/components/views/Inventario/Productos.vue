@@ -36,7 +36,6 @@
 
     </form>
     <button class="btn btn-outline btn-success mt-10" onclick="my_modal_3.showModal()">Agregar Producto</button>
-    <button class="btn btn-outline btn-success mt-10 ml-3" onclick="my_modal_3.showModal()">Agregar Servicio</button>
     <dialog id="my_modal_3" class="modal">
       <div class="modal-box">
         <form method="dialog">

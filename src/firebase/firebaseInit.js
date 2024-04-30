@@ -19,3 +19,5 @@ export {timestamp}
 export {auth}
 export default firebaseApp.firestore();
 
+const storage = firebase.storage();
+export {storage}

@@ -29,14 +29,68 @@
 
         </div>
 
-        <div class="overflow-y-hidden h-screen">
-            <ListaCompra :lista="compra" @actualizar="actualizar" @eliminar="eliminar" @pagar="realizarventa(total)"
+        <div class="overflow-y-hidden h-screen" ref="cancelar">
+            <ListaCompra :lista="compra" @actualizar="actualizar" @eliminar="eliminar" @pagar="realizarventa"
                 @cancelar="cancelar(sis)" />
         </div>
+
+        <!---Auxiliar para testear formularios-- pasar proximamente a un modal--->
+        <dialog v-if="total != 0" id="pago" class="modal max-w-96">
+            <div class="relative  overflow-y-auto overscroll-auto rounded-xl sm:w-4/6 w-full scroll-estilo">
+                <form method="dialog" v-if="!ventaExitosa">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <div class="bg-accent w-full h-full flex flex-col items-center p-5">
+                    <h1 class="text-xl font-medium m-4">Total a pagar: {{ total }} $ </h1>
+                    <form class="bg-primary flex flex-col w-full h-full rounded-lg p-3" method="dialog">
+                        <label class="flex flex-col w-full p-2 ">
+                            <div class="flex flex-nowrap w-full ">
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">Pago con:</span>
+                                <input v-if="!ventaExitosa" type="number" placeholder="00.00"
+                                    :class="['input input-bordered input-md grow font-medium', { 'input-disabled file-input-disabled': ventaExitosa }]"
+                                    v-model="pago" />
+                                <span v-else
+                                    class=" input input-bordered input-md grow font-medium flex items-center">{{ pago
+                                    }}</span>
+
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold"> $</span>
+                            </div>
+                            <span v-if="v$.pago.$error || pagomenor"
+                                class="font-mono text-sm text-red-50 bg-red-500 brightness-150 text-right m-2 rounded-md p-1">Pago
+                                Requerido
+                                y mayor al monto total</span>
+                        </label>
+                        <label class="flex flex-col w-full p-2 my-5 bg-blue-900 rounded-lg">
+                            <div class="flex flex-nowrap w-full ">
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">Cambio:</span>
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">{{ cambio
+                                    }}</span>
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold"> $</span>
+                            </div>
+                        </label>
+                        <div v-if="!ventaExitosa" class="flex flex-nowrap justify-between">
+                            <button @click="cancelarCobro"
+                                class="btn btn-md w-1/4 hover:brightness-125 btn-error brightness-50 text-secondary hover:text-secondary mx-2">Cancelar</button>
+                            <input @click.prevent="guardar" type="submit" value="Confirmar Venta"
+                                class="btn btn-md w-1/4 hover:btn-success hover:text-secondary mx-2 grow" />
+                        </div>
+                        <input v-else @click.prevent="finalizar" type="submit" value="Finalizar"
+                            class="btn btn-md btn-warning hover:btn-success hover:text-secondary mx-2 grow" />
+
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
     </div>
 </template>
 
 <script>
+
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, helpers, numeric } from '@vuelidate/validators'
+
+
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
@@ -48,6 +102,7 @@ import { list } from "postcss";
 
 export default {
     props: {},
+    setup: () => ({ v$: useVuelidate() }),
     data() {
         return {
             usuario: "",
@@ -65,9 +120,14 @@ export default {
             filtro: [
                 'Todo', 'Otros'
             ],
+            ventaExitosa: false,
             filtrado: 'todo',
             modolista: false,
             sucursal: "todas",
+            total: 0,
+            pago: "",
+            cambio: 0.00,
+            pagomenor: false,
         }
     },
     components: {
@@ -76,6 +136,11 @@ export default {
         CajaNavBar,
         Paginacion,
 
+    },
+    validations: {
+        pago: {
+            required, decimal, minValue: minValue(0)
+        }
     },
     async created() {
         /*const usuarioLoad = db.collection('empleado').doc(firebase.auth().currentUser.uid);
@@ -153,7 +218,7 @@ export default {
                 }
                 platillos.push(data);
             })
-            
+
             dataBase = await db.collection('productos');
             dbResults = await dataBase.get();
             dbResults.forEach((doc) => {
@@ -168,53 +233,81 @@ export default {
                 }
             })
             console.log(productos)
-            
+
             //this.lista_original = this.lista = [...this.lista, ...this.platillos]
-            
+
         }
-        
+
         this.lista_original = this.lista = [...this.lista, ...productos, ...platillos, ...servicios]
-        /*
-                dataBase = await db.collection('platillos');
-                var dbResults = await dataBase.get();
-                //console.log("plat")
-                //console.log(dbResults)
-                dbResults.forEach((doc) => {
-                    const data = {
-                        nombre: doc.data().nombre,
-                        tipo: doc.data().tipo,
-                        precio: doc.data().precio,
-                        id: doc.id,
-                    }
-        
-                    this.platillos.push(data)
-                })
-        
-                dataBase = await db.collection('productos');
-                dbResults = await dataBase.get();
-                //console.log("prods")
-                //console.log(dbResults)
-                dbResults.forEach((doc) => {
-                    const data = {
-                        nombre: doc.data().nombre,
-                        tipo: doc.data().tipo,
-                        precio: doc.data().precio,
-                    }
-                    //console.log(data);
-                    if (doc.data().tipo == "De venta") {
-                        this.productos.push(data)
-                    }
-                })
-                console.log(this.productos);
-                console.log(this.platillos);
-        
-                this.lista_original = this.lista = [...this.lista, ...this.platillos, ...this.productos]
-        */
+
         this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
         this.cargando = false;
         this.lista_porcionada();
     },
     methods: {
+        async guardar() {
+            try {
+                this.pagomenor = false;
+
+                const isFormCorrect = await this.v$.$validate()
+                if (isFormCorrect) {
+                    if (this.pago >= this.total) {
+                        this.ventaExitosa = true;
+                        this.cambio = this.pago - this.total;
+
+                        const dataBase = db.collection("ticket").doc();
+
+                        const listacompra = [];///hacer enlace a la tabla de productos
+                        this.compra.forEach((item) => {
+                            // console.log(item.producto.id)
+                            listacompra.push({
+                                producto: db.collection('productos').doc(item.producto.id),
+                                cantidad: item.cantidad
+                            })
+                        })
+
+                        const date = new Date();
+                        const dia =
+                            ("0" + date.getDate()).slice(-2) + "-" +
+                            ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                            date.getFullYear();
+                        const hora =
+                            ("0" + date.getHours()).slice(-2) + ":" +
+                            ("0" + date.getMinutes()).slice(-2) + ":" +
+                            ("0" + date.getSeconds()).slice(-2);
+
+                        console.log(listacompra);
+
+                        await dataBase.set({
+                            fecha: dia,
+                            dia: hora,
+                            vendedor: db.collection('empleado').doc(firebase.auth().currentUser.uid),
+                            compra: listacompra,
+                            pagoRecibido: this.pago,
+                            cambio: this.cambio,
+                        })
+                        console.log(dataBase);
+
+                    } else {
+                        this.pagomenor = true;
+                    }
+                } else {
+                    console.log(error, this.v$.error);
+                }
+
+            } catch (error) {
+            }
+        },
+        finalizar() {
+            location.reload();
+        },
+
+        evitarCerrarConEsc(event) {
+            if (this.ventaExitosa && event.key === 'Escape') {
+                // Prevenir el comportamiento predeterminado (cerrar el diálogo)
+                event.preventDefault();
+            }
+        },
         modolistado(valor) {
             this.modolista = valor;
         },
@@ -232,13 +325,22 @@ export default {
                 this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
 
         },
-        realizarventa(total) {
+        realizarventa(valor) {
             //acccion para enviar la venta al back
-            this.cancelar();
+            console.log(valor);
+            this.total = valor;
+            console.log(this.total)
+            //this.cancelar();
         },
-        cancelar(sis) {
+        cancelar() {
             console.log("eliminadndo");
             this.compra.splice(0, this.compra.length);
+        },
+        async cancelarCobro() {
+
+            await this.$nextTick();
+            const sectionElement = this.$refs.cancelar;
+            sectionElement.scrollIntoView({ behavior: 'smooth' });
         },
         eliminar(producto) {
             const indice = this.compra.findIndex((elemento) => elemento.producto === producto);
@@ -270,6 +372,7 @@ export default {
         },
         recibirpagina(nueva) {
             this.pagina_actual = nueva;
+            console.log(nueva)
             this.regresarAlInicio();
         },
         regresarAlInicio() {
@@ -322,9 +425,10 @@ export default {
 
     },
     mounted() {
+        document.addEventListener('keydown', this.evitarCerrarConEsc);
         //const 
         /*sucursal = 'taqueria';
-
+ 
         if (sucursal == 'taqueria') {
             this.filtro.push(
                 'Bebidas',
@@ -336,7 +440,7 @@ export default {
                 'Servicios',
                 'Productos');
             //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista)
-
+ 
         }*/
 
         //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos

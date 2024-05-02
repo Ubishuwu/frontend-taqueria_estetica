@@ -31,7 +31,7 @@
 
                                 <!---IMAGEN-->
                                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-accent">
-                                    <img :src="`../src/assets/${item.producto.tipo}.png`" 
+                                    <img :src="`../src/assets/${item.producto.tipo}.png`"
                                         alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
                                         class="h-full w-full object-cover object-center">
                                 </div>
@@ -78,14 +78,15 @@
                     <p>Subtotal</p>
                     <p>${{ total }}</p>
                 </div>
-                <p v-if="lista.length>0" class="mt-0.5 text-sm text-gray-500">Elementos: {{ lista.length }}</p>
+                <p v-if="lista.length > 0" class="mt-0.5 text-sm text-gray-500">Elementos: {{ lista.length }}</p>
                 <div class="mt-6">
-                    <button @click="pagar()"
+                    <button @click="pagar()" onclick="pago.showModal()"
                         class="flex items-center w-full justify-center rounded-md border border-transparent bg-info px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Pagar</button>
                 </div>
                 <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                     <p>
-                        <button @click="cancelar()" type="button" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        <button @click="cancelar()" type="button"
+                            class="font-medium text-indigo-600 hover:text-indigo-500">
                             Cancelar
                             <span aria-hidden="true"> &rarr;</span>
                         </button>
@@ -102,7 +103,7 @@
 export default {
     props: {
         lista: [],
-
+        //total: 0,
     },
     data() {
         return {
@@ -116,11 +117,15 @@ export default {
         cambiar_cantidad(item, val) {
             this.$emit("actualizar", { 'producto': item, 'valor': val });
         },
-        pagar(){
-            this.$emit("pagar",this.total);
+        pagar() {
+            if (this.total > 0) {
+                console.log(this.total);
+                this.$emit("pagar", (this.total));
+            }else
+            console.log("no hay elementos para vender");
 
         },
-        cancelar(){
+        cancelar() {
             this.$emit("cancelar", true);
         }
     },
@@ -128,7 +133,7 @@ export default {
 
         lista: {
             handler(nuevaLista) {
-                this.total = nuevaLista.reduce((acumulador, elemento) => acumulador + elemento.cantidad*elemento.producto.precio, 0);
+                this.total = nuevaLista.reduce((acumulador, elemento) => acumulador + elemento.cantidad * elemento.producto.precio, 0);
 
             },
             deep: true // Esto asegura que el watcher detecte cambios incluso dentro de los objetos de la lista

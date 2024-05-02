@@ -128,6 +128,7 @@ export default {
             pago: "",
             cambio: 0.00,
             pagomenor: false,
+            imagen:"",
         }
     },
     components: {
@@ -174,6 +175,7 @@ export default {
                     tipo: doc.data().tipo,
                     precio: doc.data().precio,
                     id: doc.id,
+                    imagen: doc.data().imagen
                 }
 
                 servicios.push(data);
@@ -188,6 +190,7 @@ export default {
                         tipo: doc.data().tipo,
                         precio: doc.data().precio,
                         id: doc.id,
+                        imagen: doc.data().imagen
                     }
                     productos.push(data)
                 }
@@ -215,6 +218,7 @@ export default {
                     tipo: doc.data().tipo,
                     precio: doc.data().precio,
                     id: doc.id,
+                    imagen: doc.data().imagen
                 }
                 platillos.push(data);
             })
@@ -228,6 +232,7 @@ export default {
                         tipo: doc.data().tipo,
                         precio: doc.data().precio,
                         id: doc.id,
+                        imagen: doc.data().imagen
                     }
                     productos.push(data)
                 }

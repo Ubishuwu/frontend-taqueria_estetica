@@ -60,7 +60,7 @@
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu p-4 w-60 min-h-full bg-base-200 text-base-content">
+      <ul class="menu p-4 w-60 min-h-full bg-base-200 text-base-content mt-16 xl:mt-0">
         <!-- Sidebar content here 
         <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li> 
         <li @click="showComponent = 'Main'"><a>Página Principal</a></li>-->

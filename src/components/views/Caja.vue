@@ -8,11 +8,12 @@
             <div v-if="cargando" class="h-3/4 w-full flex justify-center items-center">
                 <h1 class="text-green-600 font-semibold font-mono  text-5xl p-5 m-6">Cargando....</h1>
             </div>
-            <div v-if="listaPorcionada.length===0 && !cargando" class="h-3/4 w-full flex justify-center items-center">
-                <h1 class="text-red-700 font-semibold font-mono text-center text-5xl p-5 m-6">Uy!! No hay nada aqui, registre algo y regrese</h1>
+            <div v-if="listaPorcionada.length === 0 && !cargando" class="h-3/4 w-full flex justify-center items-center">
+                <h1 class="text-red-700 font-semibold font-mono text-center text-5xl p-5 m-6">Uy!! No hay nada aqui,
+                    registre algo y regrese</h1>
             </div>
 
-            <div class=" min-h-3_4 " v-if="listaPorcionada.length !=0" >
+            <div class=" min-h-3_4 " v-if="listaPorcionada.length != 0">
 
                 <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                     <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
@@ -49,6 +50,7 @@ export default {
     props: {},
     data() {
         return {
+            usuario: "",
             cargando: true,
             elementosmax: 80,
             pagina_actual: 1,
@@ -64,7 +66,8 @@ export default {
                 'Todo', 'Otros'
             ],
             filtrado: 'todo',
-            modolista: false
+            modolista: false,
+            sucursal: "todas",
         }
     },
     components: {
@@ -75,40 +78,138 @@ export default {
 
     },
     async created() {
-        var dataBase = await db.collection('platillos');
-        var dbResults = await dataBase.get();
-        //console.log("plat")
-        //console.log(dbResults)
-        dbResults.forEach((doc) => {
-            const data = {
-                nombre: doc.data().nombre,
-                tipo: doc.data().tipo,
-                precio: doc.data().precio,
-            }
+        /*const usuarioLoad = db.collection('empleado').doc(firebase.auth().currentUser.uid);
+        const usuariodata = await usuarioLoad.get();
+        console.log(usuariodata.data())*/
+        //console.log((await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data())
+        this.usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
+        console.log(this.usuario);
 
-            this.platillos.push(data)
-        })
+        this.sucursal = this.usuario.sucursal;
+        var dataBase = null;
+        var dbResults = null;
+        const servicios = [];
+        const productos = [];
+        const platillos = [];
 
-        dataBase = await db.collection('productos');
-        dbResults = await dataBase.get();
-        //console.log("prods")
-        //console.log(dbResults)
-        dbResults.forEach((doc) => {
-            const data = {
-                nombre: doc.data().nombre,
-                tipo: doc.data().tipo,
-                precio: doc.data().precio,
-            }
-            //console.log(data);
-            if (doc.data().tipo == "De venta") {
-                this.productos.push(data)
-            }
-        })
-        console.log(this.productos);
-        console.log(this.platillos);
+        ///si es barberia
+        if (this.sucursal != 'Taqueria') {
+            console.log("cargando Barberia")
 
-        this.lista_original= this.lista = [...this.lista, ...this.platillos, ...this.productos]
+            this.filtro.push(
+                'Servicios',
+                'Productos'
+            );
 
+            dataBase = await db.collection('servicios');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                const data = {
+                    nombre: doc.data().nombre,
+                    tipo: doc.data().tipo,
+                    precio: doc.data().precio,
+                    id: doc.id,
+                }
+
+                servicios.push(data);
+            })
+
+            dataBase = await db.collection('productos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                if (doc.data().sucursal == "Barberia") {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                        id: doc.id,
+                    }
+                    productos.push(data)
+                }
+            })
+
+            //this.lista_original = this.lista = [...this.lista, ...this.servicios]
+
+
+        }
+
+        ///si es taqueria
+        if (this.sucursal != 'Barberia') {
+            console.log("cargando Taqueria")
+            this.filtro.push(
+                'Bebidas',
+                'Comidas',
+                'Postres'
+            );
+
+            dataBase = await db.collection('platillos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                const data = {
+                    nombre: doc.data().nombre,
+                    tipo: doc.data().tipo,
+                    precio: doc.data().precio,
+                    id: doc.id,
+                }
+                platillos.push(data);
+            })
+            
+            dataBase = await db.collection('productos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                if (doc.data().tipo == "De venta" && doc.data().sucursal == "Taqueria") {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                        id: doc.id,
+                    }
+                    productos.push(data)
+                }
+            })
+            console.log(productos)
+            
+            //this.lista_original = this.lista = [...this.lista, ...this.platillos]
+            
+        }
+        
+        this.lista_original = this.lista = [...this.lista, ...productos, ...platillos, ...servicios]
+        /*
+                dataBase = await db.collection('platillos');
+                var dbResults = await dataBase.get();
+                //console.log("plat")
+                //console.log(dbResults)
+                dbResults.forEach((doc) => {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                        id: doc.id,
+                    }
+        
+                    this.platillos.push(data)
+                })
+        
+                dataBase = await db.collection('productos');
+                dbResults = await dataBase.get();
+                //console.log("prods")
+                //console.log(dbResults)
+                dbResults.forEach((doc) => {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                    }
+                    //console.log(data);
+                    if (doc.data().tipo == "De venta") {
+                        this.productos.push(data)
+                    }
+                })
+                console.log(this.productos);
+                console.log(this.platillos);
+        
+                this.lista_original = this.lista = [...this.lista, ...this.platillos, ...this.productos]
+        */
         this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
         this.cargando = false;
         this.lista_porcionada();
@@ -221,7 +322,8 @@ export default {
 
     },
     mounted() {
-        const sucursal = 'taqueria';
+        //const 
+        /*sucursal = 'taqueria';
 
         if (sucursal == 'taqueria') {
             this.filtro.push(
@@ -235,7 +337,7 @@ export default {
                 'Productos');
             //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista)
 
-        }
+        }*/
 
         //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
 

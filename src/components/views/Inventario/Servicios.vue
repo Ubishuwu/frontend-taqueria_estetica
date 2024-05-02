@@ -24,10 +24,10 @@
       </div>
     </dialog>
   </div>
-  <div class="overflow-x-auto mt-5">
-    <table class="table">
+  <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))] min-h-72">
+    <table class="table border-collapse">
       <!-- head -->
-      <thead>
+      <thead class="sticky z-10 top-0 bg-gray-100">
         <tr>
           <th>Nombre</th>
           <th>Tipo de Servicio</th>

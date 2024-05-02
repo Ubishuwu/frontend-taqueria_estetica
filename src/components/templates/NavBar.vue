@@ -110,30 +110,38 @@
                         <div class="relative ml-3">
                             <div>
                                 <button type="button" @click="menuUser"
-                                    class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                    class="px-2 relative flex flex-col rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                     id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                    <span class="absolute -inset-1.5"></span>
-                                    <span class="sr-only">Open user menu</span>
-                                    <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png" alt="">
+                                    <div class="justify-center items-center flex">
+
+                                        <span class="absolute -inset-1.5"></span>
+                                        <span class="sr-only">Open user menu</span>
+                                        <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png"
+                                            alt="">
+                                        <p class="text-white text-xs mx-2">{{ this.usuario.userName }}</p>
+                                    </div>
+                                    <p class="text-white text-xs">{{ this.usuarioAutenticado.email }}</p>
                                 </button>
-                                <p class="text-white text-xs">{{ this.usuarioAutenticado.email }}</p>
                             </div>
 
-                            <div class="hidden right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                            <div class="hidden z-50 mt-2 border border-1 border-gray-400 right-0 w-48 origin-top-right rounded-md bg-white shadow-lg  ring-black ring-opacity-5 focus:outline-none"
+                                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                 id="user-menu">
 
-                                <!-- Active: "bg-gray-100", Not Active: "" -->
 
-                                <a type="button"
-                                    class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm"
-                                    v-for="(ruta, nombre) in rutasUser" :key="ruta">
-                                    <RouterLink :to="Object.keys(ruta)[0]" @click="retraerUser">{{ nombre }}
-                                    </RouterLink>
+                                <RouterLink to="/config" @click="retraerUser">
+                                    <a type="button"
+                                        class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
+                                        Configuracion
+                                    </a>
+                                </RouterLink>
+                                <RouterLink to="/user" @click="retraerUser">
+                                    <a type="button"
+                                        class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
+                                        Mi perfil
+                                    </a>
+                                </RouterLink>
 
-                                    <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-
-                                </a>
                                 <a @click="logout" type="button"
                                     class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
                                     Cerrar Sesión
@@ -149,14 +157,15 @@
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="hidden sm:hidden" id="mobile-menu">
             <div class="space-y-1 px-2 pb-3 pt-2">
-                <a type="button"
-                    class="text-secondary hover:bg-primary hover:brightness-150 block rounded-md px-3 py-2 text-base font-medium"
-                    v-for="(ruta, nombre) in rutas" :key="ruta">
-                    <RouterLink :to="Object.keys(ruta)[0]" @click="retraer">{{
-                        nombre
-                    }}</RouterLink>
-                    <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
-                </a>
+                <RouterLink :to="Object.keys(ruta)[0]" @click="retraer" v-for="(ruta, nombre) in rutas" :key="ruta">
+                    <a type="button"
+                        class="text-secondary hover:bg-primary hover:brightness-150 block rounded-md px-3 py-2 text-base font-medium">
+                        {{
+                            nombre
+                        }}
+                        <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
+                    </a>
+                </RouterLink>
 
             </div>
         </div>
@@ -167,6 +176,7 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
+import db from "../../firebase/firebaseInit"
 
 export default {
     name: "Side_Bar",
@@ -178,6 +188,7 @@ export default {
     data() {
         return {
             usuarioAutenticado: firebase.auth().currentUser,
+            usuario: "",
             email: "",
             password: "",
             errorMessage: '',
@@ -186,7 +197,6 @@ export default {
                 Inicio: { "/inicio": "rol" },
                 Caja: { "/caja": "rol" },
                 Inventario: { "/inventario": "rol" },
-                Cocina: { "/cocina": "rol" },
             },
             rutasUser: {
                 ///rutas para configuracion o que tenga q ver con usuario
@@ -201,6 +211,10 @@ export default {
             this.usuarioAutenticado = firebase.auth().currentUser;
         }, 500);
 
+    },
+    async created() {
+        this.usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
+        //console.log(this.usuario);
     },
     computed: {},
     methods: {

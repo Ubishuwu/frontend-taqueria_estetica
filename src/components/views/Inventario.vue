@@ -54,7 +54,7 @@
         <component :is="showComponent" />
       </div>
     </div>
-    <div class="drawer-side">
+    <div class="drawer-side z-20">
       <label
         for="my-drawer-2"
         aria-label="close sidebar"

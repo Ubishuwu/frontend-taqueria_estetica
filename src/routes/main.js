@@ -26,12 +26,12 @@ const routes = [
         path: "caja",
         name: "Caja",
         component: Caja,
-      },/*
+      },
       {
-        path: "cocina",
-        name: "Cocina",
-        component: Cocina,
-      },*/
+        path: "inventario",
+        name: "Inventario",
+        component: Inventario,
+      },
       {
         path: "inicio",
         name: "Inicio",
@@ -54,11 +54,11 @@ const routes = [
     name: "Crear Plantillo",
     component: CreatePlatillo
   },
-  {
+  /*{
     path: "/inventario",
     name: "Inventario",
     component: Inventario,
-  },
+  },*/
   {
     path: "/error",
     name: "error",

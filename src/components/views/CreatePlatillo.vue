@@ -2,7 +2,14 @@
   <div class="w-full">
     <progress class="progress progress-success w-full" value="10" max="100"></progress>
   </div>
-
+  <div class="">
+    <button class="btn" @click="goBack">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Regresar
+    </button>
+  </div>
   <div class="md:w-[50em] w-full mx-auto my-[3%] flex flex-col justify-start p-10">
     <form v-if="state == 1" class=" w-full" @submit.prevent="">
 
@@ -30,6 +37,13 @@
           <option>Otro</option>
         </select>
       </label>
+      <label class="form-control w-full py-3 ">
+                <div class="label">
+                    <span class="font-medium text-lg">Imagen</span>
+                </div>
+                <input @change="change($event)" type="file" id="imagen" accept="image/*"
+                    class="input input-bordered w-full" />
+            </label>
       <button class="btn py-3 w-full" @click="next">Siguiente</button>
     </form>
 
@@ -102,6 +116,8 @@ import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, ema
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
+import { storage } from '../../firebase/firebaseInit';
+const ref = storage.ref();
 
 export default {
   setup: () => ({ v$: useVuelidate() }),
@@ -116,7 +132,8 @@ export default {
       cantidad: "",
       productos: [],
       ingredientes: [],
-
+      imagen:"",
+      errorEnvio: false,
     }
   },
   validations: {
@@ -128,9 +145,16 @@ export default {
 
   },
   methods: {
+    goBack() {
+      this.$router.push('/inventario');
+    },
     eliminar(item) {
       const nuevaLista = this.ingredientes.filter((items) => items !== item);
       this.ingredientes = nuevaLista;
+    },
+    change(e) {
+            this.imagen = e.target.files[0];
+            console.log(this.imagen)
     },
     async next() {
       const vefNomb = await this.v$.nombre.$validate();
@@ -172,13 +196,31 @@ export default {
       })
       //guardarlos en la bd
       const dataBase = db.collection("platillos").doc();
-      await dataBase.set({
+      const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+      const metadata = {contentType: 'img/jpeg'}
+      
+      try {
+        await refImg.put(this.imagen, metadata);
+        const downloadURL = await refImg.getDownloadURL();
+          //console.log('URL de descarga:', downloadURL);
+          console.log('Archivo cargado exitosamente');
+
+        await dataBase.set({
         nombre: this.nombre,
         tipo: this.tipo,
         ingredientes: receta,
         precio: this.precio,
+        imagen: downloadURL,
       })
+      
+      await this.$nextTick();
+
       this.$router.push('/inventario');
+
+      } catch (error) {
+      console.error('Error al cargar el archivo:', error);
+      errorEnvio = true;
+      }
     }
   },
   async created() {

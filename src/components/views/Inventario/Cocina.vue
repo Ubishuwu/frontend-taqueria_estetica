@@ -1,19 +1,12 @@
 <template>
   <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
-    <div class="flex w-fulll bg-slate-500">
-      <div class="bg-cyan-700 w-full">
-        <div id="main" class="mx-10 mt-4">
+    <div>
+      <div >
+        <div id="main">
           <a class="btn" href="/create-platillo">Crear Platillo</a>
         </div>
-
-        <div class="divider"></div>
       </div>
-      <div class="bg-slate-950">
-        <div class="w-[10em]">
-        </div>
-      </div>
-
     </div>
 
     <!---Tabla-->
@@ -26,6 +19,7 @@
             <th class="hidden min-[520px]:table-cell ">Precio</th>
             <th class="hidden min-[520px]:table-cell ">Tipo</th>
             <th class="hidden sm:table-cell ">Ingredientes</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>
@@ -60,12 +54,13 @@
                   ingre.producto.medida }}</p>
               </div>
             </td>
-
-            <td class="hidden sm:table-cell ">{{ plat.rol }}</td>
-            <th>
+            <td class="hidden sm:table-cell ">
               <button class="btn btn-ghost btn-xs " onclick="detalle.showModal()"
                 @click="nuevoDetalle(plat)">Detalles</button>
-            </th>
+            </td>
+            <td>
+              <button class="btn btn-error btn-xs" @click="eliminarServicio(plat.nombre)">Eliminar</button>
+            </td>
 
           </tr>
         </tbody>
@@ -224,6 +219,30 @@ export default {
     },
     nuevoDetalle(item) {
       this.detalles = item;
+    },
+    eliminarPlatillo(nombrePlatillo) {
+      db.collection('platillos').where('nombre', '==', nombrePlatillo).get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+              imagenRef.delete().then(() => {
+                console.log("Imagen borrada");
+              }).catch((error) => {
+                console.error("Error al borrar la imagen: ", error);
+              });
+
+              doc.ref.delete().then(() => {
+                console.log("Platillo borrado exitosamente");
+              }).catch((error) => {
+                console.error("Error al eliminar el platillo:", error);
+              });
+            });
+        })
+        .catch((error) => {
+          console.error("Error al eliminar el platillo: ", error);
+        });
+        
+        location.reload(true);
     }
   }
 

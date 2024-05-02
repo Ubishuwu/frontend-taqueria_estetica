@@ -61,10 +61,10 @@
         class="drawer-overlay"
       ></label>
       <ul class="menu p-4 w-60 min-h-full bg-base-200 text-base-content">
-        <!-- Sidebar content here -->
-        <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li>
-        <li @click="showComponent = 'Main'"><a>Página Principal</a></li>
-        <li @click="showComponent = 'Productos'"><a>Inventario</a></li>
+        <!-- Sidebar content here 
+        <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li> 
+        <li @click="showComponent = 'Main'"><a>Página Principal</a></li>-->
+        <li @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
         <li @click="showComponent = 'Personal'"><a>Empleados</a></li>
         <li @click="showComponent = 'Cocina'"><a>Cocina</a></li>
         <li @click="showComponent = 'Servicios'"><a>Servicios</a></li>

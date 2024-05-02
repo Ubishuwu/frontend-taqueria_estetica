@@ -64,10 +64,11 @@
         <!-- Sidebar content here 
         <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li> 
         <li @click="showComponent = 'Main'"><a>Página Principal</a></li>-->
-        <li @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
-        <li @click="showComponent = 'Personal'"><a>Empleados</a></li>
-        <li @click="showComponent = 'Cocina'"><a>Cocina</a></li>
-        <li @click="showComponent = 'Servicios'"><a>Servicios</a></li>
+        
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'"  @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'" @click="showComponent = 'Personal'"><a>Empleados</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Cocina' || this.usuario.rol == 'Gerente'" @click="showComponent = 'Cocina'"><a>Cocina</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'" @click="showComponent = 'Servicios'"><a>Servicios</a></li>
       </ul>
     </div>
   </div>
@@ -80,6 +81,9 @@ import Productos from "./Inventario/Productos.vue";
 import Personal from "./Inventario/Personal.vue";
 import Cocina from "./Inventario/Cocina.vue";
 import Servicios from "./Inventario/Servicios.vue";
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../../firebase/firebaseInit"
 
 export default {
   components: {
@@ -93,8 +97,13 @@ export default {
   data() {
     return {
       showComponent: "Main",
+      usuario: null
     };
   },
+  async created() {
+        this.usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
+        console.log(this.usuario);
+    },
 };
 </script>
 

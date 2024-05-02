@@ -60,6 +60,7 @@
             <th class="hidden min-[580px]:table-cell ">Proveedor</th>
             <th>Sucursal</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -84,13 +85,15 @@
                 <p class="text-white">{{ prod.inventarioActual }}</p>
               </div>
             </td>
-
             <td class="hidden min-[580px]:table-cell "> {{ prod.proveedor }}</td>
-            <th>{{ prod.sucursal }}</th>
-            <th>
-              <button class="btn btn-ghost btn-xs" onclick="detalle.showModal()"
+            <td class="hidden min-[580px]:table-cell">{{ prod.sucursal }}</td>
+            <td>
+              <button class="btn btn-neutral btn-xs" onclick="detalle.showModal()"
                 @click="nuevoDetalle(prod)">Detalles</button>
-            </th>
+            </td>
+            <td>
+              <button class="btn btn-error btn-xs" @click="borrarProducto(prod.nombre)">Eliminar</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -150,7 +153,7 @@
           </div>
           <div class="flex justify-between md:flex-row flex-col">
             <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">comentarios:</h2>
+              <h2 class="font-bold text-lg mr-2">Comentarios:</h2>
               <h3 class="font-normal text-lg">{{ detalles.comentario }}
               </h3>
             </label>
@@ -199,12 +202,23 @@ export default {
       }
       this.productos.push(data)
     })
-
-
   },
   methods: {
     nuevoDetalle(item) {
       this.detalles = item;
+    },
+    borrarProducto(nombreProducto) {
+      db.collection('productos').where('nombre', '==', nombreProducto).get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            doc.ref.delete();
+          });
+        })
+        .catch((error) => {
+          console.error("Error al eliminar el producto: ", error);
+        });
+
+        location.reload(true);
     }
   }
 }

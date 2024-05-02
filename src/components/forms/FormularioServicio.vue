@@ -32,8 +32,11 @@
                     class="input input-bordered w-full" />
             </label>
             <div class="border-y-2 border-gray-400 my-4 flex flex-col">
+                <div class="label">
+                            <span class="label-text font-bold">Agregar productos:</span>
+                        </div>
                 <div class="flex flex-nowrap">
-
+                    
                     <label class="flex m-2 items-center grow">
                         <div class="label">
                             <span class="label-text">Producto:</span>
@@ -81,7 +84,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Error al guardar.. intente denuevo</span>
+                    <span>Error al guardar... intente denuevo</span>
                 </div>
             </div>
 
@@ -202,15 +205,7 @@ export default {
         },
         change(e) {
             this.imagen = e.target.files[0];
-            console.log(this.imagen)/*
-            const refImg = ref.child("imagenes/" + this.nombre + ".jpg");
-            const metadata = {
-                contentType: 'img/jpeg'
-            }
-            refImg.put(this.imagen, metadata)
-                .then((e) => {
-                    console.log(e)
-                })*/
+            console.log(this.imagen)
         }
     },
 

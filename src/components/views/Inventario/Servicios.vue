@@ -6,10 +6,10 @@
         <div class="label">
           <span class="label-text">Ordenar por</span>
         </div>
-        <select class="select select-sm select-bordered">
+        <select class="select select-sm select-bordered" >
           <option>Nombre</option>
-          <option>Inventario</option>
-          <option>Sucursal</option>
+          <option>Precio mayor a menor</option>
+          <option>Precio menor a mayor</option>
         </select>
       </label>
 
@@ -24,14 +24,15 @@
       </div>
     </dialog>
   </div>
-  <div class="overflow-x-auto mt-5">
+  <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
     <table class="table">
       <!-- head -->
-      <thead>
+      <thead class="sticky top-0 bg-gray-100">
         <tr>
           <th>Nombre</th>
           <th>Tipo de Servicio</th>
           <th>Precio</th>
+          <th></th>
           <th></th>
         </tr>
       </thead>
@@ -42,7 +43,7 @@
               <div class="avatar">
                 <div class="mask mask-squircle w-12 h-12">
                   <img :src="serv.imagen"
-                    alt="Avatar Tailwind CSS Component" id="myimg" />
+                    alt="Imagen Serv." id="myimg" />
                 </div>
               </div>
               <div class="font-bold">{{ serv.nombre }}</div>
@@ -52,13 +53,81 @@
             <div class="text-sm opacity-50">{{ serv.tipo }}</div>
           </td>
           <td>{{ serv.precio }}</td>
-          <th>
-            <button class="btn btn-ghost btn-xs">Detalles</button>
-          </th>
+          <td>
+              <button class="btn btn-neutral btn-xs" onclick="detalle.showModal()"
+                @click="nuevoDetalle(serv)">Detalles</button>
+            </td>
+            <td>
+              <button class="btn btn-error btn-xs" @click="eliminarServicio(serv.nombre)">Eliminar</button>
+            </td>
         </tr>
       </tbody>
     </table>
   </div>
+
+   <!---VIsta de detalles-->
+   <dialog id="detalle" class="modal w-4/5 ">
+    <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[100vh] w-full">
+      <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full p-3">
+
+          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">Datos del Servicio</span>
+          <div class="flex justify-between md:flex-row flex-col">
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Nombre:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.nombre }}</h3>
+            </label>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Precio:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.precio }}</h3>
+            </label>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Medida:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.medida }}</h3>
+            </label>
+          </div>
+          <div class="flex justify-between md:flex-row flex-col">
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Stock Actual:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.inventarioActual }}</h3>
+            </label>
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Stock Minimo:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.inventarioMinimo }}</h3>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col w-full p-3 pt-0">
+          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">
+            Detalles</span>
+          <div class="flex justify-between md:flex-row flex-col">
+
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Sucursal:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.sucursal }}</h3>
+            </label>
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Proveedor:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.proveedor }}</h3>
+            </label>
+          </div>
+          <div class="flex justify-between md:flex-row flex-col">
+            <label class="flex flex-nowrap m-2">
+              <h2 class="font-bold text-lg mr-2">Comentarios:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.comentario }}
+              </h3>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </template>
 <script>
 
@@ -73,7 +142,8 @@ export default {
 
   data() {
     return {
-      servicios: [{imag:"https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"}]
+      servicios: [],
+      detalles: {}
     };
   },
   components: {
@@ -95,6 +165,9 @@ export default {
     })
   },
   methods: {
+    nuevoDetalle(item) {
+      this.detalles = item;
+    },
     async recuperarItems(data) {
       const auxIng = [];
       //console.log(data);
@@ -118,6 +191,22 @@ export default {
       //console.log(auxIng)
 
       return auxIng;
+    },
+    eliminarServicio(nombreServicio) {
+      db.collection('servicios').where('nombre', '==', nombreServicio).get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            doc.ref.delete();
+          });
+        })
+        .catch((error) => {
+          console.error("Error al eliminar el servicio: ", error);
+        });
+
+        location.reload(true);
+    },
+    ordenar(opcion){
+      console.log(opcion);
     }
   }
 }

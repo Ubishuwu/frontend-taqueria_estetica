@@ -6,7 +6,7 @@
         <div class="label">
           <span class="label-text">Ordenar por</span>
         </div>
-        <select class="select select-sm select-bordered" >
+        <select @change="ordenar($event.target.value)" class="select select-sm select-bordered" >
           <option>Nombre</option>
           <option>Precio mayor a menor</option>
           <option>Precio menor a mayor</option>
@@ -24,10 +24,10 @@
       </div>
     </dialog>
   </div>
-  <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
+  <div class="overflow-x-auto mt-5">
     <table class="table">
       <!-- head -->
-      <thead class="sticky top-0 bg-gray-100">
+      <thead class="sticky z-10 top-0 bg-gray-100">
         <tr>
           <th>Nombre</th>
           <th>Tipo de Servicio</th>
@@ -195,19 +195,38 @@ export default {
     eliminarServicio(nombreServicio) {
       db.collection('servicios').where('nombre', '==', nombreServicio).get()
         .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            doc.ref.delete();
-          });
+            querySnapshot.forEach((doc) => {
+              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+              imagenRef.delete().then(() => {
+                console.log("Imagen borrada");
+              }).catch((error) => {
+                console.error("Error al borrar la imagen: ", error);
+              });
+
+              doc.ref.delete().then(() => {
+                console.log("Servicio borrado exitosamente");
+              }).catch((error) => {
+                console.error("Error al eliminar el servicio:", error);
+              });
+            });
         })
         .catch((error) => {
           console.error("Error al eliminar el servicio: ", error);
         });
-
+        
         location.reload(true);
     },
     ordenar(opcion){
-      console.log(opcion);
-    }
+        console.log(opcion)
+        if (opcion === 'Nombre') {
+          this.servicios.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        } else if (opcion === 'Precio mayor a menor') {
+          this.servicios.sort((a, b) => b.precio - a.precio);
+        } else if (opcion === 'Precio menor a mayor') {
+          this.servicios.sort((a, b) => a.precio - b.precio);
+        }
+        this.$forceUpdate();
+      }
   }
 }
 </script>

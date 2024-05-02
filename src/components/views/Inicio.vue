@@ -1,8 +1,8 @@
 <template>
     <div class="w-full h-full flex">
 
-        <div class="fixed h-screen w-full bg-cover z-0" style="background-image: url('../src/assets/fondo.png')"></div>
-        <div class="h-full w-full z-50 bg-none">
+        <div class="fixed h-screen w-full bg-cover -z-50" style="background-image: url('../src/assets/fondo.png')"></div>
+        <div class="h-full w-full bg-none">
 
             <button class="btn hidden" onclick="formulario.showModal()">open modal</button>
 

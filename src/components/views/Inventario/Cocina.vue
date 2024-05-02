@@ -17,10 +17,10 @@
     </div>
 
     <!---Tabla-->
-    <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
+    <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))] min-h-72">
       <table class="table border-collapse">
         <!-- head -->
-        <thead class="sticky top-0 bg-gray-100">
+        <thead class="sticky z-10 top-0 bg-gray-100">
           <tr>
             <th>Nombre</th>
             <th class="hidden min-[520px]:table-cell ">Precio</th>

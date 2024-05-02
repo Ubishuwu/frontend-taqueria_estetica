@@ -75,12 +75,19 @@
                 </div>
                 <input v-model="inventarioactual" type="number" class="input input-bordered w-full" required />
             </label>
+            <label class="form-control w-full ">
+                <div class="label">
+                    <span class="label-text font-bold">Imagen</span>
+                </div>
+                <input @change="cambioImagen($event)" type="file" id="imagen" accept="image/*"
+                    class="input input-bordered w-full" />
+            </label>
             <label class="form-control">
                 <div class="label">
                     <span class="label-text font-bold">Descripción (opcional)</span>
                 </div>
                 <textarea v-model="comentario" class="textarea textarea-bordered h-24"
-                    placeholder="Este ingrediente solo se compra en temporada de verano......."></textarea>
+                    placeholder="Este ingrediente solo se compra en temporada de verano..."></textarea>
             </label>
             <label class="form-control w-full mt-5">
                 <button class="btn" type="submit" @click.prevent="save">Registrar</button>
@@ -97,6 +104,8 @@ import { required, decimal, minValue } from '@vuelidate/validators'
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
+import { storage } from '../../firebase/firebaseInit';
+const ref = storage.ref();
 
 export default {
     setup: () => ({ v$: useVuelidate() }),
@@ -114,6 +123,7 @@ export default {
             validNombre: true,
             isForSell: false,
             valido: true,
+            imagen: "",
         }
     },
     validations: {
@@ -128,15 +138,25 @@ export default {
     },
     methods: {
         async save() {
-            this.valido = await this.v$.$validate()
+            const validNombre = await this.v$.nombre.$validate();
+            const validTipo = await this.v$.tipo.$validate();
+            const validPrecio = await this.v$.precio.$validate();
 
-            //  console.log(this.nombre);
-            //    const validNombre = await this.v$.nombre.$validate();
-            //     console.log(validNombre)
-            if (this.valido) {
+            if (validNombre && validTipo && validPrecio) {
 
                 const dataBase = db.collection("productos").doc();
-                await dataBase.set({
+                
+                const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+                const metadata = {
+                    contentType: 'img/jpeg'
+                }
+                try{
+                    await refImg.put(this.imagen, metadata);
+                    const downloadURL = await refImg.getDownloadURL();
+                    //console.log('URL de descarga:', downloadURL);
+                    console.log('Archivo cargado exitosamente')
+                   
+                    await dataBase.set({
                     nombre: this.nombre,
                     tipo: this.tipo,
                     proveedor: this.proveedor,
@@ -146,11 +166,18 @@ export default {
                     sucursal: this.sucursal,
                     precio: this.precio,
                     comentario: this.comentario,
+                    imagen: downloadURL,
                 })
+                } catch (error) {
+                    console.error('Error al cargar el archivo:', error);
+                    errorEnvio = true;
+                }
+                
+                await this.$nextTick();
                 location.reload();
+
             }else{
                 await this.$nextTick();
-
                 const sectionElement = this.$refs.error;
                 sectionElement.scrollIntoView({ behavior: 'smooth' });
 
@@ -159,6 +186,10 @@ export default {
         change() {
             console.log(this.tipo)
             this.tipo == "De venta" ? this.isForSell = true : this.isForSell = false
+        },
+        cambioImagen(e) {
+            this.imagen = e.target.files[0];
+            console.log(this.imagen)
         }
     }
 }

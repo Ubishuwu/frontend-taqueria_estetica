@@ -128,7 +128,7 @@ export default {
     validations: {
         nombre: { required },
         tipo: { required },
-        precio: { required, minValue: minValue(0) },
+        precio: { required, decimal, minValue: minValue(0) },
         cantidad: { required, decimal },
         producto: { required }
     },
@@ -192,8 +192,6 @@ export default {
                     })
 
                     await this.$nextTick();
-
-
                     location.reload(true);
                 } catch (error) {
                     console.error('Error al cargar el archivo:', error);

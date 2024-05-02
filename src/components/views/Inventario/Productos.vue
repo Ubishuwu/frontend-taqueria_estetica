@@ -29,9 +29,10 @@
           <div class="label">
             <span class="label-text">Ordenar por</span>
           </div>
-          <select class="select select-sm select-bordered">
+          <select @change="ordenar($event.target.value)" class="select select-sm select-bordered">
             <option>Nombre</option>
-            <option>Inventario</option>
+            <option>Inventario mayor a menor</option>
+            <option>Inventario menor a mayor</option>
             <option>Sucursal</option>
           </select>
         </label>
@@ -49,10 +50,10 @@
     </div>
 
 
-    <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))]">
+    <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))] min-h-72  ">
       <table class="table">
         <!-- head -->
-        <thead class="sticky top-0 bg-gray-100">
+        <thead class="sticky z-10 top-0 bg-gray-100">
           <tr>
             <th>Nombre</th>
             <th class="hidden min-[650px]:table-cell ">Medida</th>
@@ -66,19 +67,18 @@
         <tbody>
           <tr v-for="prod in productos">
             <td>
-              <div class="flex items-center gap-3">
-                <div class="avatar">
-                  <div class="mask mask-squircle w-12 h-12">
-                    <img src="https://www.agrorganicos.mx/cdn/shop/products/cilantro_1080x.jpg?v=1556947270"
-                      alt="Avatar Tailwind CSS Component" />
-                  </div>
-                </div>
-                <div>
-                  <div class="font-bold">{{ prod.nombre }}</div>
-                  <div class="text-sm opacity-50">{{ prod.tipo }}</div>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="mask mask-squircle w-12 h-12">
+                  <img :src="prod.imagen"
+                    alt="Imagen Prod." id="myimg" />
                 </div>
               </div>
-            </td>
+                  <div class="font-bold">{{ prod.nombre }}</div>
+                  <div class="text-sm opacity-50">{{ prod.tipo }}</div>
+            </div>
+          </td>
+
             <td class="hidden min-[650px]:table-cell ">{{ prod.medida }}</td>
             <td class="hidden min-[520px]:table-cell ">
               <div class="badge badge-success">
@@ -198,7 +198,8 @@ export default {
         tipo: doc.data().tipo,
         sucursal: doc.data().sucursal,
         comentario: doc.data().comentario,
-        precio: doc.data().precio
+        precio: doc.data().precio,
+        imagen: doc.data().imagen
       }
       this.productos.push(data)
     })
@@ -209,17 +210,43 @@ export default {
     },
     borrarProducto(nombreProducto) {
       db.collection('productos').where('nombre', '==', nombreProducto).get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            doc.ref.delete();
-          });
+      .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+              imagenRef.delete().then(() => {
+                console.log("Imagen borrada");
+              }).catch((error) => {
+                console.error("Error al borrar la imagen: ", error);
+              });
+
+              doc.ref.delete().then(() => {
+                console.log("Producto borrado exitosamente");
+              }).catch((error) => {
+                console.error("Error al eliminar el producto:", error);
+              });
+            });
         })
         .catch((error) => {
           console.error("Error al eliminar el producto: ", error);
         });
 
         location.reload(true);
-    }
+    },
+    ordenar(opcion){
+        console.log(opcion)
+        if (opcion === 'Nombre') {
+          this.productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        } else if (opcion === 'Sucursal') {
+          this.productos.sort((a, b) => a.sucursal.localeCompare(b.nombre));
+        } else if (opcion === 'Inventario menor a mayor') {
+          this.productos.sort((a, b) => a.inventarioActual - b.inventarioActual);
+        } else if (opcion === 'Inventario mayor a menor') {
+          this.productos.sort((a, b) => b.inventarioActual - a.inventarioActual);
+        }
+
+        //console.log(this.productos)
+        this.$forceUpdate();
+      }
   }
 }
 </script>

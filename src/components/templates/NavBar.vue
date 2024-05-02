@@ -156,7 +156,6 @@
                         <!----{{ ruta[Object.keys(ruta)[0]] }}    para optener el rol-->
                     </a>
                 </RouterLink>
-
             </div>
         </div>
     </nav>
@@ -186,7 +185,7 @@ export default {
                 ///agregar las rutas
                 Inicio: { "/inicio": "rol" },
                 Caja: { "/caja": "rol" },
-                Inventario: { "/inventario": "rol" },
+                Servicios: { "/inventario": "rol" },
             },
             rutasUser: {
                 ///rutas para configuracion o que tenga q ver con usuario

@@ -126,7 +126,7 @@
                 </div>
               </div>
 
-              
+
             </div>
           </div>
 
@@ -181,7 +181,6 @@ export default {
         nombre: doc.data().nombre,
         precio: doc.data().precio,
         tipo: doc.data().tipo,
-        ingreu: doc.data().ingredientes,
         ingredientes: await this.ingredientes(doc.data().ingredientes),
         comentario: doc.data().comentario,
         id: doc.id,
@@ -193,23 +192,23 @@ export default {
   methods: {
     async ingredientes(datos) {
       const auxIng = [];
-console.log(datos);
+      console.log(datos);
       for (const ing of datos) {
         try {
-         //const dat = db.collection('productos').doc(ing.producto);
-        // const producto = ing.producto;
+          //const dat = db.collection('productos').doc(ing.producto);
+          // const producto = ing.producto;
 
-         //console.log(producto);
-         //console.log(ing.cantidad);
+          //console.log(producto);
+          //console.log(ing.cantidad);
 
-         const dato = await ing.producto.get();
-         //console.log("este es el dato optenido");
+          const dato = await ing.producto.get();
+          //console.log("este es el dato optenido");
           //const result = await dat.get();
           //console.log(dato.data());
 
           if (dato.exists) {
             //const ingrediente = { producto: result.data(), cantidad: ing.cantidad};
-            const ingrediente = { producto: dato.data(), cantidad: ing.cantidad};
+            const ingrediente = { producto: dato.data(), cantidad: ing.cantidad };
             auxIng.push(ingrediente);
           } else {
             console.log(`El documento con ID ${ing.producto} no existe.`);

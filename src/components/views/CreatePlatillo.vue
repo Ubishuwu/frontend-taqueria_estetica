@@ -68,14 +68,15 @@
           <li>
             <h2 class="menu-title">Ingredientes</h2>
             <ul>
-              <li v-for="ingrediente in ingredientes" :key="ingrediente.producto.id" class="flex flex-row justify-between">
-                <div  class="flex flex-row justify-between grow">
+              <li v-for="ingrediente in ingredientes" :key="ingrediente.producto.id"
+                class="flex flex-row justify-between">
+                <div class="flex flex-row justify-between grow">
 
                   <div>{{ ingrediente.producto.nombre }}</div>
 
                   <div>{{ ingrediente.cantidad }}</div>
-                </div>  
-                  <button @click="eliminar(ingrediente)">x</button>
+                </div>
+                <button @click="eliminar(ingrediente)">x</button>
               </li>
             </ul>
           </li>
@@ -127,8 +128,9 @@ export default {
 
   },
   methods: {
-    eliminar(item){
-      this.ingredientes.pop(item);
+    eliminar(item) {
+      const nuevaLista = this.ingredientes.filter((items) => items !== item);
+      this.ingredientes = nuevaLista;
     },
     async next() {
       const vefNomb = await this.v$.nombre.$validate();
@@ -194,7 +196,7 @@ export default {
         sucursal: doc.data().sucursal,
         id: doc.id,
       }
-      if (data.tipo == "Ingrediente") {
+      if (data.tipo == "Ingrediente" && data.sucursal == "Taqueria") {
         this.productos.push(data)
       }
 

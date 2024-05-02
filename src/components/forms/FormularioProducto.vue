@@ -120,7 +120,7 @@ export default {
         nombre: { required },
         tipo: { required },
         proveedor: { required },
-        medidad: { required },
+        medida: { required },
         inventariominimo: { required, decimal, minValue: minValue(0) },
         inventarioactual: { required, decimal, minValue: minValue(0) },
         sucursal: { required },

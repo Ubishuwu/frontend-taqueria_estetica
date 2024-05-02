@@ -175,31 +175,41 @@ export default {
   async created() {
     const dataBase = await db.collection('platillos');
     const dbResults = await dataBase.get();
-    console.log(dbResults)
+    console.log(dbResults.docs)
     dbResults.forEach(async (doc) => {
-      //for (const doc of dbResults) {
       const data = {
         nombre: doc.data().nombre,
         precio: doc.data().precio,
         tipo: doc.data().tipo,
+        ingreu: doc.data().ingredientes,
         ingredientes: await this.ingredientes(doc.data().ingredientes),
         comentario: doc.data().comentario,
+        id: doc.id,
       }
+      console.log(data)
       this.cocina.push(data)
     })
   },
   methods: {
     async ingredientes(datos) {
       const auxIng = [];
-
+console.log(datos);
       for (const ing of datos) {
         try {
-          const dat = db.collection('productos').doc(ing.producto);
-          const result = await dat.get();
-          console.log(result.data());
+         //const dat = db.collection('productos').doc(ing.producto);
+        // const producto = ing.producto;
 
-          if (result.exists) {
-            const ingrediente = { producto: result.data(), cantidad: ing.cantidad };
+         //console.log(producto);
+         //console.log(ing.cantidad);
+
+         const dato = await ing.producto.get();
+         //console.log("este es el dato optenido");
+          //const result = await dat.get();
+          //console.log(dato.data());
+
+          if (dato.exists) {
+            //const ingrediente = { producto: result.data(), cantidad: ing.cantidad};
+            const ingrediente = { producto: dato.data(), cantidad: ing.cantidad};
             auxIng.push(ingrediente);
           } else {
             console.log(`El documento con ID ${ing.producto} no existe.`);
@@ -209,7 +219,7 @@ export default {
         }
       }
 
-      console.log(auxIng)
+      //console.log(auxIng)
 
       return auxIng;
     },

@@ -229,7 +229,7 @@ export default {
         .catch((error) => {
           console.error("Error al eliminar el producto: ", error);
         });
-
+        
         location.reload(true);
     },
     ordenar(opcion){

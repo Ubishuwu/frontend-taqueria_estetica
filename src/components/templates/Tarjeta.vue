@@ -83,13 +83,10 @@
         <button @click="aumentar()" id="der">+</button>
       </div>
 
-      <img
-        class="imag border-2 border-accent shadow-sm"
-        ref="imag"
-        @click="activar()"
-        :src="`../src/assets/${producto.tipo}.png`"
-        :alt="`${producto.tipo}`"
-      />
+      <img class="imag border-2 border-accent shadow-sm" ref="imag"
+      @click="activar()"
+      :src="producto.imagen"
+                    alt="Imagen Prod.Serv." />
       <div class="data" ref="data" @click="activar()">
         <h2>{{ producto.nombre }}</h2>
         <p class="tipo">{{ producto.tipo }}</p>

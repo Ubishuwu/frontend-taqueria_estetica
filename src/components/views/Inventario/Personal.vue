@@ -27,7 +27,10 @@
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <div class="mask mask-squircle w-12 h-12 ">
-                                        <img :src="'../src/assets/miku.png'" alt="Avatar Tailwind CSS Component" class=""/>
+                                        <img v-if="user.imagen" class="h-8 w-8 rounded-full object-cover "
+                                        :src="user.imagen" alt="">
+                                        <img v-else :src="'../src/assets/user.png'" alt="Avatar Tailwind CSS Component" class=""/>
+                                        
                                     </div>
                                 </div>
                                 <div>
@@ -194,6 +197,7 @@ export default {
                 rol: doc.data().rol,
                 sueldo: doc.data().sueldo,
                 sucursal: doc.data().sucursal,
+                imagen: doc.data().imagen,
             }
             this.empleados.push(data)
         })

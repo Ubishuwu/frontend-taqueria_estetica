@@ -31,9 +31,13 @@
 
                                 <!---IMAGEN-->
                                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-accent">
-                                    <img :src="`../src/assets/${item.producto.tipo}.png`"
-                                        alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
+                                   
+                                    <img v-if="item.producto.imagen" :src="item.producto.imagen" alt=""
+                                    class="h-full w-full object-cover object-center">
+                                    <img v-else :src="`../src/assets/${item.producto.tipo}.png`"
+                                        alt="Avatar Tailwind CSS Component"
                                         class="h-full w-full object-cover object-center">
+
                                 </div>
 
                                 <!---DATOS-->
@@ -121,8 +125,8 @@ export default {
             if (this.total > 0) {
                 console.log(this.total);
                 this.$emit("pagar", (this.total));
-            }else
-            console.log("no hay elementos para vender");
+            } else
+                console.log("no hay elementos para vender");
 
         },
         cancelar() {

@@ -31,6 +31,7 @@
                                 <RouterLink :to="Object.keys(ruta)[0]" class="w-full" v-for="(ruta, nombre) in rutas"
                                     :key="ruta">
                                     <button type="button"
+                                        v-if="ruta[Object.keys(ruta)[0]] == 'rol' || usuario && usuario.rol && ruta[Object.keys(ruta)[0]] && (usuario.rol).includes(ruta[Object.keys(ruta)[0]])"
                                         class="text-secondary hover:bg-primary hover:brightness-150 rounded-md px-3 py-2 text-sm font-medium"
                                         id="lista-escritorio-navbar">
                                         {{ nombre }}
@@ -106,8 +107,10 @@
 
                                         <span class="absolute -inset-1.5"></span>
                                         <span class="sr-only">Open user menu</span>
-                                        <img class="h-8 w-8 rounded-full object-cover " src="../../assets/miku.png"
-                                            alt="">
+                                        <img v-if="usuario.imagen" class="h-8 w-8 rounded-full object-cover "
+                                            :src="usuario.imagen" alt="">
+                                        <img v-else class="h-8 w-8 rounded-full object-cover "
+                                            src="../../assets/user.png" alt="">
                                         <p class="text-white text-xs mx-2">{{ this.usuario.userName }}</p>
                                     </div>
                                     <p class="text-white text-xs">{{ this.usuarioAutenticado.email }}</p>
@@ -185,7 +188,7 @@ export default {
                 ///agregar las rutas
                 Inicio: { "/inicio": "rol" },
                 Caja: { "/caja": "rol" },
-                Servicios: { "/inventario": "rol" },
+                Administrar: { "/inventario": "Gerente" },
             },
             rutasUser: {
                 ///rutas para configuracion o que tenga q ver con usuario

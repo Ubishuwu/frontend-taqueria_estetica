@@ -33,10 +33,10 @@
             </label>
             <div class="border-y-2 border-gray-400 my-4 flex flex-col">
                 <div class="label">
-                            <span class="label-text font-bold">Agregar productos:</span>
-                        </div>
+                    <span class="label-text font-bold">Agregar productos:</span>
+                </div>
                 <div class="flex flex-nowrap">
-                    
+
                     <label class="flex m-2 items-center grow">
                         <div class="label">
                             <span class="label-text">Producto:</span>
@@ -172,16 +172,18 @@ export default {
 
                 const dataBase = db.collection("servicios").doc();
 
-                const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
-                const metadata = {
-                    contentType: 'img/jpeg'
-                }
                 try {
-                    await refImg.put(this.imagen, metadata);
-                    const downloadURL = await refImg.getDownloadURL();
-                    //console.log('URL de descarga:', downloadURL);
-                    console.log('Archivo cargado exitosamente');
-
+                    const downloadURL = null;
+                    if (this.imagen != null && this.imagen != "") {
+                        const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+                        const metadata = {
+                            contentType: 'img/jpeg'
+                        }
+                        await refImg.put(this.imagen, metadata);
+                        downloadURL = await refImg.getDownloadURL();
+                        //console.log('URL de descarga:', downloadURL);
+                        console.log('Archivo cargado exitosamente');
+                    }
                     await dataBase.set({
                         nombre: this.nombre,
                         tipo: this.tipo,

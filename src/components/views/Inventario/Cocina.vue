@@ -2,7 +2,7 @@
   <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
     <div>
-      <div >
+      <div>
         <div id="main">
           <a class="btn" href="/create-platillo">Crear Platillo</a>
         </div>
@@ -30,7 +30,8 @@
               <div class="flex items-center gap-3">
                 <div class="avatar">
                   <div class="mask mask-squircle w-12 h-12">
-                    <img :src="'../src/assets/miku.png'" alt="Avatar Tailwind CSS Component" />
+                    <img v-if="plat.imagen" class="h-8 w-8 rounded-full object-cover " :src="plat.imagen" alt="">
+                    <img v-else :src="`../src/assets/${plat.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
                   </div>
                 </div>
                 <div>
@@ -147,20 +148,7 @@ export default {
 
   data() {
     return {
-      cocina: [
-        {
-          nombre: "juan",
-          precio: 55,
-          tipo: "awa",
-          ingredientes: [
-            {
-              producto: { nombre: "queso" },
-              cantidad: 5
-            }
-          ],
-          comentario: "riko"
-        },
-      ],
+      cocina: [],
       detalles: {}
     };
   },
@@ -170,7 +158,7 @@ export default {
   async created() {
     const dataBase = await db.collection('platillos');
     const dbResults = await dataBase.get();
-    console.log(dbResults.docs)
+    //console.log(dbResults.docs)
     dbResults.forEach(async (doc) => {
       const data = {
         nombre: doc.data().nombre,
@@ -180,27 +168,17 @@ export default {
         comentario: doc.data().comentario,
         id: doc.id,
       }
-      console.log(data)
+      //console.log(data)
       this.cocina.push(data)
     })
   },
   methods: {
     async ingredientes(datos) {
       const auxIng = [];
-      console.log(datos);
+      //console.log(datos);
       for (const ing of datos) {
         try {
-          //const dat = db.collection('productos').doc(ing.producto);
-          // const producto = ing.producto;
-
-          //console.log(producto);
-          //console.log(ing.cantidad);
-
           const dato = await ing.producto.get();
-          //console.log("este es el dato optenido");
-          //const result = await dat.get();
-          //console.log(dato.data());
-
           if (dato.exists) {
             //const ingrediente = { producto: result.data(), cantidad: ing.cantidad};
             const ingrediente = { producto: dato.data(), cantidad: ing.cantidad };
@@ -223,26 +201,26 @@ export default {
     eliminarPlatillo(nombrePlatillo) {
       db.collection('platillos').where('nombre', '==', nombrePlatillo).get()
         .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
-              imagenRef.delete().then(() => {
-                console.log("Imagen borrada");
-              }).catch((error) => {
-                console.error("Error al borrar la imagen: ", error);
-              });
-
-              doc.ref.delete().then(() => {
-                console.log("Platillo borrado exitosamente");
-              }).catch((error) => {
-                console.error("Error al eliminar el platillo:", error);
-              });
+          querySnapshot.forEach((doc) => {
+            const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+            imagenRef.delete().then(() => {
+              console.log("Imagen borrada");
+            }).catch((error) => {
+              console.error("Error al borrar la imagen: ", error);
             });
+
+            doc.ref.delete().then(() => {
+              console.log("Platillo borrado exitosamente");
+            }).catch((error) => {
+              console.error("Error al eliminar el platillo:", error);
+            });
+          });
         })
         .catch((error) => {
           console.error("Error al eliminar el platillo: ", error);
         });
-        
-        location.reload(true);
+
+      location.reload(true);
     }
   }
 

@@ -4,7 +4,8 @@
   </div>
   <div class="">
     <button class="btn" @click="goBack">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
       Regresar
@@ -38,12 +39,11 @@
         </select>
       </label>
       <label class="form-control w-full py-3 ">
-                <div class="label">
-                    <span class="font-medium text-lg">Imagen</span>
-                </div>
-                <input @change="change($event)" type="file" id="imagen" accept="image/*"
-                    class="input input-bordered w-full" />
-            </label>
+        <div class="label">
+          <span class="font-medium text-lg">Imagen</span>
+        </div>
+        <input @change="change($event)" type="file" id="imagen" accept="image/*" class="input input-bordered w-full" />
+      </label>
       <button class="btn py-3 w-full" @click="next">Siguiente</button>
     </form>
 
@@ -132,7 +132,7 @@ export default {
       cantidad: "",
       productos: [],
       ingredientes: [],
-      imagen:"",
+      imagen: "",
       errorEnvio: false,
     }
   },
@@ -153,8 +153,8 @@ export default {
       this.ingredientes = nuevaLista;
     },
     change(e) {
-            this.imagen = e.target.files[0];
-            console.log(this.imagen)
+      this.imagen = e.target.files[0];
+      console.log(this.imagen)
     },
     async next() {
       const vefNomb = await this.v$.nombre.$validate();
@@ -196,30 +196,33 @@ export default {
       })
       //guardarlos en la bd
       const dataBase = db.collection("platillos").doc();
-      const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
-      const metadata = {contentType: 'img/jpeg'}
-      
+
+
       try {
-        await refImg.put(this.imagen, metadata);
-        const downloadURL = await refImg.getDownloadURL();
+        const downloadURL = null;
+        if (this.imagen != null && this.imagen != "") {
+          const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+          const metadata = { contentType: 'img/jpeg' }
+          await refImg.put(this.imagen, metadata);
+          downloadURL = await refImg.getDownloadURL();
           //console.log('URL de descarga:', downloadURL);
           console.log('Archivo cargado exitosamente');
-
+        }
         await dataBase.set({
-        nombre: this.nombre,
-        tipo: this.tipo,
-        ingredientes: receta,
-        precio: this.precio,
-        imagen: downloadURL,
-      })
-      
-      await this.$nextTick();
+          nombre: this.nombre,
+          tipo: this.tipo,
+          ingredientes: receta,
+          precio: this.precio,
+          imagen: downloadURL,
+        })
 
-      this.$router.push('/inventario');
+        await this.$nextTick();
+
+        this.$router.push('/inventario');
 
       } catch (error) {
-      console.error('Error al cargar el archivo:', error);
-      errorEnvio = true;
+        console.error('Error al cargar el archivo:', error);
+        errorEnvio = true;
       }
     }
   },

@@ -6,7 +6,7 @@
         <div class="label">
           <span class="label-text">Ordenar por</span>
         </div>
-        <select @change="ordenar($event.target.value)" class="select select-sm select-bordered" >
+        <select @change="ordenar($event.target.value)" class="select select-sm select-bordered">
           <option>Nombre</option>
           <option>Precio mayor a menor</option>
           <option>Precio menor a mayor</option>
@@ -42,8 +42,8 @@
             <div class="flex items-center gap-3">
               <div class="avatar">
                 <div class="mask mask-squircle w-12 h-12">
-                  <img :src="serv.imagen"
-                    alt="Imagen Serv." id="myimg" />
+                  <img v-if="serv.imagen" class="h-8 w-8 rounded-full object-cover " :src="serv.imagen" alt="">
+                  <img v-else :src="`../src/assets/${serv.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
                 </div>
               </div>
               <div class="font-bold">{{ serv.nombre }}</div>
@@ -54,19 +54,19 @@
           </td>
           <td>{{ serv.precio }}</td>
           <td>
-              <button class="btn btn-neutral btn-xs" onclick="detalle.showModal()"
-                @click="nuevoDetalle(serv)">Detalles</button>
-            </td>
-            <td>
-              <button class="btn btn-error btn-xs" @click="eliminarServicio(serv.nombre)">Eliminar</button>
-            </td>
+            <button class="btn btn-neutral btn-xs" onclick="detalle.showModal()"
+              @click="nuevoDetalle(serv)">Detalles</button>
+          </td>
+          <td>
+            <button class="btn btn-error btn-xs" @click="eliminarServicio(serv.nombre)">Eliminar</button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-   <!---VIsta de detalles-->
-   <dialog id="detalle" class="modal w-4/5 ">
+  <!---VIsta de detalles-->
+  <dialog id="detalle" class="modal w-4/5 ">
     <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[100vh] w-full">
       <div class="flex flex-col w-full">
         <div class="flex flex-col w-full p-3">
@@ -195,38 +195,38 @@ export default {
     eliminarServicio(nombreServicio) {
       db.collection('servicios').where('nombre', '==', nombreServicio).get()
         .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
-              imagenRef.delete().then(() => {
-                console.log("Imagen borrada");
-              }).catch((error) => {
-                console.error("Error al borrar la imagen: ", error);
-              });
-
-              doc.ref.delete().then(() => {
-                console.log("Servicio borrado exitosamente");
-              }).catch((error) => {
-                console.error("Error al eliminar el servicio:", error);
-              });
+          querySnapshot.forEach((doc) => {
+            const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+            imagenRef.delete().then(() => {
+              console.log("Imagen borrada");
+            }).catch((error) => {
+              console.error("Error al borrar la imagen: ", error);
             });
+
+            doc.ref.delete().then(() => {
+              console.log("Servicio borrado exitosamente");
+            }).catch((error) => {
+              console.error("Error al eliminar el servicio:", error);
+            });
+          });
         })
         .catch((error) => {
           console.error("Error al eliminar el servicio: ", error);
         });
-        
-        location.reload(true);
+
+      location.reload(true);
     },
-    ordenar(opcion){
-        console.log(opcion)
-        if (opcion === 'Nombre') {
-          this.servicios.sort((a, b) => a.nombre.localeCompare(b.nombre));
-        } else if (opcion === 'Precio mayor a menor') {
-          this.servicios.sort((a, b) => b.precio - a.precio);
-        } else if (opcion === 'Precio menor a mayor') {
-          this.servicios.sort((a, b) => a.precio - b.precio);
-        }
-        this.$forceUpdate();
+    ordenar(opcion) {
+      console.log(opcion)
+      if (opcion === 'Nombre') {
+        this.servicios.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      } else if (opcion === 'Precio mayor a menor') {
+        this.servicios.sort((a, b) => b.precio - a.precio);
+      } else if (opcion === 'Precio menor a mayor') {
+        this.servicios.sort((a, b) => a.precio - b.precio);
       }
+      this.$forceUpdate();
+    }
   }
 }
 </script>

@@ -70,8 +70,9 @@
             <div class="flex items-center gap-3">
               <div class="avatar">
                 <div class="mask mask-squircle w-12 h-12">
-                  <img :src="prod.imagen"
-                    alt="Imagen Prod." id="myimg" />
+                  <img v-if="prod.imagen" class="h-8 w-8 rounded-full object-cover " :src="prod.imagen" alt="">
+                    <img v-else :src="`../src/assets/${prod.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
+                  
                 </div>
               </div>
                   <div class="font-bold">{{ prod.nombre }}</div>

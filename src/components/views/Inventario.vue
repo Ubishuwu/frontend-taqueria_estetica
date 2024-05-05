@@ -27,7 +27,7 @@
                 </svg>
               </label>
             </div>
-            <a class="btn btn-ghost text-xl">Inventario</a>
+            <a class="btn btn-ghost text-xl">{{showComponent}}</a>
           </div>
           <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
@@ -50,7 +50,7 @@
       <!--End Navbar-->
 
       <!--Content-->
-      <div class="m-5">
+      <div class="m-5 lg:ml-60 ml-5">
         <component :is="showComponent" />
       </div>
     </div>
@@ -60,22 +60,23 @@
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu p-4 w-60 min-h-full bg-base-200 text-base-content mt-16 xl:mt-0">
+      <ul class="fixed menu p-4 w-56 min-h-full bg-base-200 text-base-content mt-16 lg:mt-0">
         <!-- Sidebar content here 
         <li><a href="/"><font-awesome-icon :icon="['fas', 'arrow-left']" />Back</a></li> 
-        <li @click="showComponent = 'Main'"><a>Página Principal</a></li>-->
+      -->
+        <li @click="showComponent = 'Main'"><a>Reportes</a></li>
         
-        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'"  @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
-        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'" @click="showComponent = 'Personal'"><a>Empleados</a></li>
-        <li v-if="this.usuario != null && this.usuario.rol == 'Cocina' || this.usuario.rol == 'Gerente'" @click="showComponent = 'Cocina'"><a>Cocina</a></li>
-        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente'" @click="showComponent = 'Servicios'"><a>Servicios</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente General'"  @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente General'" @click="showComponent = 'Personal'"><a>Empleados</a></li>
+        <li v-if="this.usuario != null && (this.usuario.rol == 'Gerente Taqueria' || this.usuario.rol == 'Gerente General')" @click="showComponent = 'Cocina'"><a>Cocina</a></li>
+        <li v-if="this.usuario != null && (this.usuario.rol == 'Gerente Barberia' || this.usuario.rol == 'Gerente General')" @click="showComponent = 'Servicios'"><a>Servicios</a></li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-import Main from "./Inventario/Main.vue";
+import Main from "./Inventario/Main.vue" ;
 import Reportes from "./Inventario/Reportes.vue";
 import Productos from "./Inventario/Productos.vue";
 import Personal from "./Inventario/Personal.vue";
@@ -103,7 +104,10 @@ export default {
   async created() {
         this.usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
         console.log(this.usuario);
+        console.log(firebase.auth())
     },
+    methods:{
+    }
 };
 </script>
 

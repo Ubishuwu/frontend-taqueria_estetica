@@ -20,11 +20,22 @@
             </label>
             <label class="form-control w-full max-w-xs">
                 <div class="label">
+                    <span class="label-text font-bold">Sucursal</span>
+                </div>
+                <select v-model="sucursal" class="select select-bordered" v-on:change.prevent="cambiarTipo">
+                    <option disabled selected>Selecciona una</option>
+                    <option>Taqueria</option>
+                    <option>Barberia</option>
+                </select>
+            </label>
+            <label class="form-control w-full max-w-xs">
+                <div class="label">
                     <span class="label-text font-bold">Tipo de producto</span>
                 </div>
                 <select v-on:change.prevent="change" v-model="tipo" class="select select-bordered">
-                    <option selected>Ingrediente</option>
-                    <option>De venta</option>
+                    <option v-if="tipos.length == 0" disabled selected>Selecciona una Sucursal</option>
+                    <option v-else disabled selected>Selecciona una</option>
+                    <option v-for="tipo in tipos">{{ tipo }}</option>
                 </select>
             </label>
             <label class="form-control w-full ">
@@ -51,16 +62,6 @@
                     <option>Miligramo</option>
                     <option>Bulto</option>
                     <option>Unidad</option>
-                </select>
-            </label>
-            <label class="form-control w-full max-w-xs">
-                <div class="label">
-                    <span class="label-text font-bold">Sucursal</span>
-                </div>
-                <select v-model="sucursal" class="select select-bordered">
-                    <option disabled selected>Selecciona una</option>
-                    <option>Taqueria</option>
-                    <option>Barberia</option>
                 </select>
             </label>
             <label class="form-control w-full ">
@@ -124,6 +125,7 @@ export default {
             isForSell: false,
             valido: true,
             imagen: "",
+            tipos: [],
         }
     },
     validations: {
@@ -137,46 +139,55 @@ export default {
         precio: { required, decimal, minValue: minValue(0) }
     },
     methods: {
+        cambiarTipo() {
+            if (this.sucursal == "Taqueria")
+                this.tipos = ["Ingrediente", "De Venta"]
+            if (this.sucursal == "Barberia")
+                this.tipos = ["Producto"]
+        }
+        ,
         async save() {
             const validNombre = await this.v$.nombre.$validate();
             const validTipo = await this.v$.tipo.$validate();
             const validPrecio = await this.v$.precio.$validate();
-
-            if (validNombre && validTipo && validPrecio) {
+            const valid = await this.v$.$validate();
+            if (validNombre && validTipo && validPrecio && valid) {
 
                 const dataBase = db.collection("productos").doc();
-                
-                const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
-                const metadata = {
-                    contentType: 'img/jpeg'
-                }
-                try{
-                    await refImg.put(this.imagen, metadata);
-                    const downloadURL = await refImg.getDownloadURL();
-                    //console.log('URL de descarga:', downloadURL);
-                    console.log('Archivo cargado exitosamente')
-                   
+
+                try {
+                    const downloadURL = null;
+                    if (this.imagen != null && this.imagen != "") {
+                        const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+                        const metadata = {
+                            contentType: 'img/jpeg'
+                        }
+                        await refImg.put(this.imagen, metadata);
+                        downloadURL = await refImg.getDownloadURL();
+                        //console.log('URL de descarga:', downloadURL);
+                        console.log('Archivo cargado exitosamente')
+                    }
                     await dataBase.set({
-                    nombre: this.nombre,
-                    tipo: this.tipo,
-                    proveedor: this.proveedor,
-                    medida: this.medida,
-                    inventarioMinimo: this.inventariominimo,
-                    inventarioActual: this.inventarioactual,
-                    sucursal: this.sucursal,
-                    precio: this.precio,
-                    comentario: this.comentario,
-                    imagen: downloadURL,
-                })
+                        nombre: this.nombre,
+                        tipo: this.tipo,
+                        proveedor: this.proveedor,
+                        medida: this.medida,
+                        inventarioMinimo: this.inventariominimo,
+                        inventarioActual: this.inventarioactual,
+                        sucursal: this.sucursal,
+                        precio: this.precio,
+                        comentario: this.comentario,
+                        imagen: downloadURL,
+                    })
                 } catch (error) {
                     console.error('Error al cargar el archivo:', error);
                     errorEnvio = true;
                 }
-                
+
                 await this.$nextTick();
                 location.reload();
 
-            }else{
+            } else {
                 await this.$nextTick();
                 const sectionElement = this.$refs.error;
                 sectionElement.scrollIntoView({ behavior: 'smooth' });

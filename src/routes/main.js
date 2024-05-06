@@ -80,6 +80,7 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
+  
   //console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
   console.log(to.path)
   if ((routes.some(route => route.path === to.path) || routes[0].children.some(rute => ('/' + rute.path) === to.path)))

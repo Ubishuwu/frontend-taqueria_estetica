@@ -6,7 +6,7 @@
       </div>
       <div class="stat-title">Ventas</div>
 
-      <div class="stat-value text-primary">$20,000</div>
+      <div class="stat-value text-primary">$ {{ totalVenta }}</div>
       <div class="stat-desc text-error">
         <font-awesome-icon :icon="['fas', 'arrow-trend-down']" />
         90 (14%)
@@ -87,7 +87,8 @@ export default {
 
   data() {
     return {
-      ventas: []
+      ventas: [],
+      totalVenta: 0,
     };
   },
   methods: {
@@ -95,7 +96,7 @@ export default {
   async created() {
     const dataBase = await db.collection('ticket');
     const dbResults = await dataBase.get();
-    console.log(dbResults)
+    console.log("VENTAS", dbResults)
     dbResults.forEach(async (doc) => {
       const data = {
         dia: doc.data().dia,
@@ -106,9 +107,11 @@ export default {
         id: doc.id,
 
       }
-
+      
+      this.totalVenta += doc.data().total;
       this.ventas.push(data);
-    })
+    });
+
   },
 }
 </script>

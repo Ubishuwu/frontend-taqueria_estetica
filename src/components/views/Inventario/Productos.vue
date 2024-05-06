@@ -4,11 +4,11 @@
     <div class="flex sm:flex-row flex-col justify-between items-center">
 
       <form class="flex mt-5">
-        <label class="form-control w-full max-w-xs mr-2">
+        <label v-if="sucursalUser=='Todas'" class="form-control w-full max-w-xs mr-2">
           <div class="label">
             <span class="label-text">Sucursal</span>
           </div>
-          <select class="select select-sm select-bordered">
+          <select @change="filtrar($event.target.value)" class="select select-sm select-bordered">
             <option>Todos</option>
             <option>Taqueria El TaquerITO</option>
             <option>Estetica El cortITO</option>
@@ -180,13 +180,18 @@ export default {
   data() {
     return {
       productos: [],
-      detalles: {}
+      productosCopia: [],
+      detalles: {},
+      sucursalUser: "",
     };
   },
   components: {
     FormularioProducto,
   },
   async created() {
+    const usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
+    this.sucursalUser = usuario.sucursal;
+
     const dataBase = await db.collection('productos');
     const dbResults = await dataBase.get();
     dbResults.forEach((doc) => {
@@ -203,38 +208,21 @@ export default {
         imagen: doc.data().imagen,
         id: doc.id,
       }
-      this.productos.push(data)
+      if (this.sucursalUser == "Todas")
+        this.productos.push(data)
+      else if (this.sucursalUser == "Taqueria" && data.sucursal == "Taqueria") {
+        this.productos.push(data)
+      } else if (this.sucursalUser == "Barberia" && data.sucursal == "Barberia") {
+        this.productos.push(data)
+      }
     })
+    this.productosCopia = this.productos;
+
   },
   methods: {
     nuevoDetalle(item) {
       this.detalles = item;
     },
-    borrarProducto(nombreProducto) {
-      db.collection('productos').where('nombre', '==', nombreProducto).get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
-            imagenRef.delete().then(() => {
-              console.log("Imagen borrada");
-            }).catch((error) => {
-              console.error("Error al borrar la imagen: ", error);
-            });
-
-            doc.ref.delete().then(() => {
-              console.log("Producto borrado exitosamente");
-            }).catch((error) => {
-              console.error("Error al eliminar el producto:", error);
-            });
-          });
-        })
-        .catch((error) => {
-          console.error("Error al eliminar el producto: ", error);
-        });
-
-      location.reload(true);
-    },
-
     eliminar(prod) {
       console.log(prod.id)
 
@@ -280,6 +268,17 @@ export default {
 
       //console.log(this.productos)
       this.$forceUpdate();
+    },
+    filtrar(opcion) {
+      this.productos = this.productosCopia;
+      this.productosCopia = this.productos;
+      if (opcion == "Todos") {
+        this.productos = this.productosCopia;
+      } else if (opcion == "Taqueria El TaquerITO") {
+        this.productos = this.productos.filter(elemento => elemento.sucursal === "Taqueria");
+      } else if (opcion == "Estetica El cortITO") {
+        this.productos = this.productos.filter(elemento => elemento.sucursal === "Barberia");
+      }
     }
   }
 }

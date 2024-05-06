@@ -167,6 +167,7 @@ export default {
         tipo: doc.data().tipo,
         ingredientes: await this.ingredientes(doc.data().ingredientes),
         comentario: doc.data().comentario,
+        imagen: doc.data().imagen,
         id: doc.id,
       }
       //console.log(data)

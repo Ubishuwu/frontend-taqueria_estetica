@@ -6,9 +6,12 @@
                     <span class="label-text font-bold">Tipo de servicio</span>
                 </div>
                 <select v-model="tipo" class="select select-bordered">
-                    <option selected>Corporal</option>
-                    <option>Tratamiento de cabello</option>
-                    <option>Tratamiento de vello</option>
+                    <option selected disabled>Seleccione una</option>
+                    <option>Corte</option>
+                    <option>Manicura</option>
+                    <option>Tinte</option>
+                    <option>Depilación</option>
+                    <option>Otros</option>
                 </select>
             </label>
             <label class="form-control w-full ">
@@ -191,6 +194,8 @@ export default {
                         items: elementosUsados,
                         comentario: this.comentario,
                         imagen: downloadURL,
+                        sucursal: "Barberia",
+
                     })
 
                     await this.$nextTick();

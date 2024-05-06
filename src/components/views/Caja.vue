@@ -128,7 +128,7 @@ export default {
             pago: "",
             cambio: 0.00,
             pagomenor: false,
-            imagen:"",
+            imagen: "",
         }
     },
     components: {
@@ -163,8 +163,12 @@ export default {
             console.log("cargando Barberia")
 
             this.filtro.push(
-                'Servicios',
-                'Productos'
+                'Productos',
+                'Manicuras',
+                'Cortes',
+                'Tintes',
+                'Depilacións',
+
             );
 
             dataBase = await db.collection('servicios');
@@ -175,7 +179,8 @@ export default {
                     tipo: doc.data().tipo,
                     precio: doc.data().precio,
                     id: doc.id,
-                    imagen: doc.data().imagen
+                    imagen: doc.data().imagen,
+                    sucursal: doc.data().sucursal
                 }
 
                 servicios.push(data);
@@ -190,7 +195,10 @@ export default {
                         tipo: doc.data().tipo,
                         precio: doc.data().precio,
                         id: doc.id,
-                        imagen: doc.data().imagen
+                        imagen: doc.data().imagen,
+                        cantidad: doc.data().inventarioActual,
+                        sucursal: doc.data().sucursal
+
                     }
                     productos.push(data)
                 }
@@ -218,7 +226,9 @@ export default {
                     tipo: doc.data().tipo,
                     precio: doc.data().precio,
                     id: doc.id,
-                    imagen: doc.data().imagen
+                    imagen: doc.data().imagen,
+                    sucursal: doc.data().sucursal
+
                 }
                 platillos.push(data);
             })
@@ -232,12 +242,15 @@ export default {
                         tipo: doc.data().tipo,
                         precio: doc.data().precio,
                         id: doc.id,
-                        imagen: doc.data().imagen
+                        imagen: doc.data().imagen,
+                        cantidad: doc.data().inventarioActual,
+                        sucursal: doc.data().sucursal
+
                     }
                     productos.push(data)
                 }
             })
-            console.log(productos)
+            //console.log(productos)
 
             //this.lista_original = this.lista = [...this.lista, ...this.platillos]
 
@@ -257,18 +270,33 @@ export default {
                 const isFormCorrect = await this.v$.$validate()
                 if (isFormCorrect) {
                     if (this.pago >= this.total) {
-                        this.ventaExitosa = true;
+
                         this.cambio = this.pago - this.total;
 
                         const dataBase = db.collection("ticket").doc();
 
-                        const listacompra = [];///hacer enlace a la tabla de productos
+                        const listacompra = [];///hacer enlace a la tabla de productos, servicios o platillos vendidos
                         this.compra.forEach((item) => {
                             // console.log(item.producto.id)
-                            listacompra.push({
-                                producto: db.collection('productos').doc(item.producto.id),
-                                cantidad: item.cantidad
-                            })
+                            try {
+                                let productoCompra = "";
+                                if (item.producto.tipo == "Producto" || item.producto.tipo == "De venta")
+                                    productoCompra = db.collection('productos').doc(item.producto.id);
+                                else {
+                                    console.log(item.producto.sucursal)
+                                    if (item.producto.sucursal == "Taqueria")
+                                        productoCompra = db.collection("platillos").doc(item.producto.id);
+                                    else if (item.producto.sucursal == "Barberia")
+                                        productoCompra = db.collection("servicios").doc(item.producto.id);
+
+                                }
+                                listacompra.push({
+                                    producto: productoCompra,
+                                    cantidad: item.cantidad
+                                })
+                            } catch (error) {
+                                console.error("error al leer lista de venta", error)
+                            }
                         })
 
                         const date = new Date();
@@ -291,8 +319,46 @@ export default {
                             pagoRecibido: this.pago,
                             cambio: this.cambio,
                         })
+
                         console.log(dataBase);
 
+                        //reducir inventario
+                        listacompra.forEach(async (item) => {
+                            // console.log(item.producto.id)
+                            try {
+                                let productoCompra = await item.producto.get();
+                                console.log(productoCompra.data())
+                                if (productoCompra.data().tipo == "Producto" || productoCompra.data().tipo == "De venta") {
+                                    console.log("reduciendo Producto");
+                                    const nuevacantidad = productoCompra.data().inventarioActual - item.cantidad;
+                                    console.log(nuevacantidad);
+                                    db.collection('productos').doc(productoCompra.id).update({ inventarioActual: nuevacantidad });
+                                }
+                                else {
+                                    let productosUso = [];
+                                    if (productoCompra.data().sucursal == "Taqueria") {
+                                        console.log("reduciendo Taqueria")
+                                        productosUso = productoCompra.data().ingredientes;
+                                    }
+                                    else if (productoCompra.data().sucursal == "Barberia") {
+                                        console.log("reduciendo Barberia")
+                                        productosUso = productoCompra.data().items;
+                                    }
+                                    productosUso.forEach(async (prod) => {
+                                        console.log("reduciendo Producto", productoCompra.data().sucursal)
+                                        const producto = await prod.producto.get();
+                                        const nuevacantidad = producto.data().inventarioActual - item.cantidad * prod.cantidad;
+                                        console.log(nuevacantidad);
+                                        db.collection('productos').doc(producto.id).update({ inventarioActual: nuevacantidad });
+                                    })
+
+                                }
+                            } catch (error) {
+                                console.error("error al reducir cantidad en productos", error)
+                            }
+                        })
+
+                        this.ventaExitosa = true;
                     } else {
                         this.pagomenor = true;
                     }
@@ -433,7 +499,7 @@ export default {
         document.addEventListener('keydown', this.evitarCerrarConEsc);
         //const 
         /*sucursal = 'taqueria';
- 
+     
         if (sucursal == 'taqueria') {
             this.filtro.push(
                 'Bebidas',
@@ -445,7 +511,7 @@ export default {
                 'Servicios',
                 'Productos');
             //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista)
- 
+     
         }*/
 
         //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos

@@ -57,9 +57,10 @@
         <button @click="aumentar()" id="der">+</button>
       </div>
 
-      <img v-if="producto.imagen" :src="producto.imagen" alt="" ref="imag" @click="activar()" class="imag border-2 border-accent shadow-sm">
-      <img v-else :src="`../src/assets/${producto.tipo}.png`" ref="imag" @click="activar()" alt="Avatar Tailwind CSS Component"
-        class="imag border-2 border-accent shadow-sm" />
+      <img v-if="producto.imagen" :src="producto.imagen" alt="" ref="imag" @click="activar()"
+        class="imag border-2 border-accent shadow-sm">
+      <img v-else :src="`../src/assets/${producto.tipo}.png`" ref="imag" @click="activar()"
+        alt="Avatar Tailwind CSS Component" class="imag border-2 border-accent shadow-sm" />
 
       <div class="data" ref="data" @click="activar()">
         <h2>{{ producto.nombre }}</h2>
@@ -96,8 +97,9 @@ export default {
   mounted() {
     //console.log(this.producto.nombre, this.stock_venta)
     this.stock = this.stock_venta;
-    if (this.producto.tipo.toLowerCase() == "producto")
-      if (this.stock_venta != 0) {
+    if (this.producto.tipo == "Producto" || this.producto.tipo == "De venta")
+    if (this.stock_venta != 0) {
+        //console.log(this.producto,this.producto.cantidad,this.producto.tipo)
         this.stock_restante = this.producto.cantidad - this.stock;
       } else this.stock_restante = this.producto.cantidad;
   },
@@ -105,7 +107,7 @@ export default {
   watch: {
     stock_venta() {
       this.stock = this.stock_venta;
-      if (this.producto.tipo.toLowerCase() == "producto")
+      if (this.producto.tipo == "Producto" || this.producto.tipo == "De venta")
         if (this.stock_venta != 0) {
           this.stock_restante = this.producto.cantidad - this.stock;
         } else this.stock_restante = this.producto.cantidad;
@@ -113,7 +115,7 @@ export default {
   },
   methods: {
     activar() {
-      if (!(this.stock_restante <= 0 && this.producto.tipo == "producto")) {
+      if (!(this.stock_restante <= 0 && (this.producto.tipo == "Producto" || this.producto.tipo == "De venta"))) {
         if (!this.$refs.princi.classList.contains("activo")) {
           this.$refs.princi.classList.add("activo");
           this.$refs.ficha.classList.add("activo");
@@ -134,7 +136,7 @@ export default {
     agregar() {
       if (this.canti != 0) {
         this.stock = this.stock + this.canti;
-        if (this.producto.tipo == "producto")
+        if (this.producto.tipo == "Producto" || this.producto.tipo == "De venta")
           this.stock_restante = this.producto.cantidad - this.stock;
 
         this.$emit("carrito", {

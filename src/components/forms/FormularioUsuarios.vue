@@ -222,10 +222,9 @@
 
                                     <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
                                     <select class="select select-bordered select-sm grow xl-max-w-56" id="rol"
-                                        v-model="rol">
+                                        v-model="rol" v-on:change.prevent="change">
                                         <option>Gerente General</option>
-                                        <option>Gerente Taqueria</option>
-                                        <option>Gerente Barberia</option>
+                                        <option>Gerente de Sucursal</option>
                                         <option>Empleado</option>
                                     </select>
                                 </div>
@@ -238,9 +237,10 @@
                                 <div class="flex md:flex-row w-full flex-col">
                                     <span class="font-sans text-md text-gray-200 m-1">Sucursal: </span>
                                     <select v-model="sucursal" class="select select-bordered select-sm grow xl:w-52">
-                                        <option disabled selected>Selecciona una</option>
-                                        <option>Taqueria</option>
-                                        <option>Barberia</option>
+                                        <option v-if="!gerente" disabled selected>Selecciona una</option>
+                                        <option v-if="gerente" selected>Todas</option>
+                                        <option v-if="!gerente">Taqueria</option>
+                                        <option v-if="!gerente">Barberia</option>
                                     </select>
                                 </div>
                                 <span v-if="enviado && v$.sucursal.$error"
@@ -337,6 +337,7 @@ export default {
             Imagen: "",
             validDias: true,
             validHora: true,
+            gerente: false,
         }
     },
     validations: {
@@ -420,6 +421,14 @@ export default {
                         console.log('Archivo cargado exitosamente');
 
                     }
+
+                    let rol = "";
+                    if (this.rol == "Gerente de Sucursal") {
+                        rol = "Gerente " + this.sucursal;
+                    } else {
+                        rol = this.rol;
+                    }
+
                     await dataBase.set({
                         nombre: this.name,
                         apellido: this.lastname,
@@ -432,7 +441,7 @@ export default {
                             horaDeEntrada: this.horai,
                             horaDeSalida: this.horaf,
                         },
-                        rol: this.rol,
+                        rol: rol,
                         sueldo: this.sueldo,
                         sucursal: this.sucursal,
                         imagen: downloadURL,
@@ -452,6 +461,12 @@ export default {
 
             }
 
+        },
+        change() {
+            if (this.rol == "Gerente General")
+                this.gerente = true;
+            else
+                this.gerente = false;
         }
     },
 }

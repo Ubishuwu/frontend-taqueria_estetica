@@ -141,7 +141,7 @@ export default {
     methods: {
         cambiarTipo() {
             if (this.sucursal == "Taqueria")
-                this.tipos = ["Ingrediente", "De Venta"]
+                this.tipos = ["Ingrediente", "De venta"]
             if (this.sucursal == "Barberia")
                 this.tipos = ["Producto"]
         }

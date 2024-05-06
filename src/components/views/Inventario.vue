@@ -66,7 +66,7 @@
       -->
         <li @click="showComponent = 'Main'"><a>Reportes</a></li>
         
-        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente General'"  @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
+        <li v-if="this.usuario != null && this.usuario.rol == 'Gerente General' || this.usuario.rol.includes('Gerente')"  @click="showComponent = 'Productos'"><a>Inventario de productos</a></li>
         <li v-if="this.usuario != null && this.usuario.rol == 'Gerente General'" @click="showComponent = 'Personal'"><a>Empleados</a></li>
         <li v-if="this.usuario != null && (this.usuario.rol == 'Gerente Taqueria' || this.usuario.rol == 'Gerente General')" @click="showComponent = 'Cocina'"><a>Cocina</a></li>
         <li v-if="this.usuario != null && (this.usuario.rol == 'Gerente Barberia' || this.usuario.rol == 'Gerente General')" @click="showComponent = 'Servicios'"><a>Servicios</a></li>

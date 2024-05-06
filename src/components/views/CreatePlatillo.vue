@@ -32,7 +32,7 @@
         </div>
         <select v-model="tipo" class="select select-bordered">
           <option disabled selected>Elija uno</option>
-
+          <option>Bebida</option>
           <option>Comida</option>
           <option>Postre</option>
           <option>Otro</option>
@@ -126,7 +126,7 @@ export default {
       state: 1,
       nombre: "",
       tipo: "",
-      precio: 0,
+      precio: "",
       unidad: "...",
       ingrediente: "",
       cantidad: "",
@@ -137,7 +137,7 @@ export default {
     }
   },
   validations: {
-    nombre: { required, alpha },
+    nombre: { required },
     precio: { required, decimal, minValue: minValue(0) },
     tipo: { required },
     ingrediente: { required },
@@ -214,6 +214,7 @@ export default {
           ingredientes: receta,
           precio: this.precio,
           imagen: downloadURL,
+          sucursal: "Taqueria",
         })
 
         await this.$nextTick();

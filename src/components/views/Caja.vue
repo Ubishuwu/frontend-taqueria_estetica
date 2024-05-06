@@ -8,11 +8,12 @@
             <div v-if="cargando" class="h-3/4 w-full flex justify-center items-center">
                 <h1 class="text-green-600 font-semibold font-mono  text-5xl p-5 m-6">Cargando....</h1>
             </div>
-            <div v-if="listaPorcionada.length===0 && !cargando" class="h-3/4 w-full flex justify-center items-center">
-                <h1 class="text-red-700 font-semibold font-mono text-center text-5xl p-5 m-6">Uy!! No hay nada aqui, registre algo y regrese</h1>
+            <div v-if="listaPorcionada.length === 0 && !cargando" class="h-3/4 w-full flex justify-center items-center">
+                <h1 class="text-red-700 font-semibold font-mono text-center text-5xl p-5 m-6">Uy!! No hay nada aqui,
+                    registre algo y regrese</h1>
             </div>
 
-            <div class=" min-h-3_4 " v-if="listaPorcionada.length !=0" >
+            <div class=" min-h-3_4 " v-if="listaPorcionada.length != 0">
 
                 <div class="p-0 m-0 flex flex-wrap flex-row justify-center">
                     <Tarjeta v-for="item in listaPorcionada" :producto="item" :stock_venta="verificarcompra(item)"
@@ -28,14 +29,68 @@
 
         </div>
 
-        <div class="overflow-y-hidden h-screen">
-            <ListaCompra :lista="compra" @actualizar="actualizar" @eliminar="eliminar" @pagar="realizarventa(total)"
+        <div class="overflow-y-hidden h-screen" ref="cancelar">
+            <ListaCompra :lista="compra" @actualizar="actualizar" @eliminar="eliminar" @pagar="realizarventa"
                 @cancelar="cancelar(sis)" />
         </div>
+
+        <!---Auxiliar para testear formularios-- pasar proximamente a un modal--->
+        <dialog v-if="total != 0" id="pago" class="modal max-w-96">
+            <div class="relative  overflow-y-auto overscroll-auto rounded-xl sm:w-4/6 w-full scroll-estilo">
+                <form method="dialog" v-if="!ventaExitosa">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <div class="bg-accent w-full h-full flex flex-col items-center p-5">
+                    <h1 class="text-xl font-medium m-4">Total a pagar: {{ total }} $ </h1>
+                    <form class="bg-primary flex flex-col w-full h-full rounded-lg p-3" method="dialog">
+                        <label class="flex flex-col w-full p-2 ">
+                            <div class="flex flex-nowrap w-full ">
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">Pago con:</span>
+                                <input v-if="!ventaExitosa" type="number" placeholder="00.00"
+                                    :class="['input input-bordered input-md grow font-medium', { 'input-disabled file-input-disabled': ventaExitosa }]"
+                                    v-model="pago" />
+                                <span v-else
+                                    class=" input input-bordered input-md grow font-medium flex items-center">{{ pago
+                                    }}</span>
+
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold"> $</span>
+                            </div>
+                            <span v-if="v$.pago.$error || pagomenor"
+                                class="font-mono text-sm text-red-50 bg-red-500 brightness-150 text-right m-2 rounded-md p-1">Pago
+                                Requerido
+                                y mayor al monto total</span>
+                        </label>
+                        <label class="flex flex-col w-full p-2 my-5 bg-blue-900 rounded-lg">
+                            <div class="flex flex-nowrap w-full ">
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">Cambio:</span>
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold">{{ cambio
+                                    }}</span>
+                                <span class=" font-sans text-md text-gray-200 my-1 mx-3 font-semibold"> $</span>
+                            </div>
+                        </label>
+                        <div v-if="!ventaExitosa" class="flex flex-nowrap justify-between">
+                            <button @click="cancelarCobro"
+                                class="btn btn-md w-1/4 hover:brightness-125 btn-error brightness-50 text-secondary hover:text-secondary mx-2">Cancelar</button>
+                            <input @click.prevent="guardar" type="submit" value="Confirmar Venta"
+                                class="btn btn-md w-1/4 hover:btn-success hover:text-secondary mx-2 grow" />
+                        </div>
+                        <input v-else @click.prevent="finalizar" type="submit" value="Finalizar"
+                            class="btn btn-md btn-warning hover:btn-success hover:text-secondary mx-2 grow" />
+
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
     </div>
 </template>
 
 <script>
+
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, helpers, numeric } from '@vuelidate/validators'
+
+
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
@@ -47,8 +102,10 @@ import { list } from "postcss";
 
 export default {
     props: {},
+    setup: () => ({ v$: useVuelidate() }),
     data() {
         return {
+            usuario: "",
             cargando: true,
             elementosmax: 80,
             pagina_actual: 1,
@@ -63,8 +120,15 @@ export default {
             filtro: [
                 'Todo', 'Otros'
             ],
+            ventaExitosa: false,
             filtrado: 'todo',
-            modolista: false
+            modolista: false,
+            sucursal: "todas",
+            total: 0,
+            pago: "",
+            cambio: 0.00,
+            pagomenor: false,
+            imagen: "",
         }
     },
     components: {
@@ -74,46 +138,247 @@ export default {
         Paginacion,
 
     },
+    validations: {
+        pago: {
+            required, decimal, minValue: minValue(0)
+        }
+    },
     async created() {
-        var dataBase = await db.collection('platillos');
-        var dbResults = await dataBase.get();
-        //console.log("plat")
-        //console.log(dbResults)
-        dbResults.forEach((doc) => {
-            const data = {
-                nombre: doc.data().nombre,
-                tipo: doc.data().tipo,
-                precio: doc.data().precio,
-            }
+        /*const usuarioLoad = db.collection('empleado').doc(firebase.auth().currentUser.uid);
+        const usuariodata = await usuarioLoad.get();
+        console.log(usuariodata.data())*/
+        //console.log((await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data())
+        this.usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
+        console.log(this.usuario);
 
-            this.platillos.push(data)
-        })
+        this.sucursal = this.usuario.sucursal;
+        var dataBase = null;
+        var dbResults = null;
+        const servicios = [];
+        const productos = [];
+        const platillos = [];
 
-        dataBase = await db.collection('productos');
-        dbResults = await dataBase.get();
-        //console.log("prods")
-        //console.log(dbResults)
-        dbResults.forEach((doc) => {
-            const data = {
-                nombre: doc.data().nombre,
-                tipo: doc.data().tipo,
-                precio: doc.data().precio,
-            }
-            //console.log(data);
-            if (doc.data().tipo == "De venta") {
-                this.productos.push(data)
-            }
-        })
-        console.log(this.productos);
-        console.log(this.platillos);
+        ///si es barberia
+        if (this.sucursal != 'Taqueria') {
+            console.log("cargando Barberia")
 
-        this.lista_original= this.lista = [...this.lista, ...this.platillos, ...this.productos]
+            this.filtro.push(
+                'Productos',
+                'Manicuras',
+                'Cortes',
+                'Tintes',
+                'Depilacións',
+
+            );
+
+            dataBase = await db.collection('servicios');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                const data = {
+                    nombre: doc.data().nombre,
+                    tipo: doc.data().tipo,
+                    precio: doc.data().precio,
+                    id: doc.id,
+                    imagen: doc.data().imagen,
+                    sucursal: doc.data().sucursal
+                }
+
+                servicios.push(data);
+            })
+
+            dataBase = await db.collection('productos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                if (doc.data().sucursal == "Barberia") {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                        id: doc.id,
+                        imagen: doc.data().imagen,
+                        cantidad: doc.data().inventarioActual,
+                        sucursal: doc.data().sucursal
+
+                    }
+                    productos.push(data)
+                }
+            })
+
+            //this.lista_original = this.lista = [...this.lista, ...this.servicios]
+
+
+        }
+
+        ///si es taqueria
+        if (this.sucursal != 'Barberia') {
+            console.log("cargando Taqueria")
+            this.filtro.push(
+                'Bebidas',
+                'Comidas',
+                'Postres'
+            );
+
+            dataBase = await db.collection('platillos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                const data = {
+                    nombre: doc.data().nombre,
+                    tipo: doc.data().tipo,
+                    precio: doc.data().precio,
+                    id: doc.id,
+                    imagen: doc.data().imagen,
+                    sucursal: doc.data().sucursal
+
+                }
+                platillos.push(data);
+            })
+
+            dataBase = await db.collection('productos');
+            dbResults = await dataBase.get();
+            dbResults.forEach((doc) => {
+                if (doc.data().tipo == "De venta" && doc.data().sucursal == "Taqueria") {
+                    const data = {
+                        nombre: doc.data().nombre,
+                        tipo: doc.data().tipo,
+                        precio: doc.data().precio,
+                        id: doc.id,
+                        imagen: doc.data().imagen,
+                        cantidad: doc.data().inventarioActual,
+                        sucursal: doc.data().sucursal
+
+                    }
+                    productos.push(data)
+                }
+            })
+            //console.log(productos)
+
+            //this.lista_original = this.lista = [...this.lista, ...this.platillos]
+
+        }
+
+        this.lista_original = this.lista = [...this.lista, ...productos, ...platillos, ...servicios]
 
         this.lista.sort((a, b) => a.nombre.localeCompare(b.nombre));//solo ordena d acuerdo a los nombre(repetir si c vuelven a cargar listas en otras partes)
         this.cargando = false;
         this.lista_porcionada();
     },
     methods: {
+        async guardar() {
+            try {
+                this.pagomenor = false;
+
+                const isFormCorrect = await this.v$.$validate()
+                if (isFormCorrect) {
+                    if (this.pago >= this.total) {
+
+                        this.cambio = this.pago - this.total;
+
+                        const dataBase = db.collection("ticket").doc();
+
+                        const listacompra = [];///hacer enlace a la tabla de productos, servicios o platillos vendidos
+                        this.compra.forEach((item) => {
+                            // console.log(item.producto.id)
+                            try {
+                                let productoCompra = "";
+                                if (item.producto.tipo == "Producto" || item.producto.tipo == "De venta")
+                                    productoCompra = db.collection('productos').doc(item.producto.id);
+                                else {
+                                    console.log(item.producto.sucursal)
+                                    if (item.producto.sucursal == "Taqueria")
+                                        productoCompra = db.collection("platillos").doc(item.producto.id);
+                                    else if (item.producto.sucursal == "Barberia")
+                                        productoCompra = db.collection("servicios").doc(item.producto.id);
+
+                                }
+                                listacompra.push({
+                                    producto: productoCompra,
+                                    cantidad: item.cantidad
+                                })
+                            } catch (error) {
+                                console.error("error al leer lista de venta", error)
+                            }
+                        })
+
+                        const date = new Date();
+                        const dia =
+                            ("0" + date.getDate()).slice(-2) + "-" +
+                            ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+                            date.getFullYear();
+                        const hora =
+                            ("0" + date.getHours()).slice(-2) + ":" +
+                            ("0" + date.getMinutes()).slice(-2) + ":" +
+                            ("0" + date.getSeconds()).slice(-2);
+
+                        console.log(listacompra);
+
+                        await dataBase.set({
+                            fecha: dia,
+                            dia: hora,
+                            vendedor: db.collection('empleado').doc(firebase.auth().currentUser.uid),
+                            compra: listacompra,
+                            pagoRecibido: this.pago,
+                            cambio: this.cambio,
+                        })
+
+                        console.log(dataBase);
+
+                        //reducir inventario
+                        listacompra.forEach(async (item) => {
+                            // console.log(item.producto.id)
+                            try {
+                                let productoCompra = await item.producto.get();
+                                console.log(productoCompra.data())
+                                if (productoCompra.data().tipo == "Producto" || productoCompra.data().tipo == "De venta") {
+                                    console.log("reduciendo Producto");
+                                    const nuevacantidad = productoCompra.data().inventarioActual - item.cantidad;
+                                    console.log(nuevacantidad);
+                                    db.collection('productos').doc(productoCompra.id).update({ inventarioActual: nuevacantidad });
+                                }
+                                else {
+                                    let productosUso = [];
+                                    if (productoCompra.data().sucursal == "Taqueria") {
+                                        console.log("reduciendo Taqueria")
+                                        productosUso = productoCompra.data().ingredientes;
+                                    }
+                                    else if (productoCompra.data().sucursal == "Barberia") {
+                                        console.log("reduciendo Barberia")
+                                        productosUso = productoCompra.data().items;
+                                    }
+                                    productosUso.forEach(async (prod) => {
+                                        console.log("reduciendo Producto", productoCompra.data().sucursal)
+                                        const producto = await prod.producto.get();
+                                        const nuevacantidad = producto.data().inventarioActual - item.cantidad * prod.cantidad;
+                                        console.log(nuevacantidad);
+                                        db.collection('productos').doc(producto.id).update({ inventarioActual: nuevacantidad });
+                                    })
+
+                                }
+                            } catch (error) {
+                                console.error("error al reducir cantidad en productos", error)
+                            }
+                        })
+
+                        this.ventaExitosa = true;
+                    } else {
+                        this.pagomenor = true;
+                    }
+                } else {
+                    console.log(error, this.v$.error);
+                }
+
+            } catch (error) {
+            }
+        },
+        finalizar() {
+            location.reload();
+        },
+
+        evitarCerrarConEsc(event) {
+            if (this.ventaExitosa && event.key === 'Escape') {
+                // Prevenir el comportamiento predeterminado (cerrar el diálogo)
+                event.preventDefault();
+            }
+        },
         modolistado(valor) {
             this.modolista = valor;
         },
@@ -131,13 +396,22 @@ export default {
                 this.lista = this.lista_original.filter(elemento => elemento.tipo.toLowerCase() === tipo.toLowerCase().substring(0, tipo.length - 1));
 
         },
-        realizarventa(total) {
+        realizarventa(valor) {
             //acccion para enviar la venta al back
-            this.cancelar();
+            console.log(valor);
+            this.total = valor;
+            console.log(this.total)
+            //this.cancelar();
         },
-        cancelar(sis) {
+        cancelar() {
             console.log("eliminadndo");
             this.compra.splice(0, this.compra.length);
+        },
+        async cancelarCobro() {
+
+            await this.$nextTick();
+            const sectionElement = this.$refs.cancelar;
+            sectionElement.scrollIntoView({ behavior: 'smooth' });
         },
         eliminar(producto) {
             const indice = this.compra.findIndex((elemento) => elemento.producto === producto);
@@ -169,6 +443,7 @@ export default {
         },
         recibirpagina(nueva) {
             this.pagina_actual = nueva;
+            console.log(nueva)
             this.regresarAlInicio();
         },
         regresarAlInicio() {
@@ -221,8 +496,10 @@ export default {
 
     },
     mounted() {
-        const sucursal = 'taqueria';
-
+        document.addEventListener('keydown', this.evitarCerrarConEsc);
+        //const 
+        /*sucursal = 'taqueria';
+     
         if (sucursal == 'taqueria') {
             this.filtro.push(
                 'Bebidas',
@@ -234,8 +511,8 @@ export default {
                 'Servicios',
                 'Productos');
             //agregar parte de agregar los elementos de la bd a la lista_original(o remplazar lista origninal y añadirlos directamente a lista)
-
-        }
+     
+        }*/
 
         //this.lista = this.lista_original;// cambiar dependiendo como c enviend datos
 

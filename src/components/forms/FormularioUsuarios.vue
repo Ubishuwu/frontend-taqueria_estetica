@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <div class="m-5 mt-0" v-if="!validName || !validCorreo || !validTelefono">
+            <div class="m-5 mt-0" v-if="v$.name.$error && v$.correo.$error && v$.edad.$error">
                 <div role="alert" class="alert alert-error">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                         viewBox="0 0 24 24">
@@ -222,10 +222,10 @@
 
                                     <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
                                     <select class="select select-bordered select-sm grow xl-max-w-56" id="rol"
-                                        v-model="rol">
+                                        v-model="rol" v-on:change.prevent="change">
+                                        <option>Gerente General</option>
+                                        <option>Gerente de Sucursal</option>
                                         <option>Empleado</option>
-                                        <option>Cocina</option>
-                                        <option>Gerente</option>
                                     </select>
                                 </div>
                                 <span v-if="enviado && v$.rol.$error"
@@ -237,9 +237,10 @@
                                 <div class="flex md:flex-row w-full flex-col">
                                     <span class="font-sans text-md text-gray-200 m-1">Sucursal: </span>
                                     <select v-model="sucursal" class="select select-bordered select-sm grow xl:w-52">
-                                        <option disabled selected>Selecciona una</option>
-                                        <option>Taqueria</option>
-                                        <option>Barberia</option>
+                                        <option v-if="!gerente" disabled selected>Selecciona una</option>
+                                        <option v-if="gerente" selected>Todas</option>
+                                        <option v-if="!gerente">Taqueria</option>
+                                        <option v-if="!gerente">Barberia</option>
                                     </select>
                                 </div>
                                 <span v-if="enviado && v$.sucursal.$error"
@@ -262,9 +263,11 @@
                         </label>
                     </div>
                 </div>
+
+
             </div>
 
-            <div class="m-5 mt-0" id="alert1" v-if="v$.rol.$error">
+            <div class="m-5 my-0" id="alert1" v-if="v$.rol.$error">
                 <div role="alert" class="alert alert-error">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                         viewBox="0 0 24 24">
@@ -274,6 +277,27 @@
                     <span>Informacion del Empleado incorrectos</span>
                 </div>
             </div>
+
+            <div class="relative flex flex-col items-center justify-center m-5 mb-0 p-4 w-full bg-neutral">
+
+                <div class="bg-neutral absolute top-0 left-20 z-40 p-1 px-8 rounded-xl border-2 border-primary">
+                    <h1 class="text-xl font-mono font-medium">Foto de Perfil</h1>
+                </div>
+
+                <div
+                    class="flex flex-col border border-1 border-primary p-4 shadow-sm shadow-gray-500 justify-center w-full bg-primary rounded-md">
+
+                    <label class="form-control w-full ">
+                        <div class="label">
+                            <span class=" font-sans text-md text-gray-200 m-1">Imagen</span>
+                        </div>
+                        <input @change="cambioImagen($event)" type="file" id="imagen" accept="image/*"
+                            class="input input-bordered w-full" />
+                    </label>
+                </div>
+
+            </div>
+
             <input @click.prevent="guardar" type="submit" value="Guardar"
                 class="btn btn-md w-1/4 hover:btn-success hover:text-secondary" />
         </form>
@@ -284,9 +308,12 @@
 
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, helpers, numeric } from '@vuelidate/validators'
+import { storage } from '../../firebase/firebaseInit';
+
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
+const ref = storage.ref();
 
 export default {
     setup: () => ({ v$: useVuelidate() }),
@@ -307,27 +334,15 @@ export default {
             sucursal: "",
             dias: [],
             enviado: false,
-
-            validName: true,
-            validLastName: true,
-            validEdad: true,
-            validCorreo: true,
-            validTelefono: true,
-            validUser: true,
-            validPassword: true,
-            //validPasswordv: true,
-            validHora: true,
-            validHoraf: true,
-            validSueldo: true,
-            validRol: true,
-
+            Imagen: "",
             validDias: true,
             validHora: true,
+            gerente: false,
         }
     },
     validations: {
         name: { required, alpha },
-        lastname: { required, alpha },
+        lastname: { alpha },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
         correo: { email, required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
@@ -336,7 +351,7 @@ export default {
         //passwordv: { required, minLength: minLength(5), sameAsPassword: sameAs(() => passwordval()) },
         horaf: { required },
         horai: { required },
-        sueldo: { required, decimal },
+        sueldo: { decimal },
         rol: { required },
         sucursal: { required }
 
@@ -345,9 +360,6 @@ export default {
         async validar() {
             const isFormCorrect = await this.v$.$validate()
             this.enviado = true;
-            this.validName = await this.v$.name.$validate()
-            this.validTelefono = await this.v$.telefono.$validate()
-            this.validCorreo = await this.v$.correo.$validate()
             this.validarDatos();
             if (!isFormCorrect || this.validHora || !this.validDias) {
                 console.log("error...");
@@ -375,43 +387,86 @@ export default {
                 this.validDias = true;
             else
                 this.validDias = false;
-        },
 
+
+        },
+        cambioImagen(e) {
+            this.imagen = e.target.files[0];
+            console.log(this.imagen)
+
+        },
         async guardar() {
             let res = await this.v$.$validate();
             await this.validar();
             console.log(res)
             console.log(this.v$.$errors);
             if (res) {
-                const firebaseAuth = await firebase.auth();
-                const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.correo, this.password);
+
+                const createUser = await firebase.auth().createUserWithEmailAndPassword(this.correo, this.password);
                 const result = await createUser.user.uid;
+
                 /*Activar cuando la base de datos ya c encuentre completa*/
                 const dataBase = db.collection("empleado").doc(result);
-                await dataBase.set({
-                    nombre: this.name,
-                    apellido: this.lastname,
-                    edad: this.edad,
-                    email: this.correo,
-                    telefono: this.telefono,
-                    userName: this.user,
-                    horario: {
-                        dias: this.dias,
-                        horaDeEntrada: this.horai,
-                        horaDeSalida: this.horaf,
-                    },
-                    rol: this.rol,
-                    sueldo: this.sueldo,
-                    sucursal: this.sucursal,
-                })
+                try {
+                    let downloadURL = null;
+                    if (this.imagen != null && this.imagen != "") {
+                        const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
+                        const metadata = {
+                            contentType: 'img/jpeg'
+                        }
 
-                this.$el.closest('dialog').close();
+                        await refImg.put(this.imagen, metadata);
+                        downloadURL = await refImg.getDownloadURL();
 
-                location.reload();
+                        console.log('Archivo cargado exitosamente');
+
+                    }
+
+                    let rol = "";
+                    if (this.rol == "Gerente de Sucursal") {
+                        rol = "Gerente " + this.sucursal;
+                    } else {
+                        rol = this.rol;
+                    }
+
+                    await dataBase.set({
+                        nombre: this.name,
+                        apellido: this.lastname,
+                        edad: this.edad,
+                        email: this.correo,
+                        telefono: this.telefono,
+                        userName: this.user,
+                        horario: {
+                            dias: this.dias,
+                            horaDeEntrada: this.horai,
+                            horaDeSalida: this.horaf,
+                        },
+                        rol: rol,
+                        sueldo: this.sueldo,
+                        sucursal: this.sucursal,
+                        imagen: downloadURL,
+                    })
+                    await this.$nextTick();
+
+                    location.reload(true);
+                } catch (error) {
+                    console.error('Error al cargar el archivo:', error);
+                    errorEnvio = true;
+                }
+
+                //this.$el.closest('dialog').close();
+
+                //location.reload();
 
 
             }
 
+        },
+        change() {
+            if (this.rol == "Gerente General")
+                this.gerente = true;
+            else
+                this.gerente = false;
         }
     },
 }

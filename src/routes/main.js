@@ -26,12 +26,12 @@ const routes = [
         path: "caja",
         name: "Caja",
         component: Caja,
-      },/*
+      },
       {
-        path: "cocina",
-        name: "Cocina",
-        component: Cocina,
-      },*/
+        path: "inventario",
+        name: "Inventario",
+        component: Inventario,
+      },
       {
         path: "inicio",
         name: "Inicio",
@@ -54,11 +54,11 @@ const routes = [
     name: "Crear Plantillo",
     component: CreatePlatillo
   },
-  {
+  /*{
     path: "/inventario",
     name: "Inventario",
     component: Inventario,
-  },
+  },*/
   {
     path: "/error",
     name: "error",
@@ -81,7 +81,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   //console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
-  //console.log(routes.some(rute => rute.path == to.path))
+  console.log(to.path)
   if ((routes.some(route => route.path === to.path) || routes[0].children.some(rute => ('/' + rute.path) === to.path)))
     auth.onAuthStateChanged(user => {
       if (user) {

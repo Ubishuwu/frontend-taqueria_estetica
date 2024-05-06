@@ -30,7 +30,7 @@
         </button>
         <button class="ml-2 rounded-md border border-success hover:bg-success hover:text-white hover:brightness-125"
           ref="boton" @click="agregar()">
-          agregar
+          Agregar
         </button>
       </div>
     </div>
@@ -68,7 +68,7 @@
         <p class="precio">${{ producto.precio }}</p>
       </div>
     </div>
-    <button class="agregar" ref="boton" @click="agregar()">agregar</button>
+    <button class="agregar" ref="boton" @click="agregar()">Agregar</button>
   </div>
 </template>
 

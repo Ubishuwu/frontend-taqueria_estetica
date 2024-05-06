@@ -125,7 +125,7 @@
                                 <RouterLink to="/config" @click="retraerUser">
                                     <a type="button"
                                         class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
-                                        Configuracion
+                                        Configuración
                                     </a>
                                 </RouterLink>
                                 <RouterLink to="/user" @click="retraerUser">
@@ -137,7 +137,7 @@
 
                                 <a @click="logout" type="button"
                                     class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
-                                    Cerrar Sesión
+                                    Cerrar sesión
                                 </a>
                             </div>
 

@@ -173,7 +173,7 @@ export default {
                 const dataBase = db.collection("servicios").doc();
 
                 try {
-                    const downloadURL = null;
+                    let downloadURL = null;
                     if (this.imagen != null && this.imagen != "") {
                         const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
                         const metadata = {
@@ -197,7 +197,6 @@ export default {
                     location.reload(true);
                 } catch (error) {
                     console.error('Error al cargar el archivo:', error);
-                    errorEnvio = true;
                 }
 
 

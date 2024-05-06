@@ -401,14 +401,13 @@ export default {
             console.log(this.v$.$errors);
             if (res) {
 
-
                 const createUser = await firebase.auth().createUserWithEmailAndPassword(this.correo, this.password);
                 const result = await createUser.user.uid;
 
                 /*Activar cuando la base de datos ya c encuentre completa*/
                 const dataBase = db.collection("empleado").doc(result);
                 try {
-                    const downloadURL = null;
+                    let downloadURL = null;
                     if (this.imagen != null && this.imagen != "") {
                         const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
                         const metadata = {

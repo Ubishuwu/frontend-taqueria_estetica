@@ -199,7 +199,7 @@ export default {
 
 
       try {
-        const downloadURL = null;
+        let downloadURL = null;
         if (this.imagen != null && this.imagen != "") {
           const refImg = ref.child("imagenes/" + dataBase.id + ".jpg");
           const metadata = { contentType: 'img/jpeg' }

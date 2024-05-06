@@ -65,69 +65,71 @@
     </table>
   </div>
 
+
   <!---VIsta de detalles-->
   <dialog id="detalle" class="modal w-4/5 ">
-    <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[100vh] w-full">
+    <div class="absolute overflow-hidden rounded-xl bg-slate-100 p-5 md:w-[90vh] w-full">
       <div class="flex flex-col w-full">
         <div class="flex flex-col w-full p-3">
 
-          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">Datos del Servicio</span>
+          <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">
+            Información del Platillo
+          </span>
           <div class="flex justify-between md:flex-row flex-col">
 
             <label class="flex flex-nowrap m-2">
               <h2 class="font-bold text-lg mr-2">Nombre:</h2>
               <h3 class="font-normal text-lg">{{ detalles.nombre }}</h3>
+
             </label>
+          </div>
+          <div class="flex justify-between md:flex-row flex-col">
+
             <label class="flex flex-nowrap m-2">
               <h2 class="font-bold text-lg mr-2">Precio:</h2>
               <h3 class="font-normal text-lg">{{ detalles.precio }}</h3>
             </label>
             <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Medida:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.medida }}</h3>
-            </label>
-          </div>
-          <div class="flex justify-between md:flex-row flex-col">
-            <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Stock Actual:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.inventarioActual }}</h3>
-            </label>
-
-            <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Stock Minimo:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.inventarioMinimo }}</h3>
+              <h2 class="font-bold text-lg mr-2">Tipo:</h2>
+              <h3 class="font-normal text-lg">{{ detalles.tipo }}</h3>
             </label>
           </div>
         </div>
 
-        <div class="flex flex-col w-full p-3 pt-0">
+        <div class="flex flex-col w-full p-3 pt-0 ">
           <span class="text-xl text-center w-full mb-2 p-2 border-b-2 border-gray-300">
-            Detalles</span>
-          <div class="flex justify-between md:flex-row flex-col">
+            Productos Usados</span>
+          <div class="max-h-64 overflow-auto">
 
-            <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Sucursal:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.sucursal }}</h3>
-            </label>
-            <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Proveedor:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.proveedor }}</h3>
-            </label>
-          </div>
-          <div class="flex justify-between md:flex-row flex-col">
-            <label class="flex flex-nowrap m-2">
-              <h2 class="font-bold text-lg mr-2">Comentarios:</h2>
-              <h3 class="font-normal text-lg">{{ detalles.comentario }}
-              </h3>
-            </label>
+            <div class="" v-for="ingre in detalles.items">
+              <div class="flex justify-between md:flex-row flex-col border-b-2 border-gray-600">
+
+                <label class="flex flex-nowrap m-2">
+                  <h2 class="font-bold text-lg mr-2">Nombre:</h2>
+                  <h3 class="font-normal text-lg">{{ ingre.producto.nombre }}</h3>
+                </label>
+                <label class="flex flex-nowrap m-2">
+                  <h2 class="font-bold text-lg mr-2">Cantidad:</h2>
+                  <h3 class="font-normal text-lg">{{ ingre.cantidad }}</h3>
+                </label>
+                <label class="flex flex-nowrap m-2">
+                  <h2 class="font-bold text-lg mr-2">Medida:</h2>
+                  <h3 class="font-normal text-lg">{{ ingre.producto.medida }}</h3>
+                </label>
+              </div>
+            </div>
+
+
           </div>
         </div>
+
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">
       <button>close</button>
     </form>
   </dialog>
+
 </template>
 <script>
 
@@ -196,12 +198,15 @@ export default {
       db.collection('servicios').where('nombre', '==', nombreServicio).get()
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
-            imagenRef.delete().then(() => {
-              console.log("Imagen borrada");
-            }).catch((error) => {
-              console.error("Error al borrar la imagen: ", error);
-            });
+            if (doc.data().imagen) {
+              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+
+              imagenRef.delete().then(() => {
+                console.log("Imagen borrada");
+              }).catch((error) => {
+                console.error("Error al borrar la imagen: ", error);
+              });
+            }
 
             doc.ref.delete().then(() => {
               console.log("Servicio borrado exitosamente");
@@ -209,12 +214,16 @@ export default {
               console.error("Error al eliminar el servicio:", error);
             });
           });
+
         })
         .catch((error) => {
           console.error("Error al eliminar el servicio: ", error);
+        }).finally(async () => {
+          await this.$nextTick();
+          location.reload(true);
         });
 
-      location.reload(true);
+
     },
     ordenar(opcion) {
       console.log(opcion)

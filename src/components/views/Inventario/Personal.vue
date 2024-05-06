@@ -12,25 +12,28 @@
                 <!-- head -->
                 <thead class="sticky z-10 top-0 bg-gray-100">
                     <tr>
+                        <th></th>
                         <th>Nombre</th>
                         <th class="hidden min-[520px]:table-cell ">Correo</th>
-                        <th class="hidden md:table-cell ">Usuario</th>
                         <th class="hidden sm:table-cell ">Sucursal</th>
                         <th class="hidden sm:table-cell ">Rol</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
 
                 <tbody class="">
-                    <tr v-for="user in empleados" :key="user.correo">
+                    <tr v-for="(user, index) in empleados" :key="user.correo">
+                        <td>{{ index + 1 }}</td>
                         <td>
                             <div class="flex items-center gap-3">
                                 <div class="avatar">
                                     <div class="mask mask-squircle w-12 h-12 ">
                                         <img v-if="user.imagen" class="h-8 w-8 rounded-full object-cover "
-                                        :src="user.imagen" alt="">
-                                        <img v-else :src="'../src/assets/user.png'" alt="Avatar Tailwind CSS Component" class=""/>
-                                        
+                                            :src="user.imagen" alt="">
+                                        <img v-else :src="'../src/assets/user.png'" alt="Avatar Tailwind CSS Component"
+                                            class="" />
+
                                     </div>
                                 </div>
                                 <div>
@@ -40,7 +43,7 @@
                             </div>
                         </td>
                         <td class="hidden min-[520px]:table-cell ">{{ user.correo }}</td>
-                        <th class="hidden md:table-cell ">{{ user.user }}</th>
+
                         <td class="hidden sm:table-cell ">
                             <div class="badge badge-success">
                                 <p class="text-white">{{ user.sucursal }}</p>
@@ -52,7 +55,9 @@
                             <button class="btn btn-ghost btn-xs " onclick="detalle.showModal()"
                                 @click="nuevoDetalle(user)">Detalles</button>
                         </th>
-
+                        <td>
+                            <button class="btn btn-error btn-xs" @click="eliminar(user)">Eliminar</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -151,6 +156,8 @@
 import "firebase/auth";
 import db from "../../../firebase/firebaseInit"
 import FormularioUsuarios from '../../forms/FormularioUsuarios.vue';
+import firebase from "firebase/app";
+
 
 
 export default {
@@ -158,20 +165,6 @@ export default {
     data() {
         return {
             empleados: [
-                {
-                    nombre: "juan",
-                    apellido: "perez",
-                    edad: "22",
-                    correo: "juanin@empresa.com",
-                    telefono: 9519519551,
-                    user: "juanin",
-                    hora_inicio: "15:02:23 AM",
-                    hora_fin: "15:02:23 AM",
-                    dias: "Lunes,Martes",
-                    rol: "Cocina",
-                    sueldo: 54.5,
-                    sucursal: "Taqueria",
-                },
             ],
             detalles: {}
         };
@@ -198,6 +191,7 @@ export default {
                 sueldo: doc.data().sueldo,
                 sucursal: doc.data().sucursal,
                 imagen: doc.data().imagen,
+                id: doc.id,
             }
             this.empleados.push(data)
         })
@@ -205,7 +199,36 @@ export default {
     methods: {
         nuevoDetalle(item) {
             this.detalles = item;
-        }
+        },
+
+        eliminar(user) {
+            console.log(user.id)
+
+            if (user.imagen) {
+
+                const imagenRef = firebase.storage().refFromURL(user.imagen);
+
+                imagenRef.delete().then(() => {
+                    console.log("Imagen borrada");
+                }).catch((error) => {
+                    console.error("Error al borrar la imagen: ", error);
+                });
+            }else{
+                console.log("No hay imagen para borrar");
+
+            }
+
+            firebase.firestore().collection('empleado').doc(user.id).delete()
+                .then(() => {
+                    console.log('Documento eliminado correctamente');
+                })
+                .catch((error) => {
+                    console.error('Error al eliminar el documento:', error);
+                });
+
+
+            //location.reload(true);
+        },
     }
 
 

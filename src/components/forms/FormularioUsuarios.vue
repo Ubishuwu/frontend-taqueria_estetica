@@ -21,7 +21,7 @@
                             <span class=" font-sans text-md text-gray-200 mb-1">Nombre(s):</span>
                             <input type="text" placeholder="Nombre(s)" class="input input-bordered input-sm w-full"
                                 v-model="name" />
-                            <span v-if="enviado && v$.name.$error"
+                            <span v-if="enviado && (v$.name.$error || validName)"
                                 class="font-mono text-sm text-red-500 text-right">Nombre(s) Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -30,7 +30,7 @@
                             <span class=" font-sans text-md text-gray-200 mb-1">Apellido(s):</span>
                             <input type="text" placeholder="Apellido(s)" class="input input-bordered input-sm w-full"
                                 id="lastname" v-model="lastname" />
-                            <span v-if="enviado && v$.lastname.$error"
+                            <span v-if="enviado && (v$.lastname.$error || validLastN)"
                                 class="font-mono text-sm text-red-500 text-right">Apellido(s) Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -114,7 +114,7 @@
 
                     <label class="flex flex-col w-full mt-2 p-2">
                         <span class=" font-sans text-md text-gray-200 mb-1">Usuario:</span>
-                        <input type="text" placeholder="user" class="input input-bordered input-sm w-full" id="user"
+                        <input type="text" placeholder="Usuario" class="input input-bordered input-sm w-full" id="user"
                             v-model="user" />
                         <span v-if="enviado && v$.user.$error" class="font-mono text-sm text-red-500 text-right">Usuario
                             Requerido,
@@ -124,7 +124,7 @@
                     <div class="flex flex-col md:flex-row w-full">
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
-                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
+                            <input type="password" placeholder="Contraseña" class="input input-bordered input-sm w-full"
                                 id="password" v-model="password" />
                             <span v-if="enviado && v$.password.$error"
                                 class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
@@ -337,12 +337,14 @@ export default {
             Imagen: "",
             validDias: true,
             validHora: true,
+            validName: true,
+            validLastN: true,
             gerente: false,
         }
     },
     validations: {
-        name: { required, alpha },
-        lastname: { alpha },
+        name: { required },
+        lastname: { required },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
         correo: { email, required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
@@ -361,7 +363,7 @@ export default {
             const isFormCorrect = await this.v$.$validate()
             this.enviado = true;
             this.validarDatos();
-            if (!isFormCorrect || this.validHora || !this.validDias) {
+            if (!isFormCorrect || this.validHora || !this.validDias || this.validName || this.validLastN) {
                 console.log("error...");
                 console.log("errores:");
                 console.log(this.v$.$errors);
@@ -371,8 +373,6 @@ export default {
                 return;
             }
             console.log('Formulario válido. Enviando...');
-            ///proceso para enviar y redirigir a la pagina owo// o cerrar modal(no c como xd)
-            //this.$router.push('/');
         },
         validateFloat(event) {
             this.sueldo = event.target.value.replace(/[^0-9.]/g, '');
@@ -383,10 +383,20 @@ export default {
             else { this.validHora = true; }
 
             console.log('dias:' + this.dias)
-            if (this.dias.length > 0)
+            if (this.dias.length > 0){
                 this.validDias = true;
-            else
+            }else{
                 this.validDias = false;
+            }
+
+            var regex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+            if(regex.test(this.name)){
+                this.validName = false;
+            }
+            
+            if(regex.test(this.lastname)){
+                this.validLastN = false;
+            }
 
 
         },
@@ -395,6 +405,7 @@ export default {
             console.log(this.imagen)
 
         },
+        
         async guardar() {
             let res = await this.v$.$validate();
             await this.validar();

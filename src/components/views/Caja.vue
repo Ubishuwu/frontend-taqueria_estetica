@@ -318,6 +318,8 @@ export default {
                             compra: listacompra,
                             pagoRecibido: this.pago,
                             cambio: this.cambio,
+                            sucursal: this.usuario.sucursal,
+                            total: this.total
                         })
 
                         console.log(dataBase);

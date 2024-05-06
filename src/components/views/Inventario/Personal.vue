@@ -2,8 +2,45 @@
 
     <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
-        <div>
-            <button class="btn" onclick="formulario.showModal()">Registar Usuario</button>
+        <div class="flex sm:flex-row flex-col justify-between items-center">
+
+            <form class="flex md:flex-nowrap flex-wrap items-center justify-center">
+                <label class="form-control w-full max-w-xs mr-2">
+                    <div class="label">
+                        <span class="label-text">Sucursal</span>
+                    </div>
+                    <select v-model="filtro" @change="filtroOrden" class="select select-sm select-bordered">
+                        <option>Todos</option>
+                        <option>Taqueria El TaquerITO</option>
+                        <option>Estetica El cortITO</option>
+                    </select>
+                </label>
+                <label class="form-control w-full max-w-xs mr-2">
+                    <div class="label">
+                        <span class="label-text">Rol</span>
+                    </div>
+                    <select v-model="roles" @change="filtroOrden" class="select select-sm select-bordered">
+                        <option>Todos</option>
+                        <option>Gerente General</option>
+                        <option>Gerente Taqueria</option>
+                        <option>Gerente Barberia</option>
+                        <option>Empleado</option>
+                    </select>
+                </label>
+                <label class="form-control w-full max-w-xs mr-2">
+                    <div class="label">
+                        <span class="label-text">Ordenar por</span>
+                    </div>
+                    <select v-model="orden" @change="filtroOrden" class="select select-sm select-bordered">
+                        <option>Nombre</option>
+                        <option>Edad mayor a menor</option>
+                        <option>Edad menor a mayor</option>
+                        <option>Sucursal</option>
+                    </select>
+                </label>
+
+            </form>
+                <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Registar Usuario</button>
         </div>
 
         <!---Tabla-->
@@ -14,9 +51,9 @@
                     <tr>
                         <th></th>
                         <th>Nombre</th>
-                        <th class="hidden min-[520px]:table-cell ">Correo</th>
+                        <th class="hidden md:table-cell ">Correo</th>
                         <th class="hidden sm:table-cell ">Sucursal</th>
-                        <th class="hidden sm:table-cell ">Rol</th>
+                        <th class="hidden lg:table-cell ">Rol</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -38,19 +75,21 @@
                                 </div>
                                 <div>
                                     <div class="font-bold">{{ user.nombre }}</div>
-                                    <div class="text-sm opacity-50">{{ user.apellido }}</div>
+                                    <div class="hidden md:block text-sm opacity-50">{{ user.apellido }}</div>
+                                    <div class="md:hidden text-sm opacity-50">{{ user.correo }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="hidden min-[520px]:table-cell ">{{ user.correo }}</td>
+                        <td class="hidden md:table-cell ">{{ user.correo }}</td>
 
                         <td class="hidden sm:table-cell ">
                             <div class="badge badge-success">
                                 <p class="text-white">{{ user.sucursal }}</p>
                             </div>
+                            <p class="opacity-80 lg:hidden">{{ user.rol }}</p>
                         </td>
 
-                        <td class="hidden sm:table-cell ">{{ user.rol }}</td>
+                        <td class="hidden lg:table-cell ">{{ user.rol }}</td>
                         <th>
                             <button class="btn btn-ghost btn-xs " onclick="detalle.showModal()"
                                 @click="nuevoDetalle(user)">Detalles</button>
@@ -163,9 +202,13 @@ export default {
 
     data() {
         return {
-            empleados: [
-            ],
-            detalles: {}
+            empleados: [],
+            empleadosCopia: [],
+            detalles: {},
+            roles: "Todos",
+            filtro: "Todos",
+            orden: "Nombre",
+
         };
     },
     components: {
@@ -192,7 +235,8 @@ export default {
                 imagen: doc.data().imagen,
                 id: doc.id,
             }
-            this.empleados.push(data)
+            this.empleados.push(data);
+            this.empleadosCopia = this.empleados;
         })
     },
     methods: {
@@ -228,6 +272,42 @@ export default {
 
             location.reload(true);
         },
+
+        ordenar(opcion) {
+            if (opcion === 'Nombre') {
+                this.empleados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            } else if (opcion === 'Sucursal') {
+                this.empleados.sort((a, b) => a.sucursal.localeCompare(b.sucursal));
+            } else if (opcion === 'Edad menor a mayor') {
+                this.empleados.sort((a, b) => a.edad - b.edad);
+            } else if (opcion === 'Edad mayor a menor') {
+                this.empleados.sort((a, b) => b.edad - a.edad);
+            }
+
+            this.$forceUpdate();
+        },
+        filtrar(opcion) {
+            if (opcion == "Todos") {
+                this.empleados = this.empleadosCopia;
+            } else if (opcion == "Taqueria El TaquerITO") {
+                this.empleados = this.empleados.filter(elemento => elemento.sucursal === "Taqueria" || elemento.rol === "Gerente General");
+            } else if (opcion == "Estetica El cortITO") {
+                this.empleados = this.empleados.filter(elemento => elemento.sucursal === "Barberia" || elemento.rol === "Gerente General");
+            }
+        },
+
+        rolChange(opcion) {
+            if (opcion != "Todos")
+                this.empleados = this.empleados.filter(elemento => elemento.rol == opcion);
+        },
+        filtroOrden() {
+            this.empleados = this.empleadosCopia;
+            this.empleadosCopia = this.empleados;
+            this.filtrar(this.filtro);
+            this.rolChange(this.roles);
+            this.ordenar(this.orden);
+
+        }
     }
 
 

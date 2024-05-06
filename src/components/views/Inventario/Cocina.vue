@@ -1,12 +1,35 @@
 <template>
   <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
-    <div>
-      <div>
-        <div id="main">
-          <a class="btn" href="/create-platillo">Crear Platillo</a>
-        </div>
-      </div>
+    <div class="flex sm:flex-row flex-col justify-between items-center">
+
+      <form class="flex sm:flex-nowrap flex-wrap">
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Tipo</span>
+          </div>
+          <select v-model="filtro" @change="filtroOrden" class="select select-sm select-bordered">
+            <option>Todos</option>
+            <option>Bebida</option>
+            <option>Comida</option>
+            <option>Postre</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Ordenar por</span>
+          </div>
+          <select v-model="orden" @change="filtroOrden" class="select select-sm select-bordered">
+            <option>Nombre</option>
+            <option>Precio mayor a menor</option>
+            <option>Precio menor a mayor</option>
+            <option>Tipo</option>
+          </select>
+        </label>
+
+      </form>
+      <a class="btn btn-outline btn-success mt-5" href="/create-platillo">Crear Platillo</a>
     </div>
 
     <!---Tabla-->
@@ -150,7 +173,10 @@ export default {
   data() {
     return {
       cocina: [],
-      detalles: {}
+      cocinaCopia:[],
+      detalles: {},
+      orden: "Nombre",
+      filtro: "Todos",
     };
   },
   components: {
@@ -172,6 +198,7 @@ export default {
       }
       //console.log(data)
       this.cocina.push(data)
+      this.cocinaCopia=this.cocina;
     })
   },
   methods: {
@@ -256,6 +283,35 @@ export default {
         });
 
     },
+
+    ordenar(opcion) {
+      if (opcion === 'Nombre') {
+        this.cocina.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      } else if (opcion === 'Tipo') {
+        this.cocina.sort((a, b) => a.tipo.localeCompare(b.tipo));
+      } else if (opcion === 'Precio menor a mayor') {
+        this.cocina.sort((a, b) => a.precio - b.precio);
+      } else if (opcion === 'Precio mayor a menor') {
+        this.cocina.sort((a, b) => b.precio - a.precio);
+      }
+
+      this.$forceUpdate();
+    },
+    filtrar(opcion) {
+      if (opcion == "Todos") {
+        this.cocina = this.cocinaCopia;
+      } else 
+        this.cocina = this.cocina.filter(elemento => elemento.tipo === opcion);
+      
+    },
+
+    filtroOrden() {
+      this.cocina = this.cocinaCopia;
+      this.cocinaCopia= this.cocina;
+      this.filtrar(this.filtro);
+      this.ordenar(this.orden);
+
+    }
   }
 
 

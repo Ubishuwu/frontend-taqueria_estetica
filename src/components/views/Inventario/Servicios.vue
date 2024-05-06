@@ -1,29 +1,45 @@
 <template>
-  <div class="w-[200px] flex">
+  <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
 
-    <form class="flex mt-5">
-      <label class="form-control w-full max-w-xs mr-2">
-        <div class="label">
-          <span class="label-text">Ordenar por</span>
-        </div>
-        <select @change="ordenar($event.target.value)" class="select select-sm select-bordered">
-          <option>Nombre</option>
-          <option>Precio mayor a menor</option>
-          <option>Precio menor a mayor</option>
-        </select>
-      </label>
+    <div class="flex sm:flex-row flex-col justify-between items-center">
 
-    </form>
-    <button class="btn btn-outline btn-success mt-10 ml-3" onclick="my_modal_3.showModal()">Agregar Servicio</button>
-    <dialog id="my_modal_3" class="modal">
-      <div class="modal-box">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-        <FormularioServicio />
-      </div>
-    </dialog>
+      <form class="flex sm:flex-nowrap flex-wrap">
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Tipo</span>
+          </div>
+          <select v-model="tipo" @change="filtroOrden" class="select select-sm select-bordered">
+            <option>Todos</option>
+            <option>Bebida</option>
+            <option>Comida</option>
+            <option>Postre</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <label class="form-control w-full max-w-xs mr-2">
+          <div class="label">
+            <span class="label-text">Ordenar por</span>
+          </div>
+          <select v-model="orden" @change="filtroOrden" class="select select-sm select-bordered">
+            <option>Nombre</option>
+            <option>Precio mayor a menor</option>
+            <option>Precio menor a mayor</option>
+            <option>Tipo</option>
+          </select>
+        </label>
+
+      </form>
+      <button class="btn btn-outline btn-success mt-5" onclick="my_modal_3.showModal()">Agregar Servicio</button>
+    </div>
   </div>
+  <dialog id="my_modal_3" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <FormularioServicio />
+    </div>
+  </dialog>
   <div class="overflow-x-auto mt-5">
     <table class="table">
       <!-- head -->
@@ -145,7 +161,10 @@ export default {
   data() {
     return {
       servicios: [],
-      detalles: {}
+      serviciosCopia: [],
+      detalles: {},
+      tipo: "Todos",
+      orden: "Nombre"
     };
   },
   components: {
@@ -164,7 +183,9 @@ export default {
         imagen: doc.data().imagen,
         id: doc.id,
       }
-      this.servicios.push(data)
+      this.servicios.push(data);
+      this.serviciosCopia = this.servicios;
+
     })
   },
   methods: {
@@ -258,15 +279,32 @@ export default {
 
     },
     ordenar(opcion) {
-      console.log(opcion)
       if (opcion === 'Nombre') {
         this.servicios.sort((a, b) => a.nombre.localeCompare(b.nombre));
-      } else if (opcion === 'Precio mayor a menor') {
-        this.servicios.sort((a, b) => b.precio - a.precio);
+      } else if (opcion === 'Tipo') {
+        this.servicios.sort((a, b) => a.tipo.localeCompare(b.tipo));
       } else if (opcion === 'Precio menor a mayor') {
         this.servicios.sort((a, b) => a.precio - b.precio);
+      } else if (opcion === 'Precio mayor a menor') {
+        this.servicios.sort((a, b) => b.precio - a.precio);
       }
+
       this.$forceUpdate();
+    },
+    filtrar(opcion) {
+      if (opcion == "Todos") {
+        this.servicios = this.serviciosCopia;
+      } else
+        this.servicios = this.servicios.filter(elemento => elemento.tipo === opcion);
+
+    },
+
+    filtroOrden() {
+      this.servicios = this.serviciosCopia;
+      this.serviciosCopia = this.servicios;
+      this.filtrar(this.tipo);
+      this.ordenar(this.orden);
+
     }
   }
 }

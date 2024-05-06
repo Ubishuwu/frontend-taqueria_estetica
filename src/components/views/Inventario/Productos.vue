@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col lg:max-h-[calc(100vh-3rem)] max-h-[calc(100vh-8rem)] overflow-none">
+  <div class="flex flex-col overflow-none ">
 
     <div class="flex sm:flex-row flex-col justify-between items-center">
 
-      <form class="flex mt-5">
+      <form class="flex sm:flex-nowrap flex-wrap">
         <label v-if="sucursalUser=='Todas'" class="form-control w-full max-w-xs mr-2">
           <div class="label">
             <span class="label-text">Sucursal</span>
           </div>
-          <select @change="filtrar($event.target.value)" class="select select-sm select-bordered">
+          <select v-model="filtro" @change="filtroOrden" class="select select-sm select-bordered">
             <option>Todos</option>
             <option>Taqueria El TaquerITO</option>
             <option>Estetica El cortITO</option>
@@ -18,7 +18,7 @@
           <div class="label">
             <span class="label-text">Estatus</span>
           </div>
-          <select class="select select-sm select-bordered">
+          <select v-model="estatus" @change="filtroOrden" class="select select-sm select-bordered">
             <option>Todos</option>
             <option>Proximos a vencer</option>
             <option>Normal</option>
@@ -29,7 +29,7 @@
           <div class="label">
             <span class="label-text">Ordenar por</span>
           </div>
-          <select @change="ordenar($event.target.value)" class="select select-sm select-bordered">
+          <select v-model="orden" @change="filtroOrden" class="select select-sm select-bordered">
             <option>Nombre</option>
             <option>Inventario mayor a menor</option>
             <option>Inventario menor a mayor</option>
@@ -38,7 +38,7 @@
         </label>
 
       </form>
-      <button class="btn btn-outline btn-success mt-10" onclick="formulario.showModal()">Agregar Producto</button>
+      <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Agregar Producto</button>
       <dialog id="formulario" class="modal">
         <div class="modal-box">
           <form method="dialog">
@@ -75,8 +75,11 @@
 
                   </div>
                 </div>
-                <div class="font-bold">{{ prod.nombre }}</div>
-                <div class="text-sm opacity-50">{{ prod.tipo }}</div>
+                <div class="flex flex-col">
+                  <div class="font-bold">{{ prod.nombre }}</div>
+                  <div class="text-sm opacity-50">{{ prod.tipo }}</div>
+
+                </div>
               </div>
             </td>
 
@@ -183,6 +186,9 @@ export default {
       productosCopia: [],
       detalles: {},
       sucursalUser: "",
+      filtro: "Todos",
+      estatus: "Todos",
+      orden: "Nombre"
     };
   },
   components: {
@@ -255,11 +261,12 @@ export default {
 
     },
     ordenar(opcion) {
-      console.log(opcion)
+      //this.orden=opcion;
+      //console.log(opcion)
       if (opcion === 'Nombre') {
         this.productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
       } else if (opcion === 'Sucursal') {
-        this.productos.sort((a, b) => a.sucursal.localeCompare(b.nombre));
+        this.productos.sort((a, b) => a.sucursal.localeCompare(b.sucursal));
       } else if (opcion === 'Inventario menor a mayor') {
         this.productos.sort((a, b) => a.inventarioActual - b.inventarioActual);
       } else if (opcion === 'Inventario mayor a menor') {
@@ -270,8 +277,9 @@ export default {
       this.$forceUpdate();
     },
     filtrar(opcion) {
-      this.productos = this.productosCopia;
-      this.productosCopia = this.productos;
+      //this.filtrar=opcion;
+      //this.productos = this.productosCopia;
+      //this.productosCopia = this.productos;
       if (opcion == "Todos") {
         this.productos = this.productosCopia;
       } else if (opcion == "Taqueria El TaquerITO") {
@@ -279,6 +287,27 @@ export default {
       } else if (opcion == "Estetica El cortITO") {
         this.productos = this.productos.filter(elemento => elemento.sucursal === "Barberia");
       }
+    },
+    
+    estatusChange(opcion) {
+      //this.estatus=opcion;
+      /*if (opcion == "Todos") {
+        this.productos = this.productos;
+      } else*/ if (opcion == "Proximos a vencer") {
+        this.productos = this.productos.filter(elemento => elemento.inventarioActual <= elemento.inventarioMinimo);
+      } else if (opcion == "Normal") {
+        this.productos = this.productos.filter(elemento => elemento.inventarioActual > elemento.inventarioMinimo);
+      } else if (opcion == "Sobreinventario") {
+        this.productos = this.productos.filter(elemento => elemento.inventarioActual > elemento.inventarioMinimo*10);
+      }
+    },
+    filtroOrden(){
+      this.productos = this.productosCopia;
+      this.productosCopia = this.productos;
+      this.filtrar(this.filtro);
+      this.estatusChange(this.estatus);
+      this.ordenar(this.orden);
+
     }
   }
 }

@@ -1,12 +1,12 @@
 <template>
   <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content">
+    <div class="drawer-content ">
       <!-- Page content here -->
-      <div class="lg:hidden">
-        <div class="lg:hidden navbar bg-base-100 flex">
-          <div class="navbar-start">
-            <div class="dropdown">
+      <div class=" flex ">
+        <div class=" navbar fixed shadow-md bg-base-100 z-20 flex ">
+          <div class="navbar-start ">
+            <div class="dropdown ">
               <label
                 for="my-drawer-2"
                 class="btn btn-primary drawer-button lg:hidden"
@@ -27,30 +27,15 @@
                 </svg>
               </label>
             </div>
-            <a class="btn btn-ghost text-xl">{{showComponent}}</a>
           </div>
-          <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1">
-              <li><a>Item 1</a></li>
-              <li>
-                <details>
-                  <summary>Parent</summary>
-                  <ul class="p-2">
-                    <li><a>Submenu 1</a></li>
-                    <li><a>Submenu 2</a></li>
-                  </ul>
-                </details>
-              </li>
-              <li><a>Item 3</a></li>
-            </ul>
-          </div>
-         
+          
+          <a class="text-xl">{{showComponent}}</a>
         </div>
       </div>
       <!--End Navbar-->
 
       <!--Content-->
-      <div class="m-5 lg:ml-60 ml-5">
+      <div class="m-5 mt-20 lg:ml-60 ml-5">
         <component :is="showComponent" />
       </div>
     </div>

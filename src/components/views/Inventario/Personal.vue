@@ -159,7 +159,6 @@ import FormularioUsuarios from '../../forms/FormularioUsuarios.vue';
 import firebase from "firebase/app";
 
 
-
 export default {
 
     data() {
@@ -213,7 +212,7 @@ export default {
                 }).catch((error) => {
                     console.error("Error al borrar la imagen: ", error);
                 });
-            }else{
+            } else {
                 console.log("No hay imagen para borrar");
 
             }
@@ -227,7 +226,7 @@ export default {
                 });
 
 
-            //location.reload(true);
+            location.reload(true);
         },
     }
 

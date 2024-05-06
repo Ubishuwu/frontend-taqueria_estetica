@@ -67,18 +67,18 @@
         <tbody>
           <tr v-for="prod in productos">
             <td>
-            <div class="flex items-center gap-3">
-              <div class="avatar">
-                <div class="mask mask-squircle w-12 h-12">
-                  <img v-if="prod.imagen" class="h-8 w-8 rounded-full object-cover " :src="prod.imagen" alt="">
+              <div class="flex items-center gap-3">
+                <div class="avatar">
+                  <div class="mask mask-squircle w-12 h-12">
+                    <img v-if="prod.imagen" class="h-8 w-8 rounded-full object-cover " :src="prod.imagen" alt="">
                     <img v-else :src="`../src/assets/${prod.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
-                  
+
+                  </div>
                 </div>
+                <div class="font-bold">{{ prod.nombre }}</div>
+                <div class="text-sm opacity-50">{{ prod.tipo }}</div>
               </div>
-                  <div class="font-bold">{{ prod.nombre }}</div>
-                  <div class="text-sm opacity-50">{{ prod.tipo }}</div>
-            </div>
-          </td>
+            </td>
 
             <td class="hidden min-[650px]:table-cell ">{{ prod.medida }}</td>
             <td class="hidden min-[520px]:table-cell ">
@@ -93,7 +93,7 @@
                 @click="nuevoDetalle(prod)">Detalles</button>
             </td>
             <td>
-              <button class="btn btn-error btn-xs" @click="borrarProducto(prod.nombre)">Eliminar</button>
+              <button class="btn btn-error btn-xs" @click="eliminar(prod)">Eliminar</button>
             </td>
           </tr>
         </tbody>
@@ -200,7 +200,8 @@ export default {
         sucursal: doc.data().sucursal,
         comentario: doc.data().comentario,
         precio: doc.data().precio,
-        imagen: doc.data().imagen
+        imagen: doc.data().imagen,
+        id: doc.id,
       }
       this.productos.push(data)
     })
@@ -211,43 +212,75 @@ export default {
     },
     borrarProducto(nombreProducto) {
       db.collection('productos').where('nombre', '==', nombreProducto).get()
-      .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
-              imagenRef.delete().then(() => {
-                console.log("Imagen borrada");
-              }).catch((error) => {
-                console.error("Error al borrar la imagen: ", error);
-              });
-
-              doc.ref.delete().then(() => {
-                console.log("Producto borrado exitosamente");
-              }).catch((error) => {
-                console.error("Error al eliminar el producto:", error);
-              });
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            const imagenRef = firebase.storage().refFromURL(doc.data().imagen);
+            imagenRef.delete().then(() => {
+              console.log("Imagen borrada");
+            }).catch((error) => {
+              console.error("Error al borrar la imagen: ", error);
             });
+
+            doc.ref.delete().then(() => {
+              console.log("Producto borrado exitosamente");
+            }).catch((error) => {
+              console.error("Error al eliminar el producto:", error);
+            });
+          });
         })
         .catch((error) => {
           console.error("Error al eliminar el producto: ", error);
         });
-        
-        location.reload(true);
-    },
-    ordenar(opcion){
-        console.log(opcion)
-        if (opcion === 'Nombre') {
-          this.productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
-        } else if (opcion === 'Sucursal') {
-          this.productos.sort((a, b) => a.sucursal.localeCompare(b.nombre));
-        } else if (opcion === 'Inventario menor a mayor') {
-          this.productos.sort((a, b) => a.inventarioActual - b.inventarioActual);
-        } else if (opcion === 'Inventario mayor a menor') {
-          this.productos.sort((a, b) => b.inventarioActual - a.inventarioActual);
-        }
 
-        //console.log(this.productos)
-        this.$forceUpdate();
+      location.reload(true);
+    },
+
+    eliminar(prod) {
+      console.log(prod.id)
+
+      if (prod.imagen) {
+
+        const imagenRef = firebase.storage().refFromURL(prod.imagen);
+
+        imagenRef.delete().then(() => {
+          console.log("Imagen borrada");
+        }).catch((error) => {
+          console.error("Error al borrar la imagen: ", error);
+        });
+      } else {
+        console.log("No hay imagen para borrar");
+
       }
+
+      firebase.firestore().collection('productos').doc(prod.id).delete()
+        .then(() => {
+          console.log('Documento eliminado correctamente');
+        })
+        .catch((error) => {
+          console.error('Error al eliminar el documento:', error);
+        }).finally(async () => {
+
+          await this.$nextTick();
+
+          location.reload(true);
+        });
+
+    },
+    ordenar(opcion) {
+      console.log(opcion)
+      if (opcion === 'Nombre') {
+        this.productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      } else if (opcion === 'Sucursal') {
+        this.productos.sort((a, b) => a.sucursal.localeCompare(b.nombre));
+      } else if (opcion === 'Inventario menor a mayor') {
+        this.productos.sort((a, b) => a.inventarioActual - b.inventarioActual);
+      } else if (opcion === 'Inventario mayor a menor') {
+        this.productos.sort((a, b) => b.inventarioActual - a.inventarioActual);
+      }
+
+      //console.log(this.productos)
+      this.$forceUpdate();
+    }
   }
 }
 </script>

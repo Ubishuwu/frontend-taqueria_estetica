@@ -58,7 +58,7 @@
               @click="nuevoDetalle(serv)">Detalles</button>
           </td>
           <td>
-            <button class="btn btn-error btn-xs" @click="eliminarServicio(serv.nombre)">Eliminar</button>
+            <button class="btn btn-error btn-xs" @click="eliminar(serv)">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -162,6 +162,7 @@ export default {
         precio: doc.data().precio,
         items: await this.recuperarItems(doc.data().items),
         imagen: doc.data().imagen,
+        id: doc.id,
       }
       this.servicios.push(data)
     })
@@ -223,6 +224,37 @@ export default {
           location.reload(true);
         });
 
+
+    },
+    eliminar(serv) {
+      //console.log(serv.id)
+
+      if (serv.imagen) {
+
+        const imagenRef = firebase.storage().refFromURL(serv.imagen);
+
+        imagenRef.delete().then(() => {
+          console.log("Imagen borrada");
+        }).catch((error) => {
+          console.error("Error al borrar la imagen: ", error);
+        });
+      } else {
+        console.log("No hay imagen para borrar");
+
+      }
+
+      firebase.firestore().collection('servicios').doc(serv.id).delete()
+        .then(() => {
+          console.log('Documento eliminado correctamente');
+        })
+        .catch((error) => {
+          console.error('Error al eliminar el documento:', error);
+        }).finally(async () => {
+
+          await this.$nextTick();
+
+          location.reload(true);
+        });
 
     },
     ordenar(opcion) {

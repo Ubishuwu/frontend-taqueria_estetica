@@ -60,7 +60,7 @@
                 @click="nuevoDetalle(plat)">Detalles</button>
             </td>
             <td>
-              <button class="btn btn-error btn-xs" @click="eliminarServicio(plat.nombre)">Eliminar</button>
+              <button class="btn btn-error btn-xs" @click="eliminar(plat)">Eliminar</button>
             </td>
 
           </tr>
@@ -142,6 +142,7 @@
 import "firebase/auth";
 import db from "../../../firebase/firebaseInit"
 import FormularioUsuarios from '../../forms/FormularioUsuarios.vue';
+import firebase from "firebase/app";
 
 
 export default {
@@ -221,7 +222,39 @@ export default {
         });
 
       location.reload(true);
-    }
+    },
+
+    eliminar(plat) {
+      //console.log(serv.id)
+
+      if (plat.imagen) {
+
+        const imagenRef = firebase.storage().refFromURL(plat.imagen);
+
+        imagenRef.delete().then(() => {
+          console.log("Imagen borrada");
+        }).catch((error) => {
+          console.error("Error al borrar la imagen: ", error);
+        });
+      } else {
+        console.log("No hay imagen para borrar");
+
+      }
+
+      firebase.firestore().collection('platillos').doc(plat.id).delete()
+        .then(() => {
+          console.log('Documento eliminado correctamente');
+        })
+        .catch((error) => {
+          console.error('Error al eliminar el documento:', error);
+        }).finally(async () => {
+
+          await this.$nextTick();
+
+          location.reload(true);
+        });
+
+    },
   }
 
 

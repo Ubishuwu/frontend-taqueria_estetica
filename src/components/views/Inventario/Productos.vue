@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col overflow-none ">
 
-    <div class="flex sm:flex-row flex-col justify-between items-center">
+    <div class="flex sm:flex-row flex-col justify-between items-center flex-wrap">
 
       <form class="flex sm:flex-nowrap flex-wrap">
-        <label v-if="sucursalUser=='Todas'" class="form-control w-full max-w-xs mr-2">
+        <label v-if="sucursalUser == 'Todas'" class="form-control w-full max-w-xs mr-2">
           <div class="label">
             <span class="label-text">Sucursal</span>
           </div>
@@ -38,7 +38,13 @@
         </label>
 
       </form>
-      <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Agregar Producto</button>
+      <div>
+
+        <button class="btn btn-outline btn-success mt-5 mx-5" onclick="formulario.showModal()">Agregar Producto</button>
+        <button class="btn btn-outline btn-success mt-5 mx-5" onclick="formulario2.showModal()">Reabastecimiento de
+          Productos</button>
+      </div>
+
       <dialog id="formulario" class="modal">
         <div class="modal-box">
           <form method="dialog">
@@ -47,8 +53,18 @@
           <FormularioProducto />
         </div>
       </dialog>
+
     </div>
 
+    <dialog id="formulario2" class="bg-slate-50 modal ">
+      <div
+        class="relative h-[calc(75vh)] bg-slate-50 overflow-y-auto overscroll-auto rounded<-xl md:w-4/6 w-full scroll-estilo">
+        <form method="dialog" class="">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <FormularioReabastecimiento :productos="productosCopia" />
+      </div>
+    </dialog>
 
     <div class="mt-5 overflow-auto h-[calc(100vh-theme('spacing.7'))] min-h-72  ">
       <table class="table">
@@ -177,6 +193,7 @@ import "firebase/auth";
 import db from "../../../firebase/firebaseInit"
 
 import FormularioProducto from '../../forms/FormularioProducto.vue';
+import FormularioReabastecimiento from "../../forms/FormularioReabastecimiento.vue";
 
 export default {
 
@@ -192,7 +209,7 @@ export default {
     };
   },
   components: {
-    FormularioProducto,
+    FormularioProducto, FormularioReabastecimiento
   },
   async created() {
     const usuario = (await db.collection('empleado').doc(firebase.auth().currentUser.uid).get()).data();
@@ -288,7 +305,7 @@ export default {
         this.productos = this.productos.filter(elemento => elemento.sucursal === "Barberia");
       }
     },
-    
+
     estatusChange(opcion) {
       //this.estatus=opcion;
       /*if (opcion == "Todos") {
@@ -298,10 +315,10 @@ export default {
       } else if (opcion == "Normal") {
         this.productos = this.productos.filter(elemento => elemento.inventarioActual > elemento.inventarioMinimo);
       } else if (opcion == "Sobreinventario") {
-        this.productos = this.productos.filter(elemento => elemento.inventarioActual > elemento.inventarioMinimo*10);
+        this.productos = this.productos.filter(elemento => elemento.inventarioActual > elemento.inventarioMinimo * 10);
       }
     },
-    filtroOrden(){
+    filtroOrden() {
       this.productos = this.productosCopia;
       this.productosCopia = this.productos;
       this.filtrar(this.filtro);

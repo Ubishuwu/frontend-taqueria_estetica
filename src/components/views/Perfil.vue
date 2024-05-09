@@ -46,9 +46,13 @@
                         <span class="label-text">Repetir contraseña</span>
                     </label>
                     <input type="password" class="input input-bordered w-full max-w-xs" v-model="passwordConfirm">
+                    <span v-if="this.passwordError"
+                                class="font-mono text-sm text-red-500 text-right">Las nuevas contraseñas no coinciden, verifique.</span>
                 </div>
                 <div class="card-actions">
                     <button class="btn btn-black" @click="updateProfile">Guardar cambios</button>
+                    <span v-if="this.errorNetwork"
+                                class="font-mono text-sm text-red-500 text-right">Error de conexión, espere un momento...</span>
                 </div>
             </div>
         </div>
@@ -73,6 +77,8 @@ export default {
             passwordNew: "",
             correctPass: false,
             longitud:false,
+            errorNetwork:false,
+            passwordError: false,
             rutas: {
                 ///agregar las rutas
                 Inicio: { "/inicio": "rol" },
@@ -98,7 +104,8 @@ export default {
     computed: {},
     methods: {
         async updateProfile() {
-            try {
+            if(this.passwordNew === this.passwordConfirm){
+                try {
                 const user = firebase.auth().currentUser;
                 const credential = firebase.auth.EmailAuthProvider.credential(
                     user.email,
@@ -110,14 +117,23 @@ export default {
                 location.reload()
             } catch (error) {
                 const mensaje = error.message;
-                if(mensaje.includes("Password should")){
-                    this.longitud = true;
+                if(mensaje.includes("A network error")){
+                    this.errorNetwork = true;
+                    this.correctPass = false;
+                    this.longitud = false;
                 }else if(mensaje.includes("INVALID_LOGIN_CREDENTIALS")){
                     this.correctPass = true;
-                }else {
-                    
+                    this.longitud = false;
+                    this.errorNetwork = false;
+                }else if(mensaje.includes("Password should")){
+                    this.longitud = true;
+                    this.correctPass = false;
+                    this.errorNetwork = false;
                 }
                 console.log(error)
+            }
+            }else{
+                this.passwordError = true;
             }
         },
     }

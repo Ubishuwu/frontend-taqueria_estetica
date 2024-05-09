@@ -120,14 +120,7 @@
                             <div class="hidden z-50 mt-2 border border-1 border-gray-400 right-0 w-48 origin-top-right rounded-md bg-white shadow-lg  ring-black ring-opacity-5 focus:outline-none"
                                 role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                 id="user-menu">
-
-
-                                <RouterLink to="/config" @click="retraerUser">
-                                    <a type="button"
-                                        class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
-                                        Configuración
-                                    </a>
-                                </RouterLink>
+                                
                                 <RouterLink to="/user" @click="retraerUser">
                                     <a type="button"
                                         class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">

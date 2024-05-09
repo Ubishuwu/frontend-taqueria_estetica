@@ -20,7 +20,7 @@
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Nombre(s):</span>
                             <input type="text" placeholder="Nombre(s)" class="input input-bordered input-sm w-full"
-                                v-model="name" />
+                                v-model="name" @blur="validarCampo('name')" @input="validarCampo2('name')" />
                             <span v-if="enviado && v$.name.$error"
                                 class="font-mono text-sm text-red-500 text-right">Nombre(s) Requerido,
                                 Verifiquelo</span>
@@ -88,6 +88,16 @@
                         </label>
                     </div>
 
+                    <div class="flex flex-col md:flex-row w-full">
+                        <label class="flex flex-col w-full p-2">
+                            <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
+                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
+                                id="password" v-model="password" />
+                            <span v-if="enviado && v$.password.$error"
+                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
+                                Verifiquela</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -111,36 +121,6 @@
 
                 <div
                     class="flex flex-col border border-1 border-primary p-4 shadow-sm shadow-gray-500 justify-center w-full bg-primary rounded-md">
-
-                    <label class="flex flex-col w-full mt-2 p-2">
-                        <span class=" font-sans text-md text-gray-200 mb-1">Usuario:</span>
-                        <input type="text" placeholder="user" class="input input-bordered input-sm w-full" id="user"
-                            v-model="user" />
-                        <span v-if="enviado && v$.user.$error" class="font-mono text-sm text-red-500 text-right">Usuario
-                            Requerido,
-                            Verifiquelo</span>
-                    </label>
-
-                    <div class="flex flex-col md:flex-row w-full">
-                        <label class="flex flex-col w-full p-2">
-                            <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
-                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
-                                id="password" v-model="password" />
-                            <span v-if="enviado && v$.password.$error"
-                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
-                                Verifiquela</span>
-                        </label>
-                        <!----
-                        <label class="flex flex-col w-full p-2">
-                            <span class=" font-sans text-md text-gray-200 mb-1">Confirmar Contraseña:</span>
-                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
-                                id="passwordv" v-model="passwordv" />
-                            <span v-if="enviado && v$.passwordv.$error"
-                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
-                                Verifiquela</span>
-                            </label>
-                        -->
-                    </div>
                     <div class="flex flex-col w-full p-2 mt-2 border border-1 border-white rounded-xl justify-center">
                         <span class=" font-sans text-xl text-gray-200 m-1">Horario:</span>
                         <div class="flex flex-col min-[1180px]:flex-row w-full p-2">
@@ -253,8 +233,8 @@
                             <div class="flex md:flex-row flex-col w-full">
 
                                 <span class=" font-sans text-md text-gray-200 m-1">Sueldo(por Hora):</span>
-                                <input type="text" v-model="sueldo" placeholder="00.00" @input="validateFloat"
-                                    class="input input-bordered input-sm grow" />
+                                <input type="text" v-model.number="sueldo" placeholder="00.00" @input="validateFloat"
+                                    v-validate="'decimal'" class="input input-bordered input-sm grow" />
                             </div>
                             <span v-if="enviado && v$.sueldo.$error"
                                 class="font-mono text-sm text-red-500 text-right">Sueldo
@@ -341,12 +321,12 @@ export default {
         }
     },
     validations: {
-        name: { required, alpha },
+        name: { required },
         lastname: { alpha },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
         correo: { email, required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
-        user: { required },
+        // user: { required },
         password: { required, minLength: minLength(5) },
         //passwordv: { required, minLength: minLength(5), sameAsPassword: sameAs(() => passwordval()) },
         horaf: { required },
@@ -389,6 +369,22 @@ export default {
                 this.validDias = false;
 
 
+        },
+        async validarCampo(campo) {
+            console.log(campo)
+            console.log(this.v$)
+            const verif = await this.v$.$validate();
+            console.log(verif)
+            if (!verif)
+                return
+        },
+        async validarCampo2(campo) {
+            /*console.log(campo)
+            console.log(this.v$[campo][0])
+            const verif = await this.v$[campo][0].$validate();
+            console.log(verif)
+            if (!verif)
+                return*/
         },
         cambioImagen(e) {
             this.imagen = e.target.files[0];

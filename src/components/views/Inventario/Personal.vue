@@ -40,7 +40,7 @@
                 </label>
 
             </form>
-                <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Registar Usuario</button>
+                <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Registrar Usuario</button>
         </div>
 
         <!---Tabla-->
@@ -117,7 +117,7 @@
                                 <h3 class="font-normal text-lg">{{ detalles.nombre }} {{ detalles.apellido }}</h3>
                             </label>
                             <label class="flex flex-nowrap m-2">
-                                <h2 class="font-bold text-lg mr-2">User:</h2>
+                                <h2 class="font-bold text-lg mr-2">Usuario:</h2>
                                 <h3 class="font-normal text-lg">{{ detalles.user }}</h3>
                             </label>
                             <label class="flex flex-nowrap m-2">

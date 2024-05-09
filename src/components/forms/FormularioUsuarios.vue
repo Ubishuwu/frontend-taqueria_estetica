@@ -30,7 +30,7 @@
                             <span class=" font-sans text-md text-gray-200 mb-1">Apellido(s):</span>
                             <input type="text" placeholder="Apellido(s)" class="input input-bordered input-sm w-full"
                                 id="lastname" v-model="lastname" />
-                            <span v-if="enviado && v$.lastname.$error"
+                            <span v-if="enviado && (v$.lastname.$error || validLastN)"
                                 class="font-mono text-sm text-red-500 text-right">Apellido(s) Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -317,12 +317,14 @@ export default {
             Imagen: "",
             validDias: true,
             validHora: true,
+            validName: true,
+            validLastN: true,
             gerente: false,
         }
     },
     validations: {
         name: { required },
-        lastname: { alpha },
+        lastname: { required },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
         correo: { email, required },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
@@ -341,7 +343,7 @@ export default {
             const isFormCorrect = await this.v$.$validate()
             this.enviado = true;
             this.validarDatos();
-            if (!isFormCorrect || this.validHora || !this.validDias) {
+            if (!isFormCorrect || this.validHora || !this.validDias || this.validName || this.validLastN) {
                 console.log("error...");
                 console.log("errores:");
                 console.log(this.v$.$errors);
@@ -351,8 +353,6 @@ export default {
                 return;
             }
             console.log('Formulario válido. Enviando...');
-            ///proceso para enviar y redirigir a la pagina owo// o cerrar modal(no c como xd)
-            //this.$router.push('/');
         },
         validateFloat(event) {
             this.sueldo = event.target.value.replace(/[^0-9.]/g, '');
@@ -363,11 +363,20 @@ export default {
             else { this.validHora = true; }
 
             console.log('dias:' + this.dias)
-            if (this.dias.length > 0)
+            if (this.dias.length > 0) {
                 this.validDias = true;
-            else
+            } else {
                 this.validDias = false;
+            }
 
+            var regex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+            if (regex.test(this.name)) {
+                this.validName = false;
+            }
+
+            if (regex.test(this.lastname)) {
+                this.validLastN = false;
+            }
 
         },
         async validarCampo(campo) {
@@ -391,6 +400,7 @@ export default {
             console.log(this.imagen)
 
         },
+
         async guardar() {
             let res = await this.v$.$validate();
             await this.validar();

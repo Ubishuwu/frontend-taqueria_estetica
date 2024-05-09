@@ -56,7 +56,7 @@
 
     </div>
 
-    <dialog id="formulario2" class="bg-slate-50 modal ">
+    <dialog id="formulario2" class="bg-slate-50 modal carta ">
       <div
         class="relative h-[calc(75vh)] bg-slate-50 overflow-y-auto overscroll-auto rounded<-xl md:w-4/6 w-full scroll-estilo">
         <form method="dialog" class="">
@@ -330,4 +330,5 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+</style>

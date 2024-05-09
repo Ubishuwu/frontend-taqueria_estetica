@@ -171,8 +171,8 @@ button {
 
 @media (max-width: 1024px) {
     .card {
-        width: 100%;
-        margin-left: 4rem;
+        width: 80%;
+        margin-top: 4rem;
     }
 }
 </style>

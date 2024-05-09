@@ -15,7 +15,7 @@
 
             <div class="datos">
                 <strong>{{ this.usuario.userName }}</strong>
-                <p class="text-gray-500 text-sm">Cambiar foto de perfil</p>
+                <!--<p class="text-gray-500 text-sm">Cambiar foto de perfil</p>-->
             </div>
 
             <div class="card-body items-center text-center pt-2">
@@ -34,12 +34,14 @@
                         <span class="label-text">Contraseña actual</span>
                     </label>
                     <input type="password" class="input input-bordered w-full max-w-xs" v-model="passwordCurrent">
-                    <span v-if="this.enviado"
+                    <span v-if="this.correctPass"
                                 class="font-mono text-sm text-red-500 text-right">La contraseña no coincide, verifique.</span>
                     <label class="label">
                         <span class="label-text">Nueva contraseña</span>
                     </label>
                     <input type="password" class="input input-bordered w-full max-w-xs" v-model="passwordNew">
+                    <span v-if="this.longitud"
+                                class="font-mono text-sm text-red-500 text-right">La contraseña debe contener más de 6 letras.</span>
                     <label class="label">
                         <span class="label-text">Repetir contraseña</span>
                     </label>
@@ -69,7 +71,8 @@ export default {
             passwordCurrent: "",
             passwordConfirm: "",
             passwordNew: "",
-            enviado: false,
+            correctPass: false,
+            longitud:false,
             rutas: {
                 ///agregar las rutas
                 Inicio: { "/inicio": "rol" },
@@ -95,7 +98,6 @@ export default {
     computed: {},
     methods: {
         async updateProfile() {
-            this.enviado = true;
             try {
                 const user = firebase.auth().currentUser;
                 const credential = firebase.auth.EmailAuthProvider.credential(
@@ -104,10 +106,17 @@ export default {
                 );
                 await user.reauthenticateWithCredential(credential);
                 await user.updatePassword(this.passwordNew);
-                // Password updated successfully
+                this.longitud = false;
+                location.reload()
             } catch (error) {
-                // Display error message
-                //this.errorMessage = error.message;
+                const mensaje = error.message;
+                if(mensaje.includes("Password should")){
+                    this.longitud = true;
+                }else if(mensaje.includes("INVALID_LOGIN_CREDENTIALS")){
+                    this.correctPass = true;
+                }else {
+                    
+                }
                 console.log(error)
             }
         },

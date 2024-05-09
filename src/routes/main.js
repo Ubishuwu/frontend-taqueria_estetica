@@ -10,10 +10,15 @@ import Inicio from '../components/views/Inicio.vue'
 import FormularioIngrediente from '../components/forms/FormularioIngrediente.vue';
 import FormularioPlatillo from '../components/forms/FormularioPlatillo.vue';
 import FormularioUsuarios from '../components/forms/FormularioUsuarios.vue';
+import Perfil from '../components/views/Perfil.vue';
 import Error404 from '../components/views/Error404.vue';
 
 import { auth } from '../firebase/firebaseInit'
 //import firebase from "firebase/app";
+
+import firebase from "firebase/app";
+import "firebase/auth";
+import db from "../firebase/firebaseInit"
 
 const routes = [
   {
@@ -36,6 +41,11 @@ const routes = [
         path: "inicio",
         name: "Inicio",
         component: Inicio,
+      },
+      {
+        path: "user",
+        name: "Perfil Usuario",
+        component: Perfil
       },
     ]
   },
@@ -80,18 +90,26 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
+
   //console.log(routes[0].children.some(rute => ('/' + rute.path) === to.path))
   console.log(to.path)
   if ((routes.some(route => route.path === to.path) || routes[0].children.some(rute => ('/' + rute.path) === to.path)))
-    auth.onAuthStateChanged(user => {
-      if (user) {
+    auth.onAuthStateChanged(async user => {
+
+  if (user) {
+    const usuario = (await db.collection('empleado').doc(user.uid).get()).data();
+    console.log(usuario);
         // El usuario está autenticado, `currentUser` debe estar disponible
         console.log('Usuario autenticado');
         // Aquí puedes realizar acciones como redirigir a una ruta protegida
         if (to.path === '/Login' || to.path === '/')
           next('/inicio');
         else
-          next();
+          if (usuario.rol === "Empleado" && to.path === '/inventario') {
+            next('/');
+          } else {
+            next();
+          }
       } else {
         // No hay usuario autenticado, `currentUser` será null
         console.log('No hay usuario autenticado.');

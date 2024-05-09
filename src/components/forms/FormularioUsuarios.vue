@@ -20,8 +20,8 @@
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Nombre(s):</span>
                             <input type="text" placeholder="Nombre(s)" class="input input-bordered input-sm w-full"
-                                v-model="name" />
-                            <span v-if="enviado && v$.name.$error"
+                                v-model="name" @blur="validarCampo('name')" @input="validarCampo('name')" />
+                            <span v-if="v$.name.$error || validName"
                                 class="font-mono text-sm text-red-500 text-right">Nombre(s) Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -29,8 +29,9 @@
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Apellido(s):</span>
                             <input type="text" placeholder="Apellido(s)" class="input input-bordered input-sm w-full"
-                                id="lastname" v-model="lastname" />
-                            <span v-if="enviado && v$.lastname.$error"
+                                id="lastname" v-model="lastname" @blur="validarCampo('lastname')"
+                                @input="validarCampo('lastname')" />
+                            <span v-if="(v$.lastname.$error || validLastN)"
                                 class="font-mono text-sm text-red-500 text-right">Apellido(s) Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -41,9 +42,8 @@
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Edad:</span>
                             <input type="number" placeholder="00" class="input input-bordered input-sm w-full" id="edad"
-                                v-model="edad" />
-                            <span v-if="enviado && v$.edad.$error"
-                                class="font-mono text-sm text-red-500 text-right">Edad no
+                                v-model="edad" @blur="validarCampo('edad')" @input="validarCampo('edad')" />
+                            <span v-if="v$.edad.$error" class="font-mono text-sm text-red-500 text-right">Edad no
                                 valida,
                                 Verifiquela</span>
                         </label>
@@ -72,22 +72,35 @@
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Telefono:</span>
                             <input type="number" placeholder="000-000-00-00"
-                                class="input input-bordered input-sm w-full" id="telefono" v-model="telefono" />
-                            <span v-if="enviado && v$.telefono.$error"
-                                class="font-mono text-sm text-red-500 text-right">Telefono no valido,
+                                class="input input-bordered input-sm w-full" id="telefono" v-model="telefono"
+                                @blur="validarCampo('telefono')" @input="validarCampo('telefono')" />
+                            <span v-if="v$.telefono.$error" class="font-mono text-sm text-red-500 text-right">Telefono
+                                no valido,
                                 Verifiquelo</span>
                         </label>
 
                         <label class="flex flex-col w-full p-2">
                             <span class=" font-sans text-md text-gray-200 mb-1">Correo ELectronico:</span>
                             <input type="email" placeholder="example@example.com"
-                                class="input input-bordered input-sm w-full" id="correo" v-model="correo" />
-                            <span v-if="enviado && v$.correo.$error"
-                                class="font-mono text-sm text-red-500 text-right">Correo no valido,
+                                class="input input-bordered input-sm w-full" id="correo" v-model="correo"
+                                @blur="validarCampo('correo')" @input="validarCampo('correo')" />
+                            <span v-if="v$.correo.$error" class="font-mono text-sm text-red-500 text-right">Correo no
+                                valido,
                                 Verifiquelo</span>
                         </label>
                     </div>
 
+                    <div class="flex flex-col md:flex-row w-full">
+                        <label class="flex flex-col w-full p-2">
+                            <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
+                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
+                                id="password" v-model="password" @blur="validarCampo('password')"
+                                @input="validarCampo('password')" />
+                            <span v-if="v$.password.$error"
+                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
+                                Verifiquela</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -111,82 +124,53 @@
 
                 <div
                     class="flex flex-col border border-1 border-primary p-4 shadow-sm shadow-gray-500 justify-center w-full bg-primary rounded-md">
-
-                    <label class="flex flex-col w-full mt-2 p-2">
-                        <span class=" font-sans text-md text-gray-200 mb-1">Usuario:</span>
-                        <input type="text" placeholder="user" class="input input-bordered input-sm w-full" id="user"
-                            v-model="user" />
-                        <span v-if="enviado && v$.user.$error" class="font-mono text-sm text-red-500 text-right">Usuario
-                            Requerido,
-                            Verifiquelo</span>
-                    </label>
-
-                    <div class="flex flex-col md:flex-row w-full">
-                        <label class="flex flex-col w-full p-2">
-                            <span class=" font-sans text-md text-gray-200 mb-1">Contraseña:</span>
-                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
-                                id="password" v-model="password" />
-                            <span v-if="enviado && v$.password.$error"
-                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
-                                Verifiquela</span>
-                        </label>
-                        <!----
-                        <label class="flex flex-col w-full p-2">
-                            <span class=" font-sans text-md text-gray-200 mb-1">Confirmar Contraseña:</span>
-                            <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
-                                id="passwordv" v-model="passwordv" />
-                            <span v-if="enviado && v$.passwordv.$error"
-                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
-                                Verifiquela</span>
-                            </label>
-                        -->
-                    </div>
                     <div class="flex flex-col w-full p-2 mt-2 border border-1 border-white rounded-xl justify-center">
                         <span class=" font-sans text-xl text-gray-200 m-1">Horario:</span>
                         <div class="flex flex-col min-[1180px]:flex-row w-full p-2">
-                            <label class="flex flex-row p-2">
+                            <div class="flex flex-row p-2">
                                 <span class=" font-sans text-sm text-gray-200 m-1">Dias:</span>
                                 <div class="flex flex-row flex-nowrap">
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="lunes" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="lunes" />
                                         <span class="font-sans text-sm text-gray-200 m-1">L</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="martes" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="martes" />
                                         <span class="font-sans text-sm text-gray-200 m-1">M</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
+                                            @blur="validardias('dias')" @input="validardias('dias')"
                                             value="miercoles" />
                                         <span class="font-sans text-sm text-gray-200 m-1">M</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="jueves" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="jueves" />
                                         <span class="font-sans text-sm text-gray-200 m-1">J</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="viernes" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="viernes" />
                                         <span class="font-sans text-sm text-gray-200 m-1">V</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="sabado" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="sabado" />
                                         <span class="font-sans text-sm text-gray-200 m-1">S</span>
                                     </label>
                                     <label class="label cursor-pointer flex flex-col">
                                         <input type="checkbox" class="checkbox bg-accent checkbox-info" v-model="dias"
-                                            value="domingo" />
+                                            @blur="validardias('dias')" @input="validardias('dias')" value="domingo" />
                                         <span class="font-sans text-sm text-gray-200 m-1">D</span>
                                     </label>
                                 </div>
-                                <span v-if="enviado && !validDias"
-                                    class="font-mono text-sm text-red-500 text-right">Dias requeridos,
+                                <span v-if="!validDias" class="font-mono text-sm text-red-500 text-right">Dias
+                                    requeridos,
                                     Verifiquela</span>
-                            </label>
+                            </div>
 
                             <div class="flex flex-col p-2 items-start ">
                                 <label class="flex flex-row w-full items-center justify-between">
@@ -194,18 +178,20 @@
 
                                         <span class=" font-sans text-sm text-gray-200 m-1">Hora Inicio:</span>
                                         <input type="time" placeholder="Horas" class="input input-bordered input-sm "
-                                            id="horai" v-model="horai" />
+                                            id="horai" v-model="horai" @blur="validarhora('horai')"
+                                            @input="validarhora('horai')" />
                                     </div>
                                     <div class="flex md:flex-row flex-col items-center justify-between">
 
                                         <span class=" font-sans text-sm text-gray-200 m-1">Hora Fin:</span>
 
                                         <input type="time" placeholder="Horas" class="input input-bordered input-sm "
-                                            id="horaf" v-model="horaf" />
+                                            id="horaf" v-model="horaf" @blur="validarhora('horaf')"
+                                            @input="validarhora('horaf')" />
                                     </div>
 
                                 </label>
-                                <span v-if="enviado && validHora"
+                                <span v-if="v$.horai.$error || v$.horaf.$error || validHora"
                                     class="font-mono text-sm text-red-500 text-right pt-2">
                                     La hora es requerida.
                                 </span>
@@ -222,29 +208,29 @@
 
                                     <span class="font-sans text-md text-gray-200 m-1">Rol:</span>
                                     <select class="select select-bordered select-sm grow xl-max-w-56" id="rol"
-                                        v-model="rol" v-on:change.prevent="change">
+                                        v-model="rol" v-on:change.prevent="change" @blur="validarCampo('rol')"
+                                        @input="validarCampo('rol')">
                                         <option>Gerente General</option>
                                         <option>Gerente de Sucursal</option>
                                         <option>Empleado</option>
                                     </select>
                                 </div>
-                                <span v-if="enviado && v$.rol.$error"
-                                    class="font-mono text-sm text-red-500 text-right">Rol
+                                <span v-if="v$.rol.$error" class="font-mono text-sm text-red-500 text-right">Rol
                                     Requerido</span>
                             </label>
 
                             <label class=" flex flex-col items-center m-2 p-2">
                                 <div class="flex md:flex-row w-full flex-col">
                                     <span class="font-sans text-md text-gray-200 m-1">Sucursal: </span>
-                                    <select v-model="sucursal" class="select select-bordered select-sm grow xl:w-52">
+                                    <select v-model="sucursal" class="select select-bordered select-sm grow xl:w-52"
+                                        @blur="validarCampo('sucursal')" @input="validarCampo('sucursal')">
                                         <option v-if="!gerente" disabled selected>Selecciona una</option>
                                         <option v-if="gerente" selected>Todas</option>
                                         <option v-if="!gerente">Taqueria</option>
                                         <option v-if="!gerente">Barberia</option>
                                     </select>
                                 </div>
-                                <span v-if="enviado && v$.sucursal.$error"
-                                    class="font-mono text-sm text-red-500 text-right">Rol
+                                <span v-if="v$.sucursal.$error" class="font-mono text-sm text-red-500 text-right">Rol
                                     Requerido</span>
                             </label>
                         </div>
@@ -253,11 +239,11 @@
                             <div class="flex md:flex-row flex-col w-full">
 
                                 <span class=" font-sans text-md text-gray-200 m-1">Sueldo(por Hora):</span>
-                                <input type="text" v-model="sueldo" placeholder="00.00" @input="validateFloat"
-                                    class="input input-bordered input-sm grow" />
+                                <input type="number" v-model.number="sueldo" placeholder="00.00" v-validate="'decimal'"
+                                    class="input input-bordered input-sm grow" @blur="validarCampo('sueldo')"
+                                    @input="validarCampo('sueldo')" />
                             </div>
-                            <span v-if="enviado && v$.sueldo.$error"
-                                class="font-mono text-sm text-red-500 text-right">Sueldo
+                            <span v-if="v$.sueldo.$error" class="font-mono text-sm text-red-500 text-right">Sueldo
                                 Requerido,
                                 Verifiquelo</span>
                         </label>
@@ -307,13 +293,22 @@
 <script>
 
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, helpers, numeric } from '@vuelidate/validators'
+import { required, minLength, maxLength, minValue, maxValue, alpha, decimal, email, sameAs, numeric } from '@vuelidate/validators'
 import { storage } from '../../firebase/firebaseInit';
+
 
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../../firebase/firebaseInit"
 const ref = storage.ref();
+
+const nameRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+
+const passRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+
+const emailRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+
+
 
 export default {
     setup: () => ({ v$: useVuelidate() }),
@@ -336,24 +331,44 @@ export default {
             enviado: false,
             Imagen: "",
             validDias: true,
-            validHora: true,
+            validHora: false,
+            validName: false,
+            validLastN: false,
             gerente: false,
         }
     },
     validations: {
-        name: { required, alpha },
-        lastname: { alpha },
+        name: {
+            required,
+            isValid(value) {
+                return nameRegex.test(value);
+            },
+        },
+        lastname: {
+            required,
+            isValid(value) {
+                return nameRegex.test(value);
+            },
+        },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
-        correo: { email, required },
-        telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) },
-        user: { required },
-        password: { required, minLength: minLength(5) },
+        correo: {
+            email, required, isValid(value) {
+                return emailRegex.test(value);
+            },
+        },
+        telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) ,required},
+        // user: { required },
+        password: {
+            required, minLength: minLength(5), isValid(value) {
+                return passRegex.test(value);
+            },
+        },
         //passwordv: { required, minLength: minLength(5), sameAsPassword: sameAs(() => passwordval()) },
         horaf: { required },
         horai: { required },
-        sueldo: { decimal },
+        sueldo: { decimal, required, minValue: minValue(0) },
         rol: { required },
-        sucursal: { required }
+        sucursal: { required, decimal }
 
     },
     methods: {
@@ -361,7 +376,7 @@ export default {
             const isFormCorrect = await this.v$.$validate()
             this.enviado = true;
             this.validarDatos();
-            if (!isFormCorrect || this.validHora || !this.validDias) {
+            if (!isFormCorrect || this.validHora || !this.validDias || this.validName || this.validLastN) {
                 console.log("error...");
                 console.log("errores:");
                 console.log(this.v$.$errors);
@@ -371,8 +386,6 @@ export default {
                 return;
             }
             console.log('Formulario válido. Enviando...');
-            ///proceso para enviar y redirigir a la pagina owo// o cerrar modal(no c como xd)
-            //this.$router.push('/');
         },
         validateFloat(event) {
             this.sueldo = event.target.value.replace(/[^0-9.]/g, '');
@@ -383,11 +396,42 @@ export default {
             else { this.validHora = true; }
 
             console.log('dias:' + this.dias)
-            if (this.dias.length > 0)
+            if (this.dias.length > 0) {
                 this.validDias = true;
-            else
+            } else {
                 this.validDias = false;
+            }
 
+            var regex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+            if (regex.test(this.name)) {
+                this.validName = false;
+            }
+
+            if (regex.test(this.lastname)) {
+                this.validLastN = false;
+            }
+
+        },
+        async validarCampo(campo) {
+            console.log(campo)
+            console.log(this.v$[campo].$validate())
+            const verif = await this.v$[campo].$validate();
+        },
+        async validardias(campo) {
+            
+            console.log('dias:' + this.dias)
+            if (this.dias.length > 0) {
+                this.validDias = true;
+            } else {
+                this.validDias = false;
+            }
+
+        },
+        async validarhora(campo) {
+            console.log(this.v$[campo].$validate())
+            const verif = await this.v$[campo].$validate();
+            if (this.horai != 0 && this.horaf != 0) { this.validHora = false; }
+            else { this.validHora = true; }
 
         },
         cambioImagen(e) {
@@ -395,6 +439,7 @@ export default {
             console.log(this.imagen)
 
         },
+
         async guardar() {
             let res = await this.v$.$validate();
             await this.validar();

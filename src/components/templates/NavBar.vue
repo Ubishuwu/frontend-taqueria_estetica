@@ -86,16 +86,6 @@
                         </dialog>
                     </div>
                     <div class="flex" v-else>
-                        <button type="button"
-                            class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                            <span class="absolute -inset-1.5"></span>
-                            <span class="sr-only">View notifications</span>
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                            </svg>
-                        </button>
 
                         <!-- Profile dropdown -->
                         <div class="relative ml-3">
@@ -120,14 +110,7 @@
                             <div class="hidden z-50 mt-2 border border-1 border-gray-400 right-0 w-48 origin-top-right rounded-md bg-white shadow-lg  ring-black ring-opacity-5 focus:outline-none"
                                 role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                 id="user-menu">
-
-
-                                <RouterLink to="/config" @click="retraerUser">
-                                    <a type="button"
-                                        class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
-                                        Configuracion
-                                    </a>
-                                </RouterLink>
+                                
                                 <RouterLink to="/user" @click="retraerUser">
                                     <a type="button"
                                         class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
@@ -137,7 +120,7 @@
 
                                 <a @click="logout" type="button"
                                     class="hover:bg-primary hover:text-white hover:brightness-150 rounded-md block px-4 py-2 text-sm">
-                                    Cerrar Sesión
+                                    Cerrar sesión
                                 </a>
                             </div>
 

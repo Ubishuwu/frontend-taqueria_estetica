@@ -313,11 +313,13 @@ export default {
 
                         await dataBase.set({
                             fecha: dia,
-                            dia: hora,
+                            hora: hora,
                             vendedor: db.collection('empleado').doc(firebase.auth().currentUser.uid),
                             compra: listacompra,
                             pagoRecibido: this.pago,
                             cambio: this.cambio,
+                            sucursal: this.usuario.sucursal,
+                            total: this.total
                         })
 
                         console.log(dataBase);
@@ -456,8 +458,11 @@ export default {
         agregar_compra(producto) {
             const indice = this.compra.findIndex((elemento) => elemento.producto === producto.producto);
             // Verifica si el producto existe en el arreglo
+            console.log(indice)
+
             if (indice !== -1) {
                 // Modifica la cantidad del producto existente
+                //console.log("modificando")
                 this.compra[indice].cantidad = producto.cantidad; // Aumenta la cantidad
                 //console.log('Cantidad actualizada:', this.compra[indice].cantidad, ' de ', this.compra[indice].producto);
             } else {

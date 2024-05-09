@@ -10,6 +10,7 @@ import Inicio from '../components/views/Inicio.vue'
 import FormularioIngrediente from '../components/forms/FormularioIngrediente.vue';
 import FormularioPlatillo from '../components/forms/FormularioPlatillo.vue';
 import FormularioUsuarios from '../components/forms/FormularioUsuarios.vue';
+import Perfil from '../components/views/Perfil.vue';
 import Error404 from '../components/views/Error404.vue';
 
 import { auth } from '../firebase/firebaseInit'
@@ -36,6 +37,11 @@ const routes = [
         path: "inicio",
         name: "Inicio",
         component: Inicio,
+      },
+      {
+        path: "user",
+        name: "Perfil Usuario",
+        component: Perfil
       },
     ]
   },

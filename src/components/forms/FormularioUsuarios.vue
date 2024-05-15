@@ -302,9 +302,10 @@ import "firebase/auth";
 import db from "../../firebase/firebaseInit"
 const ref = storage.ref();
 
-const nameRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+const nameRegex = /^[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,}(\s[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,})?$/;
+const lastRegex = /^[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,}(\s[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,})?$/;
 
-const passRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+const passRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&()_\-+={}\[\]'<>?\/~])[a-zA-Z0-9!@#$%&()_\-+={}\[\]'<>?\/~ÑñÁáÉéÍíÓóÚú]{4,}$/;
 
 const emailRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
 
@@ -347,19 +348,17 @@ export default {
         lastname: {
             required,
             isValid(value) {
-                return nameRegex.test(value);
+                return lastRegex.test(value);
             },
         },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
         correo: {
-            email, required, isValid(value) {
-                return emailRegex.test(value);
-            },
+            email, 
         },
         telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) ,required},
         // user: { required },
         password: {
-            required, minLength: minLength(5), isValid(value) {
+            required, minLength: minLength(4), isValid(value) {
                 return passRegex.test(value);
             },
         },

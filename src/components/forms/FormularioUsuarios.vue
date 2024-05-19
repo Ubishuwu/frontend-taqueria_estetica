@@ -96,9 +96,8 @@
                             <input type="password" placeholder="Password" class="input input-bordered input-sm w-full"
                                 id="password" v-model="password" @blur="validarCampo('password')"
                                 @input="validarCampo('password')" />
-                            <span v-if="v$.password.$error"
-                                class="font-mono text-sm text-red-500 text-right">Contraseña Requerida,
-                                Verifiquela</span>
+                            <span v-if="v$.password.$error" class="font-mono text-sm text-red-500 text-right">{{
+                                errorpass }}</span>
                         </label>
                     </div>
                 </div>
@@ -302,9 +301,10 @@ import "firebase/auth";
 import db from "../../firebase/firebaseInit"
 const ref = storage.ref();
 
-const nameRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+const nameRegex = /^[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,}(\s[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,})?$/;
+const lastRegex = /^[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,}(\s[a-zA-ZÑñÁáÉéÍíÓóÚú]{3,})?$/;
 
-const passRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
+const passRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&()_\-+={}\[\]'<>?\/~])[a-zA-Z0-9!@#$%&()_\-+={}\[\]'<>?\/~]{3,}$/;
 
 const emailRegex = /^([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+)(\s+([A-Za-zÑñÁáÉéÍíÓóÚú]+['\-]{0,1}[A-Za-zÑñÁáÉéÍíÓóÚú]+))*$/;
 
@@ -335,6 +335,7 @@ export default {
             validName: false,
             validLastN: false,
             gerente: false,
+            errorpass: 'contraseña requerida, minimo 1 Mayuscula, 1 Digito y 1 Simbolo especial valido',
         }
     },
     validations: {
@@ -347,19 +348,17 @@ export default {
         lastname: {
             required,
             isValid(value) {
-                return nameRegex.test(value);
+                return lastRegex.test(value);
             },
         },
         edad: { required, numeric, minValue: minValue(18), maxValue: maxValue(100) },
-        correo: {
-            email, required, isValid(value) {
-                return emailRegex.test(value);
-            },
+        correo: {required,
+            email,
         },
-        telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10) ,required},
+        telefono: { numeric, maxLength: maxLength(10), minLength: minLength(10), required },
         // user: { required },
         password: {
-            required, minLength: minLength(5), isValid(value) {
+            required, minLength: minLength(3), isValid(value) {
                 return passRegex.test(value);
             },
         },
@@ -416,9 +415,34 @@ export default {
             console.log(campo)
             console.log(this.v$[campo].$validate())
             const verif = await this.v$[campo].$validate();
+
+            if (campo == "password") {
+                this.errorpass = 'contraseña requerida';
+                let regx = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&()_\-+={}\[\]'<>?\/~])[a-zA-Z0-9!@#$%&()_\-+={}\[\]'<>?\/~]{3,}$/;
+                //Mayuscula
+                regx = /(?=.*[A-Z])/;
+                if (!regx.test(this.password)) {
+                    this.errorpass = this.errorpass + ', minimo 1 Mayuscula';
+                }
+                //digito
+                regx = /(?=.*[0-9])/;
+                if (!regx.test(this.password)) {
+                    this.errorpass = this.errorpass + ', minimo 1 Digito';
+                }
+                //especial
+                regx = /(?=.*[!@#$%&()_\-+={}\[\]'<>?\/~])/;
+                if (!regx.test(this.password)) {
+                    this.errorpass = this.errorpass + ', minimo 1 Caracter especial';
+                }
+                ///caracteres no validos
+                regx = /(?=.*[^0-9a-zA-Z!@#$%&()_\-+={}\[\]'<>?\/~])/;
+                if (regx.test(this.password)) {
+                    this.errorpass = 'caracteres no validos';
+                }
+            }
         },
         async validardias(campo) {
-            
+
             console.log('dias:' + this.dias)
             if (this.dias.length > 0) {
                 this.validDias = true;

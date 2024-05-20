@@ -1,8 +1,9 @@
 <template>
+  <div class="text-primary">Ventas</div>
   <div class="stats shadow stats-vertical sm:stats-horizontal w-full sm:w-auto">
+      <!-- Dashbpard de ventas por áreas
     <div class="stat bg-slate-300">
       <div class="stat-figure text-primary">
-
       </div>
       <div class="stat-title">Ventas</div>
 
@@ -32,7 +33,7 @@
       <div class="stat-value ">- $10,000</div>
       <div class="stat-desc">21% mas que el mes pasado</div>
     </div>
-
+  -->
   </div>
 
 

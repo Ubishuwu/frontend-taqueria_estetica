@@ -59,7 +59,7 @@
               <div class="avatar">
                 <div class="mask mask-squircle w-12 h-12">
                   <img v-if="serv.imagen" class="h-8 w-8 rounded-full object-cover " :src="serv.imagen" alt="">
-                  <img v-else :src="`../src/assets/${serv.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
+                  <img v-else :src="imageUrl(serv)" :alt="imageUrl(serv)" class="" />
                 </div>
               </div>
               <div class="font-bold">{{ serv.nombre }}</div>
@@ -164,7 +164,8 @@ export default {
       serviciosCopia: [],
       detalles: {},
       tipo: "Todos",
-      orden: "Nombre"
+      orden: "Nombre",
+
     };
   },
   components: {
@@ -189,6 +190,12 @@ export default {
     })
   },
   methods: {
+    imageUrl(item) {
+      const aux = '/' + item.tipo + '.png'
+      const url = new URL(aux, import.meta.url).href;
+      console.info(url)
+      return url
+    },
     nuevoDetalle(item) {
       this.detalles = item;
     },

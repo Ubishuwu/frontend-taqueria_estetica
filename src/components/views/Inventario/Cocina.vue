@@ -54,7 +54,7 @@
                 <div class="avatar">
                   <div class="mask mask-squircle w-12 h-12">
                     <img v-if="plat.imagen" class="h-8 w-8 rounded-full object-cover " :src="plat.imagen" alt="">
-                    <img v-else :src="`../src/assets/${plat.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
+                    <img v-else :src="imageUrl(plat)" alt="Avatar Tailwind CSS Component" class="" />
                   </div>
                 </div>
                 <div>
@@ -173,7 +173,7 @@ export default {
   data() {
     return {
       cocina: [],
-      cocinaCopia:[],
+      cocinaCopia: [],
       detalles: {},
       orden: "Nombre",
       filtro: "Todos",
@@ -198,10 +198,17 @@ export default {
       }
       //console.log(data)
       this.cocina.push(data)
-      this.cocinaCopia=this.cocina;
+      this.cocinaCopia = this.cocina;
     })
   },
+
   methods: {
+    imageUrl(item) {
+      const aux = '/' + item.tipo + '.png'
+      const url = new URL(aux, import.meta.url).href;
+      console.info(url)
+      return url
+    },
     async ingredientes(datos) {
       const auxIng = [];
       //console.log(datos);
@@ -300,14 +307,14 @@ export default {
     filtrar(opcion) {
       if (opcion == "Todos") {
         this.cocina = this.cocinaCopia;
-      } else 
+      } else
         this.cocina = this.cocina.filter(elemento => elemento.tipo === opcion);
-      
+
     },
 
     filtroOrden() {
       this.cocina = this.cocinaCopia;
-      this.cocinaCopia= this.cocina;
+      this.cocinaCopia = this.cocina;
       this.filtrar(this.filtro);
       this.ordenar(this.orden);
 

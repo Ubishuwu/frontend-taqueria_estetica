@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center h-screen w-screen bg-cover bg-center"
-        style="background-image: url('../src/assets/fondo.png')">
+        style="background-image: url('/fondo.png')">
 
         <form @submit.prevent="validar"
             class="flex flex-col border border-1 border-primary rounded-xl p-5 shadow-lg shadow-gray-700 bg-primary md:w-3/6 sm:w-4/6 w-11/12 h-4/6 items-center justify-center">

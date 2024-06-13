@@ -9,7 +9,7 @@
     ]">
       <img v-if="producto.imagen" :src="producto.imagen" alt=""
         class="rounded-full h-20 aspect-square object-cover border-2 border-gray-100">
-      <img v-else :src="`../src/assets/${producto.tipo}.png`" alt="Avatar Tailwind CSS Component"
+      <img v-else :src="imageUrl" alt="Avatar Tailwind CSS Component"
         class="rounded-full h-20 aspect-square object-cover border-2 border-gray-100" />
 
       <div class="mx-3 m-0 justify-center items-center">
@@ -59,7 +59,7 @@
 
       <img v-if="producto.imagen" :src="producto.imagen" alt="" ref="imag" @click="activar()"
         class="imag border-2 border-accent shadow-sm">
-      <img v-else :src="`../src/assets/${producto.tipo}.png`" ref="imag" @click="activar()"
+      <img v-else :src="imageUrl" ref="imag" @click="activar()"
         alt="Avatar Tailwind CSS Component" class="imag border-2 border-accent shadow-sm" />
 
       <div class="data" ref="data" @click="activar()">
@@ -92,16 +92,22 @@ export default {
       canti: 0,
       stock: 0,
       stock_restante: null,
+      imagenURL: "",
     };
+  },
+  beforeMount(){
+    const aux='/'+this.producto.tipo+'.png'
+    this.imageUrl = new URL(aux, import.meta.url).href;
   },
   mounted() {
     //console.log(this.producto.nombre, this.stock_venta)
     this.stock = this.stock_venta;
     if (this.producto.tipo == "Producto" || this.producto.tipo == "De venta")
-    if (this.stock_venta != 0) {
+      if (this.stock_venta != 0) {
         //console.log(this.producto,this.producto.cantidad,this.producto.tipo)
         this.stock_restante = this.producto.cantidad - this.stock;
       } else this.stock_restante = this.producto.cantidad;
+     
   },
   computed: {},
   watch: {

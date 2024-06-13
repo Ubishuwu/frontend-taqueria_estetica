@@ -40,7 +40,7 @@
                 </label>
 
             </form>
-                <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Registrar Usuario</button>
+            <button class="btn btn-outline btn-success mt-5" onclick="formulario.showModal()">Registrar Usuario</button>
         </div>
 
         <!---Tabla-->
@@ -68,7 +68,7 @@
                                     <div class="mask mask-squircle w-12 h-12 ">
                                         <img v-if="user.imagen" class="h-8 w-8 rounded-full object-cover "
                                             :src="user.imagen" alt="">
-                                        <img v-else :src="'../src/assets/user.png'" alt="Avatar Tailwind CSS Component"
+                                        <img v-else src="/user.png" alt="Avatar Tailwind CSS Component"
                                             class="" />
 
                                     </div>
@@ -240,6 +240,12 @@ export default {
         })
     },
     methods: {
+        imageUrl(item) {
+            const aux = '/' + item.tipo + '.png'
+            const url = new URL(aux, import.meta.url).href;
+            console.info(url)
+            return url
+        },
         nuevoDetalle(item) {
             this.detalles = item;
         },

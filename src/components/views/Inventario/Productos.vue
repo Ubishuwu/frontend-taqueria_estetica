@@ -87,7 +87,7 @@
                 <div class="avatar">
                   <div class="mask mask-squircle w-12 h-12">
                     <img v-if="prod.imagen" class="h-8 w-8 rounded-full object-cover " :src="prod.imagen" alt="">
-                    <img v-else :src="`../src/assets/${prod.tipo}.png`" alt="Avatar Tailwind CSS Component" class="" />
+                    <img v-else :src="imageUrl(prod)" alt="Avatar Tailwind CSS Component" class="" />
 
                   </div>
                 </div>
@@ -242,7 +242,14 @@ export default {
     this.productosCopia = this.productos;
 
   },
+
   methods: {
+    imageUrl(item) {
+      const aux = '/' + item.tipo + '.png'
+      const url = new URL(aux, import.meta.url).href;
+      console.info(url)
+      return url
+    },
     nuevoDetalle(item) {
       this.detalles = item;
     },
@@ -330,5 +337,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>
